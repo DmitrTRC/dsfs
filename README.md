@@ -23,23 +23,23 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/DmitrTRC/cashbot.git">
+  <a href="https://github.com/DmitrTRC/dsfd.git">
     <img src="img/logo.png" alt="Logo" width="788" height="1011">
   </a>
 
-<h3 align="center">LevelUP C/C++ Course Project CASH BOT</h3>
+<h3 align="center">LevelUP C/C++ Course Project Simple File System</h3>
 
   <p align="center">
     About the project:
     <br />
-    <a href="https://dmitrtrc.github.io/cashbot/"><strong>Explore the docs »</strong></a>
+    <a href="https://dmitrtrc.github.io/dsfs/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/DmitrTRC/cashbot.git">View Demo</a>
+    <a href="https://github.com/DmitrTRC/dsfs.git">View Demo</a>
     ·
-    <a href="https://github.com/DmitrTRC/cashbot.git/issues">Report Bug</a>
+    <a href="https://github.com/DmitrTRC/dsfs.git/issues">Report Bug</a>
     ·
-    <a href="https://github.com/DmitrTRC/cashbot.git/issues">Request Feature</a>
+    <a href="https://github.com/DmitrTRC/dsfs.git/issues">Request Feature</a>
   </p>
 </div>
 
@@ -91,6 +91,7 @@ Contains the following:
 * include/ : header files directory
 * img/ : images directory
 * doc/ : Current works TODO list
+* lib/ : libraries directory
 * tests/ : test directory
 * tools/ : tools directory ( contains createdb.sql for manual database creation )
 * App/ : App directory ( contains main.cpp file )
@@ -107,8 +108,9 @@ Contains the following:
 * [Clang](https://clang.llvm.org/)
 * [Git](https://git-scm.com/)
 * [CMake](https://cmake.org/)
-* [TgBot-cpp](https://github.com/reo7sp/tgbot-cpp)
-* [Nlohmann JSON](https://github.com/nlohmann/json)
+* [Doxygen](https://www.doxygen.nl/index.html)
+* [Docker](https://www.docker.com/)
+* [Alpine Linux](https://alpinelinux.org/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -132,7 +134,7 @@ C Compiler, C++ Compiler, CMake, Git.
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/DmitrTRC/cashbot.git
+   git clone https://github.com/DmitrTRC/dsfs.git
    ```
 
 2. Create a build directory
@@ -160,7 +162,7 @@ C Compiler, C++ Compiler, CMake, Git.
 Just run the executable file in the bin directory.
 
 For more information, please refer to
-the [Documentation](https://dmitrtrc.github.io/cashbot/)
+the [Documentation](https://dmitrtrc.github.io/dsfs/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -170,19 +172,14 @@ the [Documentation](https://dmitrtrc.github.io/cashbot/)
 
 ## Roadmap
 
-- [x] Base infrastructure
-- [ ] Inline keyboard
-- [ ] Downloading files
-- [ ] Uploading files
-- [ ] BackUP and Restore
-- [x] CI/CD
-- [ ] Docker
-- [ ] Link to a real Bank API
-- [ ] API
-- [ ] Web interface Backend / Frontend
-- [ ] Mobile App
+- [] Base infrastructure
+- [] Virtual Drive
+- [] File System
+- [] File System Command Manager
+- [] File System Interface
 
-See the [open issues](https://github.com/DmitrTRC/cashbot/issues) for a full list of proposed features (and
+
+See the [open issues](https://github.com/DmitrTRC/dsfs/issues) for a full list of proposed features (and
 known issues)
 .
 
@@ -226,7 +223,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Your Name - [DmitrTRC](https://twitter.com/twitter_handle) - morozovd@me.com, 9984398@gmail.com
 
-Project Link: [https://github.com/DmitrTRC/cashbot.git](https://github.com/DmitrTRC/cashbot.git)
+Project Link: [https://github.com/DmitrTRC/dsfs.git](https://github.com/DmitrTRC/dsfs.git)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -238,29 +235,29 @@ Project Link: [https://github.com/DmitrTRC/cashbot.git](https://github.com/Dmitr
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[contributors-shield]: https://img.shields.io/github/contributors/DmitrTRC/cashbot.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/DmitrTRC/dsfs.svg?style=for-the-badge
 
-[contributors-url]: https://github.com/DmitrTRC/cashbot/graphs/contributors
+[contributors-url]: https://github.com/DmitrTRC/dsfs/graphs/contributors
 
-[forks-shield]: https://img.shields.io/github/forks/DmitrTRC/cashbot?style=for-the-badge
+[forks-shield]: https://img.shields.io/github/forks/DmitrTRC/dsfs?style=for-the-badge
 
-[forks-url]: https://github.com/github_username/cashbot/network/members
+[forks-url]: https://github.com/github_username/dsfs/network/members
 
-[stars-shield]: https://img.shields.io/github/stars/DmitrTRC/cashbot.svg?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/DmitrTRC/dsfs.svg?style=for-the-badge
 
-[stars-url]: https://github.com/DmitrTRC/cashbot/stargazers
+[stars-url]: https://github.com/DmitrTRC/dsfs/stargazers
 
-[issues-shield]: https://img.shields.io/github/issues/DmitrTRC/cashbot?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/DmitrTRC/dsfs?style=for-the-badge
 
-[issues-url]: https://github.com/DmitrTRC/cashbot/issues
+[issues-url]: https://github.com/DmitrTRC/dsfs/issues
 
-[license-shield]: https://img.shields.io/github/license/DmitrTRC/cashbot?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/DmitrTRC/dsfs?style=for-the-badge
 
-[license-url]: https://github.com/DmitrTRC/cashbot/blob/main/LICENSE
+[license-url]: https://github.com/DmitrTRC/dsfs/blob/main/LICENSE
 
 [product-screenshot]: img/bot_work.jpeg
 
-[status-url]: https://github.com/DmitrTRC/cashbot/actions/workflows/cmake.yml/badge.svghttps://github.com/DmitrTRC/cashbot/actions/workflows/CMake
+[status-url]: https://github.com/DmitrTRC/dsfs/actions/workflows/cmake.yml/badge.svghttps://github.com/DmitrTRC/cashbot/actions/workflows/CMake
 
-[status-shield]: https://img.shields.io/github/workflow/status/DmitrTRC/cashbot/CMake?style=for-the-badge
+[status-shield]: https://img.shields.io/github/workflow/status/DmitrTRC/dsfs/CMake?style=for-the-badge
 
