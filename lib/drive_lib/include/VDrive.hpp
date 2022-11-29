@@ -5,7 +5,9 @@
 #ifndef DSFS_MAIN_VDRIVE_HPP
 #define DSFS_MAIN_VDRIVE_HPP
 
-#include "Sector.h"
+#include "Sector.hpp"
+
+#include <memory>
 
 class VDrive {
     int totalSectors;
