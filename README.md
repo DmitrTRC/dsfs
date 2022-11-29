@@ -95,7 +95,6 @@ Contains the following:
 * tests/ : test directory
 * tools/ : tools directory ( contains createdb.sql for manual database creation )
 * App/ : App directory ( contains main.cpp file )
-* db/ : database directory ( contains cashbot.db file )
 * docs/ : documentation directory ( contains sub-folders with documentation )
 * Doxyfile : Doxygen configuration file
 * bin/ : binary directory ( contains executable file )
