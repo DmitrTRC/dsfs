@@ -4,7 +4,11 @@ project(drive_lib)
 message(STATUS "Lib name: ${PROJECT_NAME} start building")
 
 # Add a library with the above sources
-add_library(${PROJECT_NAME} src/Drive_Lib.cpp)
+add_library(${PROJECT_NAME}
+            src/Drive_Lib.cpp
+            src/VDrive.cpp
+            src/Sector.cpp
+            )
 
 add_library(sub::ds ALIAS ${PROJECT_NAME})
 

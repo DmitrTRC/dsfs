@@ -24,7 +24,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/DmitrTRC/dsfd.git">
-    <img src="img/logo.png" alt="Logo" width="788" height="1011">
+    <img src="img/logo.webp" alt="Logo" width="788" height="1011">
   </a>
 
 <h3 align="center">LevelUP C/C++ Course Project Simple File System</h3>
