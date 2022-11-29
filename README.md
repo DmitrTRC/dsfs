@@ -172,11 +172,11 @@ the [Documentation](https://dmitrtrc.github.io/dsfs/)
 
 ## Roadmap
 
-- [] Base infrastructure
-- [] Virtual Drive
-- [] File System
-- [] File System Command Manager
-- [] File System Interface
+- [ ] Base infrastructure
+- [ ] Virtual Drive
+- [ ] File System
+- [ ] File System Command Manager
+- [ ] File System Interface
 
 
 See the [open issues](https://github.com/DmitrTRC/dsfs/issues) for a full list of proposed features (and
