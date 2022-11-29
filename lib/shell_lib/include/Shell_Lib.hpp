@@ -6,9 +6,12 @@
 #define DSFS_MAIN_SHELL_LIB_HPP
 
 
-class shell_lib {
+class Shell_lib {
 
 public:
+
+    Shell_lib();
+
     void info();
 
 };

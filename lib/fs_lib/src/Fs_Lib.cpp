@@ -6,7 +6,14 @@
 
 #include <iostream>
 
-void fs_lib::info() {
+Fs_lib::Fs_lib() {
+
+    info();
+
+}
+
+void Fs_lib::info() {
+
     std::cout << "fs_lib::info() Running" << std::endl;
 }
 

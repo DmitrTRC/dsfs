@@ -6,8 +6,11 @@
 #define DSFS_MAIN_FS_LIB_HPP
 
 
-class fs_lib {
+class Fs_lib {
 public:
+
+    Fs_lib();
+
     void info();
 
 };
