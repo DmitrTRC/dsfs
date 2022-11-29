@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.23)
 
-project(dsfs VERSION 0.0.1)
+project(DSFS VERSION 0.0.1)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -28,29 +28,24 @@ FetchContent_MakeAvailable(googletest)
 ############################################################
 
 #Generate the static library from the library sources
-#add_library(dsfs_lib STATIC
-#
-#            )
 
-#target_include_directories(dsfs_lib
-#                           PUBLIC
-#                           ${PROJECT_SOURCE_DIR}/include
-#                           )
+add_subdirectory(lib)
 
-#target_link_libraries(dsfs_lib PUBLIC)
 
 ############################################################
 # Create an executable
 ############################################################
 
 add_executable(
-        DSFS
+        ${PROJECT_NAME}
         App/main.cpp
 )
 
 
-#target_link_libraries(bot_binary PUBLIC
-#                      dsfs_lib)
+target_link_libraries(${PROJECT_NAME}
+                      sub::fs
+                      sub::shell
+                      )
 
 ######### TEST SECTION ###########
 
