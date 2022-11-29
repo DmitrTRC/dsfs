@@ -257,7 +257,7 @@ Project Link: [https://github.com/DmitrTRC/dsfs.git](https://github.com/DmitrTRC
 
 [product-screenshot]: img/bot_work.jpeg
 
-[status-url]: https://github.com/DmitrTRC/dsfs/actions/workflows/cmake.yml/badge.svghttps://github.com/DmitrTRC/cashbot/actions/workflows/CMake
+[status-url]: https://github.com/DmitrTRC/dsfs/actions/workflows/cmake.yml/badge.svghttps://github.com/DmitrTRC/dsfs/actions/workflows/CMake
 
 [status-shield]: https://img.shields.io/github/workflow/status/DmitrTRC/dsfs/CMake?style=for-the-badge
 
