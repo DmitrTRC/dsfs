@@ -10,11 +10,17 @@
 #include <memory>
 
 class VDrive {
-    int totalSectors;
-    int usedSectors;
-    int freeSectors;
+public:
+    VDrive();
 
-    std::shared_ptr <Sector> sectors;
+    explicit VDrive(int bytes); //bytes are the multiple of 512
+
+private:
+    int _totalSectors;
+    int _usedSectors;
+    int _freeSectors;
+
+    Sector *_sectors;
 
 };
 

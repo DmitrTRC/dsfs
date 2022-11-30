@@ -7,6 +7,13 @@
 
 
 class Sector {
+public:
+
+    Sector();
+
+private:
+    int _byteCount;
+    char _bytes[512];
 
 };
 

@@ -3,3 +3,9 @@
 //
 
 #include "Sector.hpp"
+
+Sector::Sector() {
+
+    _byteCount = 0;
+
+}
