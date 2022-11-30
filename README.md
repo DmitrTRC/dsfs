@@ -254,7 +254,7 @@ Project Link: [https://github.com/DmitrTRC/dsfs.git](https://github.com/DmitrTRC
 
 [license-url]: https://github.com/DmitrTRC/dsfs/blob/main/LICENSE
 
-[product-screenshot]: img/bot_work.jpeg
+[product-screenshot]: img/Struct.svg
 
 [status-url]: https://github.com/DmitrTRC/dsfs/actions/workflows/CMake.yml/badge.svghttps://github.com/DmitrTRC/dsfs/actions/workflows/CMake
 
