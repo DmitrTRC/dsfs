@@ -4,7 +4,7 @@
 
 #include "Shell_Lib.hpp"
 #include "Fs_Lib.hpp"
-#include "Drive_Lib.hpp"
+#include "VDrive.hpp"
 
 #include <iostream>
 
@@ -20,7 +20,14 @@ Shell_lib::Shell_lib() {
 
     Fs_lib fs_lib;
 
-    Drive_lib drive_lib;
+    VDrive hdd(1024 * 1024 * 1024);
+
+
+    std::cout << "Total Sectors: " << hdd.totalSectors() << std::endl;
+
+    std::cout << "Sector Size: " << sizeof(Sector) << std::endl;
+
+    std::cout << "Sector 4 address: " << &hdd + 4 << std::endl;
 
 }
 

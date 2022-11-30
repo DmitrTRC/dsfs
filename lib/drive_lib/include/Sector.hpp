@@ -15,6 +15,7 @@ private:
     int _byteCount;
     char _bytes[512];
 
+    friend class VDrive;
 };
 
 

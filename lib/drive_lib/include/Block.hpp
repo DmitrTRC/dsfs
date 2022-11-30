@@ -10,10 +10,13 @@
 #include <memory>
 #include <array>
 
-struct Block {
+class Block {
+public:
+    explicit Block(Sector *baseSectorAddress);
 
-    int usedSectors;
-    std::array<std::shared_ptr<Sector>, 8> sectors;
+private:
+    int _usedSectors;
+    Sector * _sectors;
 
 };
 

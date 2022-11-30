@@ -15,6 +15,10 @@ public:
 
     explicit VDrive(int bytes); //bytes are the multiple of 512
 
+    ~VDrive();
+
+    long totalSectors();
+
 private:
     int _totalSectors;
     int _usedSectors;

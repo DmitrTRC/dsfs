@@ -3,3 +3,10 @@
 //
 
 #include "Block.hpp"
+
+Block::Block(Sector *baseSectorAddress) {
+
+    _usedSectors = 0;
+    _sectors = baseSectorAddress;
+
+}

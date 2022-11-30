@@ -23,4 +23,15 @@ VDrive::VDrive(int bytes) {
 
 VDrive::VDrive() : VDrive(1024) {}
 
+VDrive::~VDrive() {
+
+    delete[] _sectors;
+
+}
+
+long VDrive::totalSectors() {
+
+    return _totalSectors;
+}
+
 
