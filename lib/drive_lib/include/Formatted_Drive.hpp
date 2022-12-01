@@ -14,7 +14,9 @@ class FormattedDrive {
 public:
     explicit FormattedDrive(VDrive &drive);
 
-    inline int blockCount() {return _blockCount;}
+    inline int blockCount() { return _blockCount; }
+
+    inline Block *blocks() { return _blocks; }
 
 private:
     int _blockCount;

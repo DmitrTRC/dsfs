@@ -8,6 +8,7 @@
 #include "Formatted_Drive.hpp"
 
 #include <iostream>
+#include <stdio.h>
 
 void Shell_lib::info() {
 
@@ -33,6 +34,9 @@ Shell_lib::Shell_lib() {
 
     std::cout << "Block Count: " << f_hdd.blockCount() << std::endl;
 
+    printf(" Hdd Sector 24 addr %p ", hdd._sectors[24]);
+
+    printf(" Volume block 3  addr %p ", f_hdd.blocks()[3]);
 
 }
 

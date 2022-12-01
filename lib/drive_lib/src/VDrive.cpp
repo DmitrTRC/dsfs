@@ -4,6 +4,7 @@
 
 #include "VDrive.hpp"
 
+#include <iostream>
 #include <memory>
 #include <type_traits>
 
@@ -17,16 +18,13 @@ VDrive::VDrive(int bytes) {
     _usedSectors = 0;
     _freeSectors = _totalSectors;
 
-    _sectors = new Sector[_totalSectors];
-
+    _sectors = std::make_unique<Sector[]>(_totalSectors);
 }
 
 VDrive::VDrive() : VDrive(1024) {}
 
 VDrive::~VDrive() {
-
-    delete[] _sectors;
-
+    std::cout << "VDrive destructor" << std::endl;
 }
 
 long VDrive::totalSectors() {

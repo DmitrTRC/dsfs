@@ -6,16 +6,14 @@
 #define DSFS_MAIN_SECTOR_HPP
 
 
-class Sector {
-public:
+struct Sector {
 
     Sector();
 
-private:
+
     int _byteCount;
     char _bytes[512];
 
-    friend class VDrive;
 };
 
 

@@ -23,14 +23,15 @@ public:
 
     [[nodiscard]] inline long freeSectors() const { return _freeSectors; }
 
-    inline Sector *sectors() { return _sectors; }
+   // inline Sector * sectors() { return _sectors; }
 
-private:
+public:
     int _totalSectors;
     int _usedSectors;
     int _freeSectors;
 
-    Sector *_sectors;
+    std::unique_ptr<Sector[]> _sectors;
+
 
 };
 

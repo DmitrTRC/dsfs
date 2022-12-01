@@ -10,16 +10,17 @@
 #include <memory>
 #include <array>
 
-class Block {
-public:
+struct Block {
 
     Block();
 
     explicit Block(Sector *baseSectorAddress);
 
-private:
     int _usedSectors;
-    Sector * _sectors;
+    //Sector *_sectors;
+    // auto buf_ptr = std::make_unique_for_overwrite<uint8_t[]>(n);
+
+    std::unique_ptr<Sector[]> _sectors;
 
 };
 
