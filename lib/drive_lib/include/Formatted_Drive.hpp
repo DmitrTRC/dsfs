@@ -8,6 +8,8 @@
 #include "Block.hpp"
 #include "VDrive.hpp"
 
+#include <array>
+
 class FormattedDrive {
 public:
     explicit FormattedDrive(VDrive &drive);

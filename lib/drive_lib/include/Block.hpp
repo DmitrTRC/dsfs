@@ -12,6 +12,9 @@
 
 class Block {
 public:
+
+    Block();
+
     explicit Block(Sector *baseSectorAddress);
 
 private:

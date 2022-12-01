@@ -19,6 +19,12 @@ public:
 
     long totalSectors();
 
+    [[nodiscard]] inline long usedSectors() const { return _usedSectors; }
+
+    [[nodiscard]] inline long freeSectors() const { return _freeSectors; }
+
+    inline Sector *sectors() { return _sectors; }
+
 private:
     int _totalSectors;
     int _usedSectors;

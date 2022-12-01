@@ -6,13 +6,14 @@
 #include "VDrive.hpp"
 #include "Formatted_Drive.hpp"
 
-FormattedDrive::FormattedDrive( VDrive &drive ) {
+FormattedDrive::FormattedDrive(VDrive &drive) {
 
     _blockCount = drive.totalSectors() / 8;
+
     _blocks = new Block[_blockCount];
 
-    for ( int i = 0; i < _blockCount; i++ ) {
-        _blocks[i] = Block( drive.getSector( i * 8 ) );
+    for (int i = 0; i < _blockCount; i++) {
+        _blocks[i] = Block(drive.sectors() + i * 8);
     }
 
 }

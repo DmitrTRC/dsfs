@@ -10,3 +10,10 @@ Block::Block(Sector *baseSectorAddress) {
     _sectors = baseSectorAddress;
 
 }
+
+Block::Block() {
+
+    _usedSectors = 0;
+    _sectors = nullptr;
+
+}
