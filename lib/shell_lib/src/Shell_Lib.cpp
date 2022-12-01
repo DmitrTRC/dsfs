@@ -5,6 +5,7 @@
 #include "Shell_Lib.hpp"
 #include "Fs_Lib.hpp"
 #include "VDrive.hpp"
+#include "Formatted_Drive.hpp"
 
 #include <iostream>
 
@@ -22,12 +23,16 @@ Shell_lib::Shell_lib() {
 
     VDrive hdd(1024 * 1024 * 1024);
 
+    FormattedDrive f_hdd(hdd);
 
     std::cout << "Total Sectors: " << hdd.totalSectors() << std::endl;
 
     std::cout << "Sector Size: " << sizeof(Sector) << std::endl;
 
-    std::cout << "Sector 4 address: " << &hdd + 4 << std::endl;
+    std::cout << "Block Size: " << sizeof(Block) << std::endl;
+
+    std::cout << "Block Count: " << f_hdd.blockCount() << std::endl;
+
 
 }
 
