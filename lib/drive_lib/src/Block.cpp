@@ -7,9 +7,7 @@
 Block::Block(Sector *baseSectorAddress) {
 
     _usedSectors = 0;
-   _sectors = std::make_unique<Sector[]>(8);
-
-
+    _sectors = baseSectorAddress;
 
 }
 

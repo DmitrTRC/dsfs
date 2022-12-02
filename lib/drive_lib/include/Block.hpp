@@ -17,12 +17,10 @@ struct Block {
     explicit Block(Sector *baseSectorAddress);
 
     int _usedSectors;
-    //Sector *_sectors;
-    // auto buf_ptr = std::make_unique_for_overwrite<uint8_t[]>(n);
+    Sector *_sectors;
 
-    std::unique_ptr<Sector[]> _sectors;
 
-};
+    };
 
 
 #endif //DSFS_MAIN_BLOCK_HPP
