@@ -24,9 +24,9 @@ public:
 
     [[nodiscard]] inline long freeSectors() const { return _freeSectors; }
 
-    std::shared_ptr<Sector> getSector(long sectorNumber);
+    Sector *  getSector(long);
 
-    std::shared_ptr<Block> getBlock(long blockNumber);
+    Block *  getBlock(long);
 
     long totalBlocks();
 
@@ -41,8 +41,11 @@ private:
 
     bool _isFormatted;
 
-    std::shared_ptr<Sector[]> _sectors;
-    std::shared_ptr<Block[]> _blocks;
+    // Define Array of Sectors
+    std::unique_ptr<Sector[]> _sectors;
+
+    // Define Array of Blocks
+    std::unique_ptr<Block[]> _blocks;
 
 
 };

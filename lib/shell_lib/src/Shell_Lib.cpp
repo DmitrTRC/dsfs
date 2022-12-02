@@ -33,11 +33,19 @@ Shell_lib::Shell_lib() {
 
     std::cout << "Block Count: " << hdd.totalBlocks() << std::endl;
 
-    std::cout << "VDrive Sector 24 Addr = " << hdd.getSector(1).get() << std::endl;
+    std::cout << "VDrive Sector 0 Addr = " << hdd.getSector(0) << std::endl;
+
+    std::cout << "VDrive Sector 1 Addr = " << hdd.getSector(1) << std::endl;
+
+    std::cout << "VDrive Sector 24 Addr = " << hdd.getSector(24) << std::endl;
 
     hdd.Format();
 
-    std::cout << "Formatted Drive Block 3 Addr = " << hdd.getBlock(1).get() << std::endl;
+    auto block = hdd.getBlock(0);
+
+    std::cout << "Formatted Drive Block 2 reference to : " << hdd.getBlock(2) ->_baseSectorAddress << std::endl;
+
+    std::cout << "Formatted Drive Block 3 reference to : " << hdd.getBlock(3) ->_baseSectorAddress << std::endl;
 
 }
 

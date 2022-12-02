@@ -5,6 +5,9 @@
 #ifndef DSFS_MAIN_SECTOR_HPP
 #define DSFS_MAIN_SECTOR_HPP
 
+#include <array>
+#include <cinttypes>
+
 
 struct Sector {
 
@@ -12,7 +15,7 @@ struct Sector {
 
 
     int _byteCount;
-    char _bytes[512];
+    std::array<std::uint8_t, 512> _bytes{};
 
 };
 

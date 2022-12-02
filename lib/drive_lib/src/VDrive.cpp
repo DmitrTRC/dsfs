@@ -19,9 +19,10 @@ VDrive::VDrive(int bytes) {
     _totalSectors = bytes / 512;
     _usedSectors = 0;
     _freeSectors = _totalSectors;
-    _sectors = std::make_unique<Sector[]>(_totalSectors);
     _isFormatted = false;
     _blockCount = 0;
+
+    _sectors = std::make_unique<Sector[]>(_totalSectors);
 
 }
 
@@ -42,30 +43,35 @@ void VDrive::Format() {
     _isFormatted = true;
     _blockCount = _totalSectors / 8;
 
+
     _blocks = std::make_unique<Block[]>(_blockCount);
 
     for (int i = 0; i < _blockCount; i++) {
-        _blocks.get()[i] = Block(_sectors.get() + i * 8);
+        auto block = std::make_unique<Block>(_sectors.get() + i * 8);
+        _blocks[i] = *block;
+
     }
+
 
 }
 
-std::shared_ptr<Sector> VDrive::getSector(long sectorNumber) {
+Sector *VDrive::getSector(long sector) {
 
-    if (sectorNumber > _totalSectors) {
+    if (sector > _totalSectors) {
         throw std::invalid_argument("Sector number is out of range");
     }
 
-    return std::make_shared<Sector>(_sectors.get()[sectorNumber]);
+    return _sectors.get() + sector;
 }
 
-std::shared_ptr<Block> VDrive::getBlock(long blockNumber) {
 
-    if (blockNumber > _totalSectors / 8) {
+Block *VDrive::getBlock(long block) {
+
+    if (block > _blockCount) {
         throw std::invalid_argument("Block number is out of range");
     }
 
-    return std::make_shared<Block>(_blocks.get()[blockNumber]);
+    return _blocks.get() + block;
 }
 
 long VDrive::totalBlocks() {

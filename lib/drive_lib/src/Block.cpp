@@ -7,15 +7,17 @@
 Block::Block(Sector *baseSectorAddress) {
 
     _usedSectors = 0;
-    _sectors = baseSectorAddress;
+
+    _baseSectorAddress = baseSectorAddress;
+
 
 }
 
 Block::Block() {
 
     _usedSectors = 0;
-    _sectors = nullptr;
 
+    _baseSectorAddress = nullptr;
 
 }
 

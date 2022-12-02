@@ -17,9 +17,9 @@ struct Block {
     explicit Block(Sector *baseSectorAddress);
 
     int _usedSectors;
-    Sector *_sectors;
+    Sector *  _baseSectorAddress;
 
-    };
+};
 
 
 #endif //DSFS_MAIN_BLOCK_HPP
