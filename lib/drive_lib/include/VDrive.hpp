@@ -6,6 +6,7 @@
 #define DSFS_MAIN_VDRIVE_HPP
 
 #include "Sector.hpp"
+#include "Block.hpp"
 
 #include <memory>
 
@@ -23,14 +24,25 @@ public:
 
     [[nodiscard]] inline long freeSectors() const { return _freeSectors; }
 
-   // inline Sector * sectors() { return _sectors; }
+    std::shared_ptr<Sector> getSector(long sectorNumber);
 
-public:
+    std::shared_ptr<Block> getBlock(long blockNumber);
+
+    long totalBlocks();
+
+    void Format();
+
+
+private:
     int _totalSectors;
     int _usedSectors;
     int _freeSectors;
+    int _blockCount;
 
-    std::unique_ptr<Sector[]> _sectors;
+    bool _isFormatted;
+
+    std::shared_ptr<Sector[]> _sectors;
+    std::shared_ptr<Block[]> _blocks;
 
 
 };

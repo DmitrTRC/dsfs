@@ -8,7 +8,6 @@ add_library(${PROJECT_NAME}
             src/VDrive.cpp
             src/Sector.cpp
             src/Block.cpp
-            src/Formatted_Drive.cpp
             )
 
 add_library(sub::ds ALIAS ${PROJECT_NAME})

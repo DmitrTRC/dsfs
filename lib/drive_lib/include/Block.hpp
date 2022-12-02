@@ -19,7 +19,6 @@ struct Block {
     int _usedSectors;
     Sector *_sectors;
 
-
     };
 
 
