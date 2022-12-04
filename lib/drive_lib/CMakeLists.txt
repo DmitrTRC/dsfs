@@ -5,9 +5,10 @@ message(STATUS "Lib name: ${PROJECT_NAME} start building")
 
 # Add a library with the above sources
 add_library(${PROJECT_NAME}
-            src/VDrive.cpp
-            src/Sector.cpp
-            src/Block.cpp
+            #            src/VDrive.cpp
+            #            src/Sector.cpp
+            #            src/Block.cpp
+            src/Disk.cpp
             )
 
 add_library(sub::ds ALIAS ${PROJECT_NAME})
