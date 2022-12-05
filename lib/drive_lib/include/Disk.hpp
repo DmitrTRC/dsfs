@@ -3,66 +3,73 @@
 //
 // disk.h: Disk emulator
 
-#pragma once
+#ifndef DSFS_MAIN_DISK_H
+#define DSFS_MAIN_DISK_H
 
-#include <stdlib.h>
+#include <cinttypes>
+#include <cstddef>
 
 class Disk {
 private:
-    int FileDescriptor; /// File descriptor of disk image
-    size_t Blocks;        /// Number of blocks in disk image
-    size_t Reads;        /// Number of reads performed
-    size_t Writes;        /// Number of writes performed
-    size_t Mounts;        /// Number of mounts
+    int file_descriptor_; /// File descriptor of disk image
+    std::size_t blocks_;        /// Number of blocks in disk image
+    std::size_t reads_;        /// Number of reads performed
+    std::size_t writes_;        /// Number of writes performed
+    std::size_t mounts_;        /// Number of mounts
 
     /** Check parameters
-     @param	blocknum    Block to operate on
+     @param	block_num    Block to operate on
      @param	data	    Buffer to operate on
      Throws invalid_argument exception on error.
      */
-    void sanity_check(int blocknum, char *data);
+    void HealthCheck(int block_num, const char *data) const;
 
 public:
     /// Number of bytes per block
-    const static size_t BLOCK_SIZE = 4096;
+    const static std::size_t K_Block_Size = 4096; /// 4K blocks
 
     /// Default constructor
-    Disk() : FileDescriptor(0), Blocks(0), Reads(0), Writes(0), Mounts(0) {}
+    Disk() : file_descriptor_(0), blocks_(0), reads_(0), writes_(0), mounts_(0) {}
 
     /// Destructor
     ~Disk();
 
     /** Open disk image
     * @param	path	    Path to disk image
-    * @param	nblocks	    Number of blocks in disk image
+    * @param	n_blocks	    Number of blocks in disk image
     * Throws runtime_error exception on error.
     */
-    void open(const char *path, size_t nblocks);
+    void open(const char *path, std::size_t n_blocks);
 
     /// Return size of disk (in terms of blocks)
-    size_t size() const { return Blocks; }
+    inline std::size_t size() const { return blocks_; }
 
     /// Return whether or not disk is mounted
-    bool mounted() const { return Mounts > 0; }
+    inline bool mounted() const { return mounts_ > 0; }
 
     /// Increment mounts
-    void mount() { Mounts++; }
+    void mount() { ++mounts_; }
 
     /// Decrement mounts
-    void unmount() { if (Mounts > 0) Mounts--; }
+    void unmount() { if (mounts_ > 0) --mounts_; }
 
     /**
      * @brief Read a block from the disk
-     * @param blocknum
+     * @param block_num
      * @param data
      */
-    void read(int blocknum, char *data);
+    void read(int block_num, char *data);
 
 
     /**
      * @brief
-     * @param blocknum
+     * @param block_num
      * @param data
      */
-    void write(int blocknum, char *data);
+    void write(int block_num, char *data);
+
+    std::uint32_t blocks();
 };
+
+
+#endif //DSFS_MAIN_DISK_H
