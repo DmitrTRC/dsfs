@@ -27,6 +27,10 @@ private:
         char *arg1;
         char *arg2;
 
+        Command_Args(Disk &disk, FileSystem &fs, int args, char *arg1, char *arg2) : disk(disk), fs(fs), args(args),
+                                                                                     arg1(arg1), arg2(arg2) {}
+
+
     };
 
     Disk disk;
@@ -36,7 +40,7 @@ private:
     using CommandFunc = void (*)(Command_Args);
 
     //Commands map
-    static const std::unordered_map<std::string, CommandFunc> commands_map;
+    std::unordered_map<std::string, CommandFunc> commands_map;
 
 
     //Command prototypes
@@ -59,6 +63,8 @@ private:
     static void copyin_(Command_Args);
 
     static void help_(Command_Args);
+
+    static void exit_(Command_Args);
 
     void register_commands();
 
