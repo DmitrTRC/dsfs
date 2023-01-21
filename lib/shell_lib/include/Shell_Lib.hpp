@@ -15,6 +15,7 @@ class Shell_lib {
 
 public:
     Shell_lib();
+
     Shell_lib(int argc, char *argv[]);
 
 private:
@@ -31,20 +32,32 @@ private:
     Disk disk;
     FileSystem fs;
 
+    //Command type
+    using CommandFunc = void (*)(Command_Args);
 
     //Commands map
-    static const std::unordered_map< std::string, std::function<void>(Command_Args) > commands;
+    static const std::unordered_map<std::string, CommandFunc> commands_map;
+
 
     //Command prototypes
     static void debug_(Command_Args);
+
     static void format_(Command_Args);
+
     static void mount_(Command_Args);
+
     static void cat_(Command_Args);
+
     static void copyout_(Command_Args);
+
     static void create_(Command_Args);
+
     static void remove_(Command_Args);
+
     static void stat_(Command_Args);
+
     static void copyin_(Command_Args);
+
     static void help_(Command_Args);
 
     void register_commands();
