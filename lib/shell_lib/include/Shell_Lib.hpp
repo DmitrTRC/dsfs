@@ -5,14 +5,49 @@
 #ifndef DSFS_MAIN_SHELL_LIB_HPP
 #define DSFS_MAIN_SHELL_LIB_HPP
 
+#include "Disk.hpp"
+#include "File_System.hpp"
+
+#include <unordered_map>
+
 
 class Shell_lib {
 
 public:
-
     Shell_lib();
+    Shell_lib(int argc, char *argv[]);
 
-    void info();
+private:
+    struct Command_Args {
+
+        Disk &disk;
+        FileSystem &fs;
+        int args;
+        char *arg1;
+        char *arg2;
+
+    };
+
+    Disk disk;
+    FileSystem fs;
+
+
+    //Commands map
+    static const std::unordered_map< std::string, std::function<void>(Command_Args) > commands;
+
+    //Command prototypes
+    static void debug_(Command_Args);
+    static void format_(Command_Args);
+    static void mount_(Command_Args);
+    static void cat_(Command_Args);
+    static void copyout_(Command_Args);
+    static void create_(Command_Args);
+    static void remove_(Command_Args);
+    static void stat_(Command_Args);
+    static void copyin_(Command_Args);
+    static void help_(Command_Args);
+
+    void register_commands();
 
 };
 

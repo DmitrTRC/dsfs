@@ -13,9 +13,9 @@
 
 
 
-void Disk::open(const char *path, size_t n_blocks) {
+void Disk::open(const std::string &path, size_t n_blocks) {
 
-    file_descriptor_ = ::open(path, O_RDWR | O_CREAT, 0600);
+    file_descriptor_ = ::open(path.c_str(), O_RDWR | O_CREAT, 0600);
 
     if (file_descriptor_ < 0) {
 

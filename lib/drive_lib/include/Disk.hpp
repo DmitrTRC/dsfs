@@ -9,6 +9,8 @@
 #include <cinttypes>
 #include <cstddef>
 
+#include <string>
+
 class Disk {
 private:
     int file_descriptor_; /// File descriptor of disk image
@@ -39,7 +41,7 @@ public:
     * @param	n_blocks	    Number of blocks in disk image
     * Throws runtime_error exception on error.
     */
-    void open(const char *path, std::size_t n_blocks);
+    void open(const std::string &path, std::size_t n_blocks);
 
     /// Return size of disk (in terms of blocks)
     inline std::size_t size() const { return blocks_; }
