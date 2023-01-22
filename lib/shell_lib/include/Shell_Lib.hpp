@@ -10,7 +10,6 @@
 
 #include <unordered_map>
 
-
 class Shell_lib {
 
  public:
@@ -23,41 +22,40 @@ class Shell_lib {
  private:
   using Command_Args = std::vector<std::string>;
 
-  Disk disk_;
-  FileSystem fs_;
+  static Disk disk_;
+  static FileSystem fs_;
 
   //Command type
-  using CommandFunc = void (*)(Command_Args);
+  using CommandFunc = void (*)(Command_Args &);
 
   //Commands map
   std::unordered_map<std::string, CommandFunc> commands_map;
 
   //Command prototypes
-  static void debug_(Command_Args);
+  static void debug_(Command_Args &);
 
-    static void format_(Command_Args);
+  static void format_(Command_Args &);
 
-    static void mount_(Command_Args);
+  static void mount_(Command_Args &);
 
-    static void cat_(Command_Args);
+  static void cat_(Command_Args &);
 
-    static void copyout_(Command_Args);
+  static void copyout_(Command_Args &);
 
-    static void create_(Command_Args);
+  static void create_(Command_Args &);
 
-    static void remove_(Command_Args);
+  static void remove_(Command_Args &);
 
-    static void stat_(Command_Args);
+  static void stat_(Command_Args &);
 
-    static void copyin_(Command_Args);
+  static void copyin_(Command_Args &);
 
-    static void help_(Command_Args);
+  static void help_(Command_Args &);
 
-    static void exit_(Command_Args);
+  static void exit_(Command_Args &);
 
-    void register_commands();
+  void register_commands();
 
 };
-
 
 #endif //DSFS_MAIN_SHELL_LIB_HPP

@@ -54,7 +54,7 @@ void Shell_lib::Run() {
   std::vector<std::string> cmd_line;
   std::string line, cmd;
 
-  while (cmd != "stop") {
+  while (cmd != "quit") {
 
     std::cout << "sfs> ";
     std::getline(std::cin, line);
@@ -83,6 +83,23 @@ void Shell_lib::Run() {
 
     }
   }
+
+}
+void Shell_lib::debug_(Command_Args &args) {
+  std::cout << "debug" << std::endl;
+
+  if (!args.empty()) {
+    std::cout << "Usage: debug" << std::endl;
+    return;
+  }
+
+  FileSystem::debug(&disk_);
+
+}
+void Shell_lib::format_(Shell_lib::Command_Args &) {
+  std::cout << "format" << std::endl;
+
+  FileSystem::format(&disk_);
 
 }
 
