@@ -96,10 +96,19 @@ void Shell_lib::debug_(Command_Args &args) {
   FileSystem::debug(&disk_);
 
 }
-void Shell_lib::format_(Shell_lib::Command_Args &) {
+void Shell_lib::format_(Shell_lib::Command_Args &args) {
   std::cout << "format" << std::endl;
 
-  FileSystem::format(&disk_);
+  if (!args.empty()) {
+    std::cout << "Usage: format" << std::endl;
+    return;
+  }
+
+  if (FileSystem::format(&disk_)) {
+    std::cout << "Disk formatted successfully." << std::endl;
+  } else {
+    std::cout << "Disk format failed." << std::endl;
+  }
 
 }
 
