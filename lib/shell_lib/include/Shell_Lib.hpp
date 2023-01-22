@@ -13,38 +13,27 @@
 
 class Shell_lib {
 
-public:
-    Shell_lib();
+ public:
+  Shell_lib();
 
-    Shell_lib(int argc, char *argv[]);
+  Shell_lib(int argc, char *argv[]);
 
-private:
-    struct Command_Args {
+  void Run();
 
-        Disk &disk;
-        FileSystem &fs;
-        int args;
-        char *arg1;
-        char *arg2;
+ private:
+  using Command_Args = std::vector<std::string>;
 
-        Command_Args(Disk &disk, FileSystem &fs, int args, char *arg1, char *arg2) : disk(disk), fs(fs), args(args),
-                                                                                     arg1(arg1), arg2(arg2) {}
+  Disk disk_;
+  FileSystem fs_;
 
+  //Command type
+  using CommandFunc = void (*)(Command_Args);
 
-    };
+  //Commands map
+  std::unordered_map<std::string, CommandFunc> commands_map;
 
-    Disk disk;
-    FileSystem fs;
-
-    //Command type
-    using CommandFunc = void (*)(Command_Args);
-
-    //Commands map
-    std::unordered_map<std::string, CommandFunc> commands_map;
-
-
-    //Command prototypes
-    static void debug_(Command_Args);
+  //Command prototypes
+  static void debug_(Command_Args);
 
     static void format_(Command_Args);
 
