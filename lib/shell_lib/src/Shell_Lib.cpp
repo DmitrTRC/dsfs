@@ -85,6 +85,7 @@ void Shell_lib::Run() {
   }
 
 }
+
 void Shell_lib::debug_(Command_Args &args) {
   std::cout << "debug" << std::endl;
 
@@ -108,6 +109,23 @@ void Shell_lib::format_(Shell_lib::Command_Args &args) {
     std::cout << "Disk formatted successfully." << std::endl;
   } else {
     std::cout << "Disk format failed." << std::endl;
+  }
+
+}
+
+void Shell_lib::mount_(Shell_lib::Command_Args &args) {
+
+  std::cout << "mount" << std::endl;
+
+  if (!args.empty()) {
+    std::cout << "Usage: mount" << std::endl;
+    return;
+  }
+
+  if (fs_.mount(&disk_)) {
+    std::cout << "Disk mounted successfully." << std::endl;
+  } else {
+    std::cout << "Disk mount failed." << std::endl;
   }
 
 }
