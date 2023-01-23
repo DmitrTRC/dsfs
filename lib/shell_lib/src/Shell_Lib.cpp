@@ -20,8 +20,10 @@ Shell_lib::Shell_lib(int argc, char *argv[]) {
   std::string disk_file = argv[1];
   int n_blocks = std::stoi(argv[2]);
 
+  disk_ = new Disk();
+
   try {
-    disk_.open(disk_file, n_blocks);
+    disk_->open(disk_file, n_blocks);
   } catch (std::runtime_error &e) {
     throw std::runtime_error("Unable to open disk " + std::string(argv[1]) + ": " + e.what());
   }
@@ -36,17 +38,12 @@ Shell_lib::Shell_lib() : Shell_lib(0, nullptr) {
 
 void Shell_lib::register_commands() {
 
-  commands_map.insert({"debug", &Shell_lib::cmd_debug_});
-  commands_map.insert({"format", &Shell_lib::cmd_format_});
-  commands_map.insert({"mount", &Shell_lib::cmd_mount_});
-  commands_map.insert({"cat", &Shell_lib::cmd_cat_});
-//  commands_map.insert({"copyout", &Shell_lib::cmd_copyout_});
-//  commands_map.insert({"create", &Shell_lib::cmd_create_});
-//  commands_map.insert({"remove", &Shell_lib::cmd_remove_});
-  commands_map.insert({"quit", &Shell_lib::cmd_exit_});
-//  commands_map.insert({"stat", &Shell_lib::cmd_stat_});
-  commands_map.insert({"help", &Shell_lib::cmd_help_});
-  // commands_map.insert({"copyin", &Shell_lib::cmd_copyin_});
+  commands_map["debug"] = &Shell_lib::cmd_debug_;
+  commands_map["format"] = &Shell_lib::cmd_format_;
+  commands_map["help"] = &Shell_lib::cmd_help_;
+  commands_map["quit"] = &Shell_lib::cmd_quit_;
+//  commands_map["read"] = &Shell_lib::cmd_read_; // FIXME: Wrong linking
+//  commands_map["write"] = &Shell_lib::cmd_write_;
 
 }
 
@@ -75,7 +72,9 @@ void Shell_lib::Run() {
 
     if (commands_map.find(cmd) != commands_map.end()) {
 
-      commands_map[cmd](cmd_line);
+      auto cmd_func = commands_map[cmd];
+
+      (this->*cmd_func)(cmd_line);
 
     } else {
 
@@ -87,7 +86,7 @@ void Shell_lib::Run() {
 
 }
 
-void Shell_lib::cmd_debug_(Command_Args &args) {
+void Shell_lib::cmd_debug_(const Command_Args &args) {
   std::cout << "debug" << std::endl;
 
   if (!args.empty()) {
@@ -95,10 +94,9 @@ void Shell_lib::cmd_debug_(Command_Args &args) {
     return;
   }
 
-  FileSystem::debug(&disk_);
-
 }
-void Shell_lib::cmd_format_(Shell_lib::Command_Args &args) {
+
+void Shell_lib::cmd_format_(const Command_Args &args) {
   std::cout << "format" << std::endl;
 
   if (!args.empty()) {
@@ -106,15 +104,11 @@ void Shell_lib::cmd_format_(Shell_lib::Command_Args &args) {
     return;
   }
 
-  if (FileSystem::format(&disk_)) {
-    std::cout << "Disk formatted successfully." << std::endl;
-  } else {
-    std::cout << "Disk format failed." << std::endl;
-  }
+  FileSystem::format(disk_);
 
 }
 
-void Shell_lib::cmd_mount_(Shell_lib::Command_Args &args) {
+void Shell_lib::cmd_mount_(const Shell_lib::Command_Args &args) {
 
   std::cout << "mount" << std::endl;
 
@@ -123,14 +117,8 @@ void Shell_lib::cmd_mount_(Shell_lib::Command_Args &args) {
     return;
   }
 
-  if (Shell_lib::fs_.mount(&disk_)) {
-    std::cout << "Disk mounted successfully." << std::endl;
-  } else {
-    std::cout << "Disk mount failed." << std::endl;
-  }
-
 }
-void Shell_lib::cmd_cat_(Shell_lib::Command_Args &args) {
+void Shell_lib::cmd_cat_(const Shell_lib::Command_Args &args) {
   std::cout << "cat" << std::endl;
 
   if (args.size() != 1) {
@@ -160,26 +148,22 @@ bool Shell_lib::copyin_(size_t i_number, const std::string &path) {
 
   file.close();
 
-  if (Shell_lib::fs_.write(i_number, const_cast<char *>(buffer.c_str()), buffer.size(), 0) < 0) {
-    std::cout << "Unable to write to file " << path << std::endl;
-    return false;
-  }
-
   std::cout << "File " << path << " copied to disk." << std::endl;
   std::cout << buffer.size() << " bytes copied." << std::endl;
 
   return true;
 
 }
-bool Shell_lib::copyout_(const std::string &, size_t) {
+bool Shell_lib::copyout_(const std::string &path, size_t i_number) {
   return false;
 }
-void Shell_lib::cmd_exit_(Shell_lib::Command_Args &) {
+
+void Shell_lib::cmd_quit_(const Shell_lib::Command_Args &) {
   std::cout << "exit" << std::endl;
   exit(0);
 
 }
-void Shell_lib::cmd_help_(Shell_lib::Command_Args &) {
+void Shell_lib::cmd_help_(const Shell_lib::Command_Args &) {
 
   std::cout << "Help. List of commands :" << std::endl << std::endl;
   std::cout << "help" << std::endl;

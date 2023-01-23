@@ -20,47 +20,33 @@ class Shell_lib {
   void Run();
 
  private:
+
   using Command_Args = std::vector<std::string>;
-  static std::string currentDirectory_;
 
-  static Disk disk_;
-  static FileSystem fs_;
+  std::unordered_map<std::string, void (Shell_lib::*)(const Command_Args &)> commands_map;
 
-  //Command type
-  using CommandFunc = void (*)(Command_Args &);
+  void cmd_debug_(const Command_Args &);
 
-  //Commands map
-  std::unordered_map<std::string, CommandFunc> commands_map;
+  void cmd_format_(const Command_Args &);
 
-  static bool copyin_(size_t, const std::string &);
+  void cmd_mount_(const Command_Args &);
 
-  static bool copyout_(const std::string &, size_t);
+  void cmd_help_(const Command_Args &);
 
-  //Command prototypes
-  static void cmd_debug_(Command_Args &);
+  void cmd_cat_(const Command_Args &);
 
-  static void cmd_format_(Command_Args &);
+  void cmd_quit_(const Command_Args &);
 
-  static void cmd_mount_(Command_Args &);
+  void cmd_read_(const Command_Args &);
 
-  static void cmd_cat_(Command_Args &);
-
-//  static void cmd_copyout_(Command_Args &);
-//
-//  static void cmd_create_(Command_Args &);
-//
-//  static void cmd_remove_(Command_Args &);
-//
-//  static void cmd_stat_(Command_Args &);
-//
-//  static void cmd_copyin_(Command_Args &);
-
-  static void cmd_help_(Command_Args &);
-
-  static void cmd_exit_(Command_Args &);
+  void cmd_write_(const Command_Args &);
 
   void register_commands();
 
+  Disk *disk_;
+
+  bool copyin_(size_t i_number, const string &path);
+  bool copyout_(const string &, size_t);
 };
 
 #endif //DSFS_MAIN_SHELL_LIB_HPP

@@ -28,7 +28,7 @@ class Disk {
 
  public:
   /// Number of bytes per block
-  const static std::size_t Block_Size = 4096; /// 4K blocks
+  const static std::size_t BLOCK_SIZE = 4096; /// 4K blocks
 
   /// Default constructor
   Disk() : file_descriptor_(0), blocks_(0), reads_(0), writes_(0), mounts_(0) {}

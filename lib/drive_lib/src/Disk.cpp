@@ -23,7 +23,7 @@ void Disk::open(const std::string &path, size_t n_blocks) {
 
   }
 
-  if (ftruncate(file_descriptor_, static_cast<int>(n_blocks * Block_Size)) < 0) {
+  if (ftruncate(file_descriptor_, static_cast<int>(n_blocks * BLOCK_SIZE)) < 0) {
 
     std::stringstream ss;
     ss << "Failed to truncate disk image: " << path << " : " << strerror(errno);
@@ -81,7 +81,7 @@ void Disk::read(int block_num, char *data) {
 
   HealthCheck(block_num, data);
 
-  if (lseek(file_descriptor_, block_num * static_cast<int>(Block_Size), SEEK_SET) < 0) {
+  if (lseek(file_descriptor_, block_num * static_cast<int>(BLOCK_SIZE), SEEK_SET) < 0) {
 
     std::stringstream ss;
     ss << "Unable to seek to block " << block_num << ": " << strerror(errno);
@@ -89,7 +89,7 @@ void Disk::read(int block_num, char *data) {
 
   }
 
-  if (::read(file_descriptor_, data, Block_Size) != Block_Size) {
+  if (::read(file_descriptor_, data, BLOCK_SIZE) != BLOCK_SIZE) {
 
     std::stringstream ss;
     ss << "Unable to read block " << block_num << ": " << strerror(errno);
@@ -105,7 +105,7 @@ void Disk::write(int block_num, char *data) {
 
   HealthCheck(block_num, data);
 
-  if (lseek(file_descriptor_, block_num * static_cast<int>(Block_Size), SEEK_SET) < 0) {
+  if (lseek(file_descriptor_, block_num * static_cast<int>(BLOCK_SIZE), SEEK_SET) < 0) {
 
     std::stringstream ss;
     ss << "Unable to lseek " << block_num << ": " << strerror(errno);
@@ -113,7 +113,7 @@ void Disk::write(int block_num, char *data) {
 
   }
 
-  if (::write(file_descriptor_, data, Block_Size) != Block_Size) {
+  if (::write(file_descriptor_, data, BLOCK_SIZE) != BLOCK_SIZE) {
 
     std::stringstream result_error;
     result_error << "Unable to write " << block_num << ": " << strerror(errno);
