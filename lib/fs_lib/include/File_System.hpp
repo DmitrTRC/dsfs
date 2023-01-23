@@ -12,14 +12,14 @@
 
 class FileSystem {
  public:
-  const static std::uint32_t K_Control_Number = 0xf0f03410;
+  const static std::uint32_t MAGIC_NUMBER = 0xf0f03410;
   const static std::uint32_t K_Inodes_Per_Block = 128;
   const static std::uint32_t K_Pointers_Per_Node = 5;
   const static std::uint32_t K_Pointers_Per_Block = 1024;
 
  private:
   struct SuperBlock {        /// Superblock structure
-    std::uint32_t ControlNumber;    /// File system magic number
+    std::uint32_t MagicNumber;    /// File system magic number
     std::uint32_t Blocks;    /// Number of blocks in file system
     std::uint32_t InodeBlocks;    /// Number of blocks reserved for inodes
     std::uint32_t Inodes;    /// Number of inodes in file system
@@ -36,7 +36,7 @@ class FileSystem {
     SuperBlock Super;                /// Superblock
     Inode Inodes[K_Inodes_Per_Block];        /// Inode block
     std::uint32_t Pointers[K_Inodes_Per_Block];   /// Pointer block
-    char Data[Disk::K_Block_Size];        /// Data block
+    char Data[Disk::Block_Size];        /// Data block
   };
 
   // TODO: Internal helper functions

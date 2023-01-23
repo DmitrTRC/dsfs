@@ -5,6 +5,7 @@
 #include "Shell_Lib.hpp"
 
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <string>
 #include <stdexcept>
@@ -35,17 +36,17 @@ Shell_lib::Shell_lib() : Shell_lib(0, nullptr) {
 
 void Shell_lib::register_commands() {
 
-  commands_map.insert({"debug", &Shell_lib::debug_});
-  commands_map.insert({"format", &Shell_lib::format_});
-  commands_map.insert({"mount", &Shell_lib::mount_});
-  commands_map.insert({"cat", &Shell_lib::cat_});
-  commands_map.insert({"copyout", &Shell_lib::copyout_});
-  commands_map.insert({"create", &Shell_lib::create_});
-  commands_map.insert({"remove", &Shell_lib::remove_});
-  commands_map.insert({"quit", &Shell_lib::exit_});
-  commands_map.insert({"stat", &Shell_lib::stat_});
-  commands_map.insert({"help", &Shell_lib::help_});
-  commands_map.insert({"copyin", &Shell_lib::copyin_});
+  commands_map.insert({"debug", &Shell_lib::cmd_debug_});
+  commands_map.insert({"format", &Shell_lib::cmd_format_});
+  commands_map.insert({"mount", &Shell_lib::cmd_mount_});
+  commands_map.insert({"cat", &Shell_lib::cmd_cat_});
+//  commands_map.insert({"copyout", &Shell_lib::cmd_copyout_});
+//  commands_map.insert({"create", &Shell_lib::cmd_create_});
+//  commands_map.insert({"remove", &Shell_lib::cmd_remove_});
+  commands_map.insert({"quit", &Shell_lib::cmd_exit_});
+//  commands_map.insert({"stat", &Shell_lib::cmd_stat_});
+  commands_map.insert({"help", &Shell_lib::cmd_help_});
+  // commands_map.insert({"copyin", &Shell_lib::cmd_copyin_});
 
 }
 
@@ -86,7 +87,7 @@ void Shell_lib::Run() {
 
 }
 
-void Shell_lib::debug_(Command_Args &args) {
+void Shell_lib::cmd_debug_(Command_Args &args) {
   std::cout << "debug" << std::endl;
 
   if (!args.empty()) {
@@ -97,7 +98,7 @@ void Shell_lib::debug_(Command_Args &args) {
   FileSystem::debug(&disk_);
 
 }
-void Shell_lib::format_(Shell_lib::Command_Args &args) {
+void Shell_lib::cmd_format_(Shell_lib::Command_Args &args) {
   std::cout << "format" << std::endl;
 
   if (!args.empty()) {
@@ -113,7 +114,7 @@ void Shell_lib::format_(Shell_lib::Command_Args &args) {
 
 }
 
-void Shell_lib::mount_(Shell_lib::Command_Args &args) {
+void Shell_lib::cmd_mount_(Shell_lib::Command_Args &args) {
 
   std::cout << "mount" << std::endl;
 
@@ -122,13 +123,82 @@ void Shell_lib::mount_(Shell_lib::Command_Args &args) {
     return;
   }
 
-  if (fs_.mount(&disk_)) {
+  if (Shell_lib::fs_.mount(&disk_)) {
     std::cout << "Disk mounted successfully." << std::endl;
   } else {
     std::cout << "Disk mount failed." << std::endl;
   }
 
 }
+void Shell_lib::cmd_cat_(Shell_lib::Command_Args &args) {
+  std::cout << "cat" << std::endl;
+
+  if (args.size() != 1) {
+    std::cout << "Usage: cat <file_name>" << std::endl;
+    return;
+  }
+
+  std::string file_name = args[0];
+
+}
+
+bool Shell_lib::copyin_(size_t i_number, const std::string &path) {
+
+  std::ifstream file(path, std::ios::binary);
+
+  if (!file.is_open()) {
+    std::cout << "Unable to open file " << path << std::endl;
+    return false;
+  }
+
+  std::string buffer;
+  std::string line;
+
+  while (std::getline(file, line)) {
+    buffer += line;
+  }
+
+  file.close();
+
+  if (Shell_lib::fs_.write(i_number, const_cast<char *>(buffer.c_str()), buffer.size(), 0) < 0) {
+    std::cout << "Unable to write to file " << path << std::endl;
+    return false;
+  }
+
+  std::cout << "File " << path << " copied to disk." << std::endl;
+  std::cout << buffer.size() << " bytes copied." << std::endl;
+
+  return true;
+
+}
+bool Shell_lib::copyout_(const std::string &, size_t) {
+  return false;
+}
+void Shell_lib::cmd_exit_(Shell_lib::Command_Args &) {
+  std::cout << "exit" << std::endl;
+  exit(0);
+
+}
+void Shell_lib::cmd_help_(Shell_lib::Command_Args &) {
+
+  std::cout << "Help. List of commands :" << std::endl << std::endl;
+  std::cout << "help" << std::endl;
+  std::cout << "Available commands:" << std::endl;
+  std::cout << "debug" << std::endl;
+  std::cout << "format" << std::endl;
+  std::cout << "mount" << std::endl;
+  std::cout << "cat" << std::endl;
+  std::cout << "copyout" << std::endl;
+  std::cout << "create" << std::endl;
+  std::cout << "remove" << std::endl;
+  std::cout << "quit" << std::endl;
+  std::cout << "stat" << std::endl;
+  std::cout << "help" << std::endl;
+  std::cout << "copyin" << std::endl;
+
+}
+
+
 
 
 
