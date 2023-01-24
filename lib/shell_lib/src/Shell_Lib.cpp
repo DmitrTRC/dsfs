@@ -11,29 +11,25 @@
 #include <stdexcept>
 #include <vector>
 
-Shell_lib::Shell_lib(int argc, char *argv[]) {
+Shell_lib::Shell_lib(int c_argc, char *c_argv[]) {
 
-  if (argc != 3) {
+  if (c_argc != 3) {
     throw std::runtime_error("Usage: <disk_file> <n_blocks>");
   }
 
-  std::string disk_file = argv[1];
-  int n_blocks = std::stoi(argv[2]);
+  std::string disk_file = c_argv[1];
+  int n_blocks = std::stoi(c_argv[2]);
 
   disk_ = new Disk();
 
   try {
     disk_->open(disk_file, n_blocks);
   } catch (std::runtime_error &e) {
-    throw std::runtime_error("Unable to open disk " + std::string(argv[1]) + ": " + e.what());
+    throw std::runtime_error("Unable to open disk " + std::string(c_argv[1]) + ": " + e.what());
   }
 
   register_commands();
 
-}
-
-Shell_lib::Shell_lib() : Shell_lib(0, nullptr) {
-//TODO: Set default values.
 }
 
 void Shell_lib::register_commands() {

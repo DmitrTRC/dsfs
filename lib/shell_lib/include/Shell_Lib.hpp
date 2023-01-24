@@ -13,9 +13,8 @@
 class Shell_lib {
 
  public:
-  Shell_lib();
 
-  Shell_lib(int argc, char *argv[]);
+  Shell_lib(int, char *[]);
 
   void Run();
 
