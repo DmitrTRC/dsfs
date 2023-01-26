@@ -50,7 +50,7 @@ Disk::~Disk() {
 
 }
 
-void Disk::HealthCheck(int block_num, const char *data) const {
+void Disk::ValidCheck(int block_num, const char *data) const {
 
   std::stringstream ss;
 
@@ -79,7 +79,7 @@ void Disk::HealthCheck(int block_num, const char *data) const {
 
 void Disk::read(int block_num, char *data) {
 
-  HealthCheck(block_num, data);
+  ValidCheck(block_num, data);
 
   if (lseek(file_descriptor_, block_num * static_cast<int>(BLOCK_SIZE), SEEK_SET) < 0) {
 
@@ -103,7 +103,7 @@ void Disk::read(int block_num, char *data) {
 
 void Disk::write(int block_num, char *data) {
 
-  HealthCheck(block_num, data);
+  ValidCheck(block_num, data);
 
   if (lseek(file_descriptor_, block_num * static_cast<int>(BLOCK_SIZE), SEEK_SET) < 0) {
 

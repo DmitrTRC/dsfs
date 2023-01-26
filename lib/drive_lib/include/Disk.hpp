@@ -24,7 +24,7 @@ class Disk {
    @param	data	    Buffer to operate on
    Throws invalid_argument exception on error.
    */
-  void HealthCheck(int block_num, const char *data) const;
+  void ValidCheck(int block_num, const char *data) const;
 
  public:
   /// Number of bytes per block
@@ -69,6 +69,10 @@ class Disk {
    */
   void write(int block_num, char *data);
 
+  /**
+   * @brief Return number of blocks
+   * @return number of blocks
+   */
   [[nodiscard]] std::uint32_t blocks() const;
 };
 
