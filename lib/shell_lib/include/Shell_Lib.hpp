@@ -36,11 +36,11 @@ private:
     using CommandFunc = void (*)(Command_Args);
 
     //Commands map
-    static const std::unordered_map<std::string, CommandFunc> commands_map;
+  std::unordered_map<std::string, CommandFunc> commands_map;
 
 
     //Command prototypes
-    static void debug_(Command_Args);
+    static void debug_(Command_Args );
 
     static void format_(Command_Args);
 
