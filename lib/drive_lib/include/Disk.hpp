@@ -9,11 +9,12 @@
 #include <cinttypes>
 #include <cstddef>
 
+#include <fstream>
 #include <string>
 
 class Disk {
  private:
-  int file_descriptor_; /// File descriptor of disk image
+  std::fstream FileDescriptor_;    /// File descriptor for disk image
   std::size_t blocks_;        /// Number of blocks in disk image
   std::size_t reads_;        /// Number of reads performed
   std::size_t writes_;        /// Number of writes performed
@@ -24,14 +25,14 @@ class Disk {
    @param	data	    Buffer to operate on
    Throws invalid_argument exception on error.
    */
-  void ValidCheck(int block_num, const char *data) const;
+  void ValidCheck(int block_num, const std::shared_ptr<char> &data) const;
 
  public:
   /// Number of bytes per block
   const static std::size_t BLOCK_SIZE = 4096; /// 4K blocks
 
   /// Default constructor
-  Disk() : file_descriptor_(0), blocks_(0), reads_(0), writes_(0), mounts_(0) {}
+  Disk() : FileDescriptor_(nullptr), blocks_(0), reads_(0), writes_(0), mounts_(0) {}
 
   /// Destructor
   ~Disk();

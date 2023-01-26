@@ -5,6 +5,7 @@
 #include "Disk.hpp"
 
 #include <iostream>
+#include <fstream>
 #include <stdexcept>
 #include <cerrno>
 #include <fcntl.h>
@@ -13,22 +14,14 @@
 
 void Disk::open(const std::string &path, size_t n_blocks) {
 
-  file_descriptor_ = ::open(path.c_str(), O_RDWR | O_CREAT, 0600);
+  if (n_blocks < 2) throw std::runtime_error("Disk size must be at least 2 blocks");
 
-  if (file_descriptor_ < 0) {
+  FileDescriptor_.open(path, std::ios::in | std::ios::out | std::ios::binary | std::ios::trunc);
 
+  if ((!FileDescriptor_.is_open()) or (!FileDescriptor_.good())) {
     std::stringstream ss;
     ss << "Failed to open disk image: " << path << " : " << strerror(errno);
     throw std::runtime_error(ss.str());
-
-  }
-
-  if (ftruncate(file_descriptor_, static_cast<int>(n_blocks * BLOCK_SIZE)) < 0) {
-
-    std::stringstream ss;
-    ss << "Failed to truncate disk image: " << path << " : " << strerror(errno);
-    throw std::runtime_error(ss.str());
-
   }
 
   blocks_ = n_blocks;
@@ -39,40 +32,38 @@ void Disk::open(const std::string &path, size_t n_blocks) {
 
 Disk::~Disk() {
 
-  if (file_descriptor_ > 0) {
+  if (FileDescriptor_.is_open()) {
 
-    std::cout << "disk  : " << reads_ << "block reads" << std::endl;
-    std::cout << "disk  : " << writes_ << "block writes" << std::endl;
-    ::close(file_descriptor_);
-    file_descriptor_ = 0;
+    std::cout << "Disk: " << reads_ << " reads, " << writes_ << " writes" << std::endl;
+
+    FileDescriptor_.close();
 
   }
 
 }
 
-void Disk::ValidCheck(int block_num, const char *data) const {
+void Disk::ValidCheck(int block_num, const std::shared_ptr<char> &data) const {
 
   std::stringstream ss;
 
   if (block_num < 0) {
-
-    ss << "Invalid block number ( negative ) : " << block_num;
+    ss << "Invalid block number: " << block_num;
     throw std::invalid_argument(ss.str());
-
   }
 
-  if (block_num >= static_cast<int>(blocks_)) {
-
-    ss << "Invalid block number ( too large ) : " << block_num;
+  if (block_num >= blocks_) {
+    ss << "Block number " << block_num << " is out of range";
     throw std::invalid_argument(ss.str());
-
   }
 
   if (data == nullptr) {
-
-    ss << "Invalid data buffer ( null )";
+    ss << "Invalid data buffer";
     throw std::invalid_argument(ss.str());
+  }
 
+  if (!mounted()) {
+    ss << "Disk is not mounted";
+    throw std::invalid_argument(ss.str());
   }
 
 }
@@ -80,19 +71,20 @@ void Disk::ValidCheck(int block_num, const char *data) const {
 void Disk::read(int block_num, char *data) {
 
   ValidCheck(block_num, data);
+  // C++ 20 STL seekg
 
-  if (lseek(file_descriptor_, block_num * static_cast<int>(BLOCK_SIZE), SEEK_SET) < 0) {
+  if (FileDescriptor_.seekg(block_num * static_cast<int>(BLOCK_SIZE), std::ios::beg).fail()) {
 
     std::stringstream ss;
-    ss << "Unable to seek to block " << block_num << ": " << strerror(errno);
+    ss << "Unable to seek " << block_num << ": " << strerror(errno);
     throw std::runtime_error(ss.str());
 
   }
 
-  if (::read(file_descriptor_, data, BLOCK_SIZE) != BLOCK_SIZE) {
+  if (FileDescriptor_.read(data, BLOCK_SIZE).fail()) {
 
     std::stringstream ss;
-    ss << "Unable to read block " << block_num << ": " << strerror(errno);
+    ss << "Unable to read " << block_num << ": " << strerror(errno);
     throw std::runtime_error(ss.str());
 
   }
@@ -105,19 +97,11 @@ void Disk::write(int block_num, char *data) {
 
   ValidCheck(block_num, data);
 
-  if (lseek(file_descriptor_, block_num * static_cast<int>(BLOCK_SIZE), SEEK_SET) < 0) {
+  if (FileDescriptor_.seekp(block_num * static_cast<int>(BLOCK_SIZE), std::ios::beg).fail()) {
 
     std::stringstream ss;
-    ss << "Unable to lseek " << block_num << ": " << strerror(errno);
+    ss << "Unable to seek " << block_num << ": " << strerror(errno);
     throw std::runtime_error(ss.str());
-
-  }
-
-  if (::write(file_descriptor_, data, BLOCK_SIZE) != BLOCK_SIZE) {
-
-    std::stringstream result_error;
-    result_error << "Unable to write " << block_num << ": " << strerror(errno);
-    throw std::runtime_error(result_error.str());
 
   }
 
