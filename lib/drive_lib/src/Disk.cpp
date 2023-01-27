@@ -137,8 +137,22 @@ void Disk::write(int block_num, const std::shared_ptr<char> &data) {
 
 }
 
-uint32_t Disk::blocks() const {
+size_t Disk::blocks() const {
 
   return blocks_;
+
+}
+void Disk::close() {
+
+  if (FileDescriptor_.is_open()) {
+
+    std::cout << "Disk: " << reads_ << " reads, " << writes_ << " writes" << std::endl;
+
+    reads_ = 0;
+    writes_ = 0;
+
+    FileDescriptor_.close();
+
+  }
 
 }

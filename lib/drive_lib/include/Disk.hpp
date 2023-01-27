@@ -82,12 +82,10 @@ class Disk {
    * @brief Return number of blocks
    * @return number of blocks
    */
-  [[nodiscard]] std::uint32_t blocks() const;
+  [[nodiscard]] size_t blocks() const;
 
   //Only for testing
-  void close() {
-    FileDescriptor_.close();
-  }
+  void close();
 
   void isValid(int block_num, const std::shared_ptr<char> &data) const {
     ValidCheck(block_num, data);

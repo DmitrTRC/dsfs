@@ -136,9 +136,6 @@ TEST(DISK, ReadWriteData_Test) {
 
   std::shared_ptr<char> data(new char[disk.BLOCK_SIZE], std::default_delete<char[]>());
 
-//Delays the execution of the current thread for the specified duration.
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
   EXPECT_NO_THROW(disk.write(0, Z_data));
   EXPECT_NO_THROW(disk.write(1, X_data));
   EXPECT_NO_THROW(disk.read(0, data));
@@ -160,3 +157,107 @@ TEST(DISK, ReadWriteData_Test) {
 
 }
 
+TEST(DISK, test_close) {
+
+  Disk disk;
+
+  disk.open("test.dat", 2);
+  disk.mount();
+
+  std::shared_ptr<char> data(new char[disk.BLOCK_SIZE], std::default_delete<char[]>());
+
+  EXPECT_NO_THROW(disk.write(0, data));
+  EXPECT_NO_THROW(disk.write(1, data));
+  EXPECT_NO_THROW(disk.read(0, data));
+  EXPECT_NO_THROW(disk.read(1, data));
+  EXPECT_NO_THROW(disk.write(0, data));
+  EXPECT_NO_THROW(disk.write(1, data));
+  EXPECT_NO_THROW(disk.read(0, data));
+  EXPECT_NO_THROW(disk.read(1, data));
+
+  EXPECT_EQ(disk.getReads(), 4);
+  EXPECT_EQ(disk.getWrites(), 4);
+
+  EXPECT_NO_THROW(disk.close());
+
+  EXPECT_EQ(disk.getReads(), 0);
+  EXPECT_EQ(disk.getWrites(), 0);
+
+}
+
+TEST(DISK, test_mount) {
+
+  Disk disk;
+
+  disk.open("test.dat", 2);
+
+  EXPECT_NO_THROW(disk.mount());
+  EXPECT_NO_THROW(disk.mount());
+
+  EXPECT_NO_THROW(disk.close());
+
+  EXPECT_NO_THROW(disk.mount());
+
+}
+
+TEST(DISK, test_unmount) {
+
+  Disk disk;
+
+  disk.open("test.dat", 2);
+
+  EXPECT_NO_THROW(disk.mount());
+  EXPECT_NO_THROW(disk.unmount());
+  EXPECT_NO_THROW(disk.unmount());
+
+  EXPECT_NO_THROW(disk.close());
+
+  EXPECT_NO_THROW(disk.unmount());
+
+}
+
+TEST(DISK, test_mounted) {
+
+  Disk disk;
+
+  disk.open("test.dat", 2);
+
+  EXPECT_FALSE(disk.mounted());
+
+  EXPECT_NO_THROW(disk.mount());
+
+  EXPECT_TRUE(disk.mounted());
+
+  EXPECT_NO_THROW(disk.unmount());
+
+  EXPECT_FALSE(disk.mounted());
+
+  EXPECT_NO_THROW(disk.close());
+
+  EXPECT_FALSE(disk.mounted());
+
+}
+
+TEST(DISK, test_get_Block_Size) {
+
+  Disk disk;
+
+  disk.open("test.dat", 2);
+
+  EXPECT_EQ(disk.getBlockSize(), 4096);
+
+  EXPECT_NO_THROW(disk.close());
+
+}
+
+TEST(DISK, test_get_Number_Of_Blocks) {
+
+  Disk disk;
+
+  disk.open("test.dat", 2);
+
+  EXPECT_EQ(disk.blocks(), 2);
+
+  EXPECT_NO_THROW(disk.close());
+
+}
