@@ -24,6 +24,11 @@ void Disk::open(const std::string &path, size_t n_blocks) {
     throw std::runtime_error(ss.str());
   }
 
+  //Reserve space for the disk
+  FileDescriptor_.seekp(static_cast<long>((n_blocks - 1) * BLOCK_SIZE), std::ios::beg);
+  FileDescriptor_.write("", 1);
+  FileDescriptor_.seekp(0, std::ios::beg);
+
   blocks_ = n_blocks;
   reads_ = 0;
   writes_ = 0;
@@ -68,10 +73,9 @@ void Disk::ValidCheck(int block_num, const std::shared_ptr<char> &data) const {
 
 }
 
-void Disk::read(int block_num, char *data) {
+void Disk::read(int block_num, const std::shared_ptr<char> &data) {
 
   ValidCheck(block_num, data);
-  // C++ 20 STL seekg
 
   if (FileDescriptor_.seekg(block_num * static_cast<int>(BLOCK_SIZE), std::ios::beg).fail()) {
 
@@ -81,19 +85,31 @@ void Disk::read(int block_num, char *data) {
 
   }
 
-  if (FileDescriptor_.read(data, BLOCK_SIZE).fail()) {
+  if (FileDescriptor_.eof()) {
+    std::stringstream ss;
+    ss << "Unable to read (EOF Position) " << block_num << ": " << strerror(errno);
+    throw std::runtime_error(ss.str());
+  }
 
+  if (FileDescriptor_.bad()) {
+    std::stringstream ss;
+    ss << "Unable to read (BAD descriptor) " << block_num << ": " << strerror(errno);
+    throw std::runtime_error(ss.str());
+  }
+
+  FileDescriptor_.read(data.get(), static_cast<long>(BLOCK_SIZE));
+
+  if (FileDescriptor_.fail()) {
     std::stringstream ss;
     ss << "Unable to read " << block_num << ": " << strerror(errno);
     throw std::runtime_error(ss.str());
-
   }
 
   ++reads_;
 
 }
 
-void Disk::write(int block_num, char *data) {
+void Disk::write(int block_num, const std::shared_ptr<char> &data) {
 
   ValidCheck(block_num, data);
 

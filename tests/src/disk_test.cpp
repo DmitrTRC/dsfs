@@ -30,3 +30,57 @@ TEST(DISK, Open_Test) {
 
 }
 
+TEST(DISK, ValidCheck_Test) {
+
+  Disk disk;
+
+  disk.open("test.dat", 2);
+  disk.mount();
+
+  std::shared_ptr<char> data = std::make_shared<char>(disk.BLOCK_SIZE);
+
+  EXPECT_THROW(disk.isValid(-1, data), std::invalid_argument);
+  EXPECT_THROW(disk.isValid(2, data), std::invalid_argument);
+  EXPECT_THROW(disk.isValid(0, nullptr), std::invalid_argument);
+  EXPECT_THROW(disk.isValid(3, data), std::invalid_argument);
+
+  EXPECT_NO_THROW(disk.isValid(0, data));
+  EXPECT_NO_THROW(disk.isValid(1, data));
+
+}
+
+TEST(DISK, Read_Test) {
+
+  Disk disk;
+
+  disk.open("test.dat", 2);
+  disk.mount();
+
+  std::shared_ptr<char> data = std::make_shared<char>(disk.BLOCK_SIZE);
+
+  EXPECT_THROW(disk.read(-1, data), std::invalid_argument);
+  EXPECT_THROW(disk.read(2, data), std::invalid_argument);
+  EXPECT_THROW(disk.read(0, nullptr), std::invalid_argument);
+
+  EXPECT_NO_THROW(disk.read(0, data));
+  EXPECT_EQ(disk.getReads(), 1);
+  EXPECT_EQ(disk.getWrites(), 0);
+
+  EXPECT_NO_THROW(disk.read(1, data));
+  EXPECT_EQ(disk.getReads(), 2);
+  EXPECT_EQ(disk.getWrites(), 0);
+
+  EXPECT_NO_THROW(disk.read(0, data));
+  EXPECT_EQ(disk.getReads(), 3);
+  EXPECT_EQ(disk.getWrites(), 0);
+
+  EXPECT_NO_THROW(disk.read(1, data));
+  EXPECT_EQ(disk.getReads(), 4);
+  EXPECT_EQ(disk.getWrites(), 0);
+
+  EXPECT_NO_THROW(disk.read(0, data));
+  EXPECT_EQ(disk.getReads(), 5);
+  EXPECT_EQ(disk.getWrites(), 0);
+
+}
+

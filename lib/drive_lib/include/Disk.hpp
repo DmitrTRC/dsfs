@@ -29,7 +29,7 @@ class Disk {
 
  public:
   /// Number of bytes per block
-  const static std::size_t BLOCK_SIZE = 4096; /// 4K blocks
+  const std::size_t BLOCK_SIZE = 4096; /// 4K blocks
 
   /// Default constructor
   Disk() : FileDescriptor_(nullptr), blocks_(0), reads_(0), writes_(0), mounts_(0) {}
@@ -61,20 +61,37 @@ class Disk {
    * @param block_num
    * @param data
    */
-  void read(int block_num, char *data);
+  void read(int block_num, const std::shared_ptr<char> &data);
+
+  size_t getReads() const {
+    return reads_;
+  }
+
+  size_t getWrites() const {
+    return writes_;
+  }
 
   /**
    * @brief
    * @param block_num
    * @param data
    */
-  void write(int block_num, char *data);
+  void write(int block_num, const std::shared_ptr<char> &data);
 
   /**
    * @brief Return number of blocks
    * @return number of blocks
    */
   [[nodiscard]] std::uint32_t blocks() const;
+
+  //Only for testing
+  void close() {
+    FileDescriptor_.close();
+  }
+
+  void isValid(int block_num, const std::shared_ptr<char> &data) const {
+    ValidCheck(block_num, data);
+  }
 };
 
 #endif //DSFS_MAIN_DISK_H
