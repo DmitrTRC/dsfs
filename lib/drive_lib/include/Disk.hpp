@@ -92,6 +92,11 @@ class Disk {
   void isValid(int block_num, const std::shared_ptr<char> &data) const {
     ValidCheck(block_num, data);
   }
+
+  size_t getBlockSize() const {
+    return BLOCK_SIZE;
+  }
+
 };
 
 #endif //DSFS_MAIN_DISK_H

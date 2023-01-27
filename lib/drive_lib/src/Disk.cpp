@@ -5,11 +5,7 @@
 #include "Disk.hpp"
 
 #include <iostream>
-#include <fstream>
 #include <stdexcept>
-#include <cerrno>
-#include <fcntl.h>
-#include <unistd.h>
 #include <sstream>
 
 void Disk::open(const std::string &path, size_t n_blocks) {
@@ -134,6 +130,8 @@ void Disk::write(int block_num, const std::shared_ptr<char> &data) {
     ss << "Unable to write " << block_num << ": " << strerror(errno);
     throw std::runtime_error(ss.str());
   }
+  //Flush the buffer to the disk
+  FileDescriptor_.flush();
 
   ++writes_;
 
