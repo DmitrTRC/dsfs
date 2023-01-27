@@ -25,7 +25,7 @@ void Disk::open(const std::string &path, size_t n_blocks) {
   }
 
   //Reserve space for the disk
-  FileDescriptor_.seekp(static_cast<long>((n_blocks - 1) * BLOCK_SIZE), std::ios::beg);
+  FileDescriptor_.seekp(static_cast<long>(n_blocks * BLOCK_SIZE), std::ios::beg);
   FileDescriptor_.write("", 1);
   FileDescriptor_.seekp(0, std::ios::beg);
 
