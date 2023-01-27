@@ -121,6 +121,20 @@ void Disk::write(int block_num, const std::shared_ptr<char> &data) {
 
   }
 
+  if (FileDescriptor_.bad()) {
+    std::stringstream ss;
+    ss << "Unable to write (BAD descriptor) " << block_num << ": " << strerror(errno);
+    throw std::runtime_error(ss.str());
+  }
+
+  FileDescriptor_.write(data.get(), static_cast<long>(BLOCK_SIZE));
+
+  if (FileDescriptor_.fail()) {
+    std::stringstream ss;
+    ss << "Unable to write " << block_num << ": " << strerror(errno);
+    throw std::runtime_error(ss.str());
+  }
+
   ++writes_;
 
 }
