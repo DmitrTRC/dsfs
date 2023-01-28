@@ -28,7 +28,7 @@ class FileSystem {
 
   ~FileSystem();
 
-  void debug(std::shared_ptr<Disk> disk);
+  static void debug(const std::shared_ptr<Disk> &disk);
 
   bool format(std::shared_ptr<Disk> disk);
 
@@ -99,9 +99,10 @@ class FileSystem {
     uint32_t Indirect;
   };
 
-  using Block = std::variant<SuperBlock, std::array<Inode, FileSystem::INODES_PER_BLOCK>,
+  using Block = std::variant<SuperBlock,
+                             std::array<Inode, FileSystem::INODES_PER_BLOCK>,
                              std::array<std::uint32_t, FileSystem::POINTERS_PER_BLOCK>,
-                             const std::shared_ptr<char>,
+                             std::shared_ptr<char>,
                              std::array<Directory, FileSystem::DIR_PER_BLOCK>>;
 
   // Internal member variables
