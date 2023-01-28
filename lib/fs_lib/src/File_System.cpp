@@ -3,63 +3,13 @@
 
 #include <algorithm>
 #include <cmath>
-#include <assert.h>
-#include <stdio.h>
-#include <string.h>
+
 #include <iostream>
 
 using namespace std;
 
-void FileSystem::debug(Disk *disk) {
-  Block block;
-
-  disk->read(0, block.Data);
-
-  printf("SuperBlock:\n");
-
-  if (block.Super.MagicNumber == MAGIC_NUMBER)
-    printf("    magic number is valid\n");
-  else {
-    printf("    magic number is invalid\n");
-    printf("    exiting...\n");
-    return;
-  }
-
-  printf("    %u blocks\n", block.Super.Blocks);
-  printf("    %u inode blocks\n", block.Super.InodeBlocks);
-  printf("    %u inodes\n", block.Super.Inodes);
-
-  int ii = 0;
-
-  for (uint32_t i = 1; i <= block.Super.InodeBlocks; i++) {
-    disk->read(i, block.Data);
-    for (uint32_t j = 0; j < INODES_PER_BLOCK; j++) {
-      if (block.Inodes[j].Valid) {
-        printf("Inode %u:\n", ii);
-        printf("    size: %u bytes\n", block.Inodes[j].Size);
-        printf("    direct blocks:");
-
-        for (uint32_t k = 0; k < POINTERS_PER_INODE; k++) {
-          if (block.Inodes[j].Direct[k]) printf(" %u", block.Inodes[j].Direct[k]);
-        }
-        printf("\n");
-
-        if (block.Inodes[j].Indirect) {
-          printf("    indirect block: %u\n    indirect data blocks:", block.Inodes[j].Indirect);
-          Block IndirectBlock;
-          disk->read(block.Inodes[j].Indirect, IndirectBlock.Data);
-          for (uint32_t k = 0; k < POINTERS_PER_BLOCK; k++) {
-            if (IndirectBlock.Pointers[k]) printf(" %u", IndirectBlock.Pointers[k]);
-          }
-          printf("\n");
-        }
-      }
-
-      ii++;
-    }
-  }
-
-  return;
+void FileSystem::debug(std::shared_ptr<Disk> disk) {
+  
 }
 
 bool FileSystem::format(Disk *disk) {

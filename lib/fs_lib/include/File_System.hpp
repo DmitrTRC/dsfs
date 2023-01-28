@@ -12,8 +12,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 class FileSystem {
  public:
   const static uint32_t MAGIC_NUMBER = 0xf0f03410; //Magic number helps in checking Validity of the FileSystem on disk
@@ -30,9 +28,9 @@ class FileSystem {
 
   ~FileSystem();
 
-  static void debug(Disk *disk);
+  void debug(std::shared_ptr<Disk> disk);
 
-  static bool format(Disk *disk);
+  bool format(std::shared_ptr<Disk> disk);
 
   bool mount(Disk *disk);
 
@@ -101,10 +99,10 @@ class FileSystem {
     uint32_t Indirect;
   };
 
-  std::variant<SuperBlock, std::array<Inode, FileSystem::INODES_PER_BLOCK>,
-               std::array<std::uint32_t, FileSystem::POINTERS_PER_BLOCK>,
-               std::array<char, Disk::BLOCK_SIZE>,
-               std::array<Directory, FileSystem::DIR_PER_BLOCK>> Block;
+  using Block = std::variant<SuperBlock, std::array<Inode, FileSystem::INODES_PER_BLOCK>,
+                             std::array<std::uint32_t, FileSystem::POINTERS_PER_BLOCK>,
+                             std::array<char, Disk::BLOCK_SIZE>,
+                             std::array<Directory, FileSystem::DIR_PER_BLOCK>>;
 
   // Internal member variables
   std::shared_ptr<Disk> fs_disk;
