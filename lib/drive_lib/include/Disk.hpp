@@ -61,7 +61,7 @@ class Disk {
    * @param block_num
    * @param data
    */
-  void read(int block_num, const std::shared_ptr<char> &data);
+  void read(int block_num, std::shared_ptr<char> &data);
 
   size_t getReads() const {
     return reads_;

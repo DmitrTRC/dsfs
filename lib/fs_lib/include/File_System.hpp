@@ -101,7 +101,7 @@ class FileSystem {
 
   using Block = std::variant<SuperBlock, std::array<Inode, FileSystem::INODES_PER_BLOCK>,
                              std::array<std::uint32_t, FileSystem::POINTERS_PER_BLOCK>,
-                             std::array<char, Disk::BLOCK_SIZE>,
+                             const std::shared_ptr<char>,
                              std::array<Directory, FileSystem::DIR_PER_BLOCK>>;
 
   // Internal member variables

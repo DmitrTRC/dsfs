@@ -9,7 +9,11 @@
 using namespace std;
 
 void FileSystem::debug(std::shared_ptr<Disk> disk) {
-  
+  Block block;
+
+  const std::shared_ptr<char> buffer = std::shared_ptr<char>(new char[Disk::BLOCK_SIZE]);
+  disk->read(0, block);
+
 }
 
 bool FileSystem::format(Disk *disk) {

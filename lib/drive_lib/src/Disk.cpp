@@ -69,7 +69,7 @@ void Disk::ValidCheck(int block_num, const std::shared_ptr<char> &data) const {
 
 }
 
-void Disk::read(int block_num, const std::shared_ptr<char> &data) {
+void Disk::read(int block_num, std::shared_ptr<char> &data) {
 
   ValidCheck(block_num, data);
 
