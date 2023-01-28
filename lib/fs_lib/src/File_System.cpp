@@ -35,19 +35,35 @@ void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
 //  std::cout << "  Password Hash: " << sb_Ptr->PasswordHash << std::endl;
 
 }
-
+/*
+ * Format the disk
+ * write superblock
+ * Reinitialising password protection
+ * clear all other blocks
+ * clear individual Inodes
+ * clear all direct Pointers
+ * clear indirect Pointer
+ * Free Data Blocks
+ * Free Directory Blocks
+ * Create Root directory
+ * Create table entries for "." and ".."
+ * Empty the directories
+ */
 bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
   if (disk->mounted()) return false;
 
   Block block;
-  std::get<SuperBlock>(block).MagicNumber = MAGIC_NUMBER;
-  std::get<SuperBlock>(block).Blocks = disk->size();
-  std::get<SuperBlock>(block).InodeBlocks = std::ceil((disk->size() * 1.00) / 10);
-  std::get<SuperBlock>(block).Inodes = std::get<SuperBlock>(block).InodeBlocks * INODES_PER_BLOCK;
-  std::get<SuperBlock>(block).DirBlocks = std::ceil((disk->size() * 1.00) / 100);
-  std::get<SuperBlock>(block).Protected = false;
+  std::get<SuperBlock>(block).MagicNumber = FileSystem::MAGIC_NUMBER;
+  std::get<SuperBlock>(block).Blocks = static_cast<std::uint32_t>(disk->size());
+  std::get<SuperBlock>(block).InodeBlocks = static_cast<std::uint32_t>(std::ceil((disk->size() * 1.00) / 10));
+  std::get<SuperBlock>(block).Inodes = std::get<SuperBlock>(block).InodeBlocks * FileSystem::INODES_PER_BLOCK;
+  std::get<SuperBlock>(block).DirBlocks = static_cast<std::uint32_t>(std::ceil((disk->size() * 1.00) / 100));
 
   disk->write(0, std::get<std::shared_ptr<char>>(block));
+
+  std::get<SuperBlock>(block).Protected = false;
+
+  std::fill(std::get<SuperBlock>(block).PasswordHash.begin(), std::get<SuperBlock>(block).PasswordHash.end(), 0);
 
   return true;
 
