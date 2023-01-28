@@ -256,7 +256,7 @@ TEST(DISK, test_get_Number_Of_Blocks) {
 
   disk.open("test.dat", 2);
 
-  EXPECT_EQ(disk.blocks(), 2);
+  EXPECT_EQ(disk.size(), 2);
 
   EXPECT_NO_THROW(disk.close());
 

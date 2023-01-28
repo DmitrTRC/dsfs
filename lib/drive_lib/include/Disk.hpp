@@ -29,7 +29,7 @@ class Disk {
 
  public:
   /// Number of bytes per block
-  const std::size_t BLOCK_SIZE = 4096; /// 4K blocks
+  static const std::size_t BLOCK_SIZE = 4096; /// 4K blocks
 
   /// Default constructor
   Disk() : FileDescriptor_(nullptr), blocks_(0), reads_(0), writes_(0), mounts_(0) {}
@@ -78,12 +78,6 @@ class Disk {
    */
   void write(int block_num, const std::shared_ptr<char> &data);
 
-  /**
-   * @brief Return number of blocks
-   * @return number of blocks
-   */
-  [[nodiscard]] size_t blocks() const;
-
   //Only for testing
   void close();
 
@@ -91,7 +85,7 @@ class Disk {
     ValidCheck(block_num, data);
   }
 
-  size_t getBlockSize() const {
+  static size_t getBlockSize() {
     return BLOCK_SIZE;
   }
 

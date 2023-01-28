@@ -5,27 +5,23 @@
 #ifndef DSFS_DEV_FILE_SYSTEM_HPP
 #define DSFS_DEV_FILE_SYSTEM_HPP
 #include "Disk.hpp"
-#include <cstring>
-#include <vector>
-#include <stdint.h>
+
+#include <string>
+
+#include <cstdint>
 #include <vector>
 
 using namespace std;
 
 class FileSystem {
  public:
-  const static uint32_t
-      MAGIC_NUMBER = 0xf0f03410;      //    Magic number helps in checking Validity of the FileSystem on disk
-  const static uint32_t INODES_PER_BLOCK =
-      128;             //    Number of Inodes which can be contained in a block of (4kb)
-  const static uint32_t
-      POINTERS_PER_INODE = 5;               //    Number of Direct block pointers in an Inode Block
-  const static uint32_t
-      POINTERS_PER_BLOCK = 1024;            //    Number of block pointers in one Indirect pointer
-  const static uint32_t NAMESIZE = 16;              //    Max Name size for files/directories
-  const static uint32_t
-      ENTRIES_PER_DIR = 7;              //    Number of Files/Directory entries within a Directory
-  const static uint32_t DIR_PER_BLOCK = 8;               //    Number of Directories per 4KB block
+  const static uint32_t MAGIC_NUMBER = 0xf0f03410; //Magic number helps in checking Validity of the FileSystem on disk
+  const static uint32_t INODES_PER_BLOCK = 128; //    Number of Inodes which can be contained in a block of (4kb)
+  const static uint32_t POINTERS_PER_INODE = 5; //    Number of Direct block pointers in an Inode Block
+  const static uint32_t POINTERS_PER_BLOCK = 1024; //    Number of block pointers in one Indirect pointer
+  const static uint32_t NAME_SIZE = 16; //    Max Name size for files/directories
+  const static uint32_t ENTRIES_PER_DIR = 7; //    Number of Files/Directory entries within a Directory
+  const static uint32_t DIR_PER_BLOCK = 8; //    Number of Directories per 4KB block
 
   ssize_t write(size_t inumber, char *data, int length, size_t offset);
  private:
@@ -43,13 +39,13 @@ class FileSystem {
     uint8_t type;
     uint8_t valid;
     uint32_t inum;
-    char Name[NAMESIZE];
+    char Name[NAME_SIZE];
   };
 
   struct Directory {
     uint16_t Valid;
     uint32_t inum;
-    char Name[NAMESIZE];
+    char Name[NAME_SIZE];
     Dirent Table[ENTRIES_PER_DIR];
   };
 
