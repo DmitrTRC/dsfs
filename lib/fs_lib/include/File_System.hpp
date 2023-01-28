@@ -38,13 +38,13 @@ class FileSystem {
   struct Dirent {
     uint8_t type;
     uint8_t valid;
-    uint32_t inum;
+    uint32_t i_num;
     char Name[NAME_SIZE];
   };
 
   struct Directory {
     uint16_t Valid;
-    uint32_t inum;
+    uint32_t I_num;
     char Name[NAME_SIZE];
     Dirent Table[ENTRIES_PER_DIR];
   };

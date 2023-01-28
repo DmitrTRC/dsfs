@@ -104,7 +104,7 @@ bool FileSystem::format(Disk *disk) {
   for (uint32_t i = block.Super.Blocks - block.Super.DirBlocks; i < block.Super.Blocks; i++) {
     Block DataBlock;
     Directory dir;
-    dir.inum = -1;
+    dir.I_num = -1;
     dir.Valid = 0;
     memset(dir.Table, 0, sizeof(Dirent) * ENTRIES_PER_DIR);
     for (uint32_t j = 0; j < FileSystem::DIR_PER_BLOCK; j++) {
@@ -115,12 +115,12 @@ bool FileSystem::format(Disk *disk) {
 
   struct Directory root;
   strcpy(root.Name, "/");
-  root.inum = 0;
+  root.I_num = 0;
   root.Valid = 1;
 
   struct Dirent temp;
   memset(&temp, 0, sizeof(temp));
-  temp.inum = 0;
+  temp.i_num = 0;
   temp.type = 0;
   temp.valid = 1;
   char tstr1[] = ".";
