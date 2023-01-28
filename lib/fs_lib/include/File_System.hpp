@@ -30,7 +30,7 @@ class FileSystem {
 
   static void debug(const std::shared_ptr<Disk> &disk);
 
-  bool format(std::shared_ptr<Disk> disk);
+  bool format(const std::shared_ptr<Disk> &disk);
 
   bool mount(Disk *disk);
 

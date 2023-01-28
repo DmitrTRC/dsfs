@@ -36,79 +36,22 @@ void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
 
 }
 
-bool FileSystem::format(Disk *disk) {
+bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
   if (disk->mounted()) return false;
 
   Block block;
-  memset(&block, 0, sizeof(Block));
+  std::get<SuperBlock>(block).MagicNumber = MAGIC_NUMBER;
+  std::get<SuperBlock>(block).Blocks = disk->size();
+  std::get<SuperBlock>(block).InodeBlocks = std::ceil((disk->size() * 1.00) / 10);
+  std::get<SuperBlock>(block).Inodes = std::get<SuperBlock>(block).InodeBlocks * INODES_PER_BLOCK;
+  std::get<SuperBlock>(block).DirBlocks = std::ceil((disk->size() * 1.00) / 100);
+  std::get<SuperBlock>(block).Protected = false;
 
-  block.Super.MagicNumber = FileSystem::MAGIC_NUMBER;
-  block.Super.Blocks = (uint32_t) (disk->size());
-  block.Super.InodeBlocks = (uint32_t) std::ceil((int(block.Super.Blocks) * 1.00) / 10);
-  block.Super.Inodes = block.Super.InodeBlocks * (FileSystem::INODES_PER_BLOCK);
-  block.Super.DirBlocks = (uint32_t) std::ceil((int(block.Super.Blocks) * 1.00) / 100);
+  std::shared_ptr<char> buffer = std::make_shared<char>(sizeof(Block));
+  buffer
 
-  disk->write(0, block.Data);
+  disk->write(0, buffer);
 
-  block.Super.Protected = 0;
-  memset(block.Super.PasswordHash, 0, 257);
-
-  for (uint32_t i = 1; i <= block.Super.InodeBlocks; i++) {
-    Block inodeblock;
-
-    for (uint32_t j = 0; j < FileSystem::INODES_PER_BLOCK; j++) {
-      inodeblock.Inodes[j].Valid = false;
-      inodeblock.Inodes[j].Size = 0;
-
-      for (uint32_t k = 0; k < FileSystem::POINTERS_PER_INODE; k++)
-        inodeblock.Inodes[j].Direct[k] = 0;
-
-      inodeblock.Inodes[j].Indirect = 0;
-    }
-
-    disk->write(i, inodeblock.Data);
-  }
-
-  for (uint32_t i = (block.Super.InodeBlocks) + 1; i < block.Super.Blocks - block.Super.DirBlocks; i++) {
-    Block DataBlock;
-    memset(DataBlock.Data, 0, Disk::BLOCK_SIZE);
-    disk->write(i, DataBlock.Data);
-  }
-
-  for (uint32_t i = block.Super.Blocks - block.Super.DirBlocks; i < block.Super.Blocks; i++) {
-    Block DataBlock;
-    Directory dir;
-    dir.I_num = -1;
-    dir.Valid = 0;
-    memset(dir.Table, 0, sizeof(Dirent) * ENTRIES_PER_DIR);
-    for (uint32_t j = 0; j < FileSystem::DIR_PER_BLOCK; j++) {
-      DataBlock.Directories[j] = dir;
-    }
-    disk->write(i, DataBlock.Data);
-  }
-
-  struct Directory root;
-  strcpy(root.Name, "/");
-  root.I_num = 0;
-  root.Valid = 1;
-
-  struct Dirent temp;
-  memset(&temp, 0, sizeof(temp));
-  temp.i_num = 0;
-  temp.type = 0;
-  temp.valid = 1;
-  char tstr1[] = ".";
-  char tstr2[] = "..";
-  strcpy(temp.Name, tstr1);
-  memcpy(&(root.Table[0]), &temp, sizeof(Dirent));
-  strcpy(temp.Name, tstr2);
-  memcpy(&(root.Table[1]), &temp, sizeof(Dirent));
-
-  Block Dirblock;
-  memcpy(&(Dirblock.Directories[0]), &root, sizeof(root));
-  disk->write(block.Super.Blocks - 1, Dirblock.Data);
-
-  return true;
 }
 
 //bool FileSystem::mount(Disk *disk) {
