@@ -47,10 +47,9 @@ bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
   std::get<SuperBlock>(block).DirBlocks = std::ceil((disk->size() * 1.00) / 100);
   std::get<SuperBlock>(block).Protected = false;
 
-  std::shared_ptr<char> buffer = std::make_shared<char>(sizeof(Block));
-  buffer
+  disk->write(0, std::get<std::shared_ptr<char>>(block));
 
-  disk->write(0, buffer);
+  return true;
 
 }
 
