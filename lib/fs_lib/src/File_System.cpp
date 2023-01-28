@@ -165,40 +165,40 @@ bool FileSystem::mount(Disk *disk) {
   disk->mount();
   fs_disk = disk;
 
-  MetaData = block.Super;
+  meta_data_ = block.Super;
 
-  free_blocks.resize(MetaData.Blocks, false);
+  free_blocks_.resize(meta_data_.Blocks, false);
 
-  inode_counter.resize(MetaData.InodeBlocks, 0);
+  inode_counter_.resize(meta_data_.InodeBlocks, 0);
 
-  free_blocks[0] = true;
+  free_blocks_[0] = true;
 
-  for (uint32_t i = 1; i <= MetaData.InodeBlocks; i++) {
+  for (uint32_t i = 1; i <= meta_data_.InodeBlocks; i++) {
     disk->read(i, block.Data);
 
     for (uint32_t j = 0; j < INODES_PER_BLOCK; j++) {
       if (block.Inodes[j].Valid) {
-        inode_counter[i - 1]++;
+        inode_counter_[i - 1]++;
 
-        if (block.Inodes[j].Valid) free_blocks[i] = true;
+        if (block.Inodes[j].Valid) free_blocks_[i] = true;
 
         for (uint32_t k = 0; k < POINTERS_PER_INODE; k++) {
           if (block.Inodes[j].Direct[k]) {
-            if (block.Inodes[j].Direct[k] < MetaData.Blocks)
-              free_blocks[block.Inodes[j].Direct[k]] = true;
+            if (block.Inodes[j].Direct[k] < meta_data_.Blocks)
+              free_blocks_[block.Inodes[j].Direct[k]] = true;
             else
               return false;
           }
         }
 
         if (block.Inodes[j].Indirect) {
-          if (block.Inodes[j].Indirect < MetaData.Blocks) {
-            free_blocks[block.Inodes[j].Indirect] = true;
+          if (block.Inodes[j].Indirect < meta_data_.Blocks) {
+            free_blocks_[block.Inodes[j].Indirect] = true;
             Block indirect;
             fs_disk->read(block.Inodes[j].Indirect, indirect.Data);
             for (uint32_t k = 0; k < POINTERS_PER_BLOCK; k++) {
-              if (indirect.Pointers[k] < MetaData.Blocks) {
-                free_blocks[indirect.Pointers[k]] = true;
+              if (indirect.Pointers[k] < meta_data_.Blocks) {
+                free_blocks_[indirect.Pointers[k]] = true;
               } else return false;
             }
           } else
@@ -208,14 +208,14 @@ bool FileSystem::mount(Disk *disk) {
     }
   }
 
-  dir_counter.resize(MetaData.DirBlocks, 0);
+  dir_counter_.resize(meta_data_.DirBlocks, 0);
 
   Block dirblock;
-  for (uint32_t dirs = 0; dirs < MetaData.DirBlocks; dirs++) {
-    disk->read(MetaData.Blocks - 1 - dirs, dirblock.Data);
+  for (uint32_t dirs = 0; dirs < meta_data_.DirBlocks; dirs++) {
+    disk->read(meta_data_.Blocks - 1 - dirs, dirblock.Data);
     for (uint32_t offset = 0; offset < FileSystem::DIR_PER_BLOCK; offset++) {
       if (dirblock.Directories[offset].Valid == 1) {
-        dir_counter[dirs]++;
+        dir_counter_[dirs]++;
       }
     }
     if (dirs == 0) {
@@ -223,19 +223,19 @@ bool FileSystem::mount(Disk *disk) {
     }
   }
 
-  mounted = true;
+  mounted_ = true;
 
   return true;
 }
 
 ssize_t FileSystem::create() {
-  if (!mounted) return false;
+  if (!mounted_) return false;
 
   Block block;
   fs_disk->read(0, block.Data);
 
-  for (uint32_t i = 1; i <= MetaData.InodeBlocks; i++) {
-    if (inode_counter[i - 1] == INODES_PER_BLOCK) continue;
+  for (uint32_t i = 1; i <= meta_data_.InodeBlocks; i++) {
+    if (inode_counter_[i - 1] == INODES_PER_BLOCK) continue;
     else fs_disk->read(i, block.Data);
 
     for (uint32_t j = 0; j < INODES_PER_BLOCK; j++) {
@@ -246,8 +246,8 @@ ssize_t FileSystem::create() {
         for (int ii = 0; ii < 5; ii++) {
           block.Inodes[j].Direct[ii] = 0;
         }
-        free_blocks[i] = true;
-        inode_counter[i - 1]++;
+        free_blocks_[i] = true;
+        inode_counter_[i - 1]++;
 
         fs_disk->write(i, block.Data);
 
@@ -260,15 +260,15 @@ ssize_t FileSystem::create() {
 }
 
 bool FileSystem::load_inode(size_t inumber, Inode *node) {
-  if (!mounted) return false;
-  if ((inumber > MetaData.Inodes) || (inumber < 1)) { return false; }
+  if (!mounted_) return false;
+  if ((inumber > meta_data_.Inodes) || (inumber < 1)) { return false; }
 
   Block block;
 
   int i = inumber / INODES_PER_BLOCK;
   int j = inumber % INODES_PER_BLOCK;
 
-  if (inode_counter[i]) {
+  if (inode_counter_[i]) {
     fs_disk->read(i + 1, block.Data);
     if (block.Inodes[j].Valid) {
       *node = block.Inodes[j];
@@ -280,7 +280,7 @@ bool FileSystem::load_inode(size_t inumber, Inode *node) {
 }
 
 bool FileSystem::remove(size_t inumber) {
-  if (!mounted) return false;
+  if (!mounted_) return false;
 
   Inode node;
 
@@ -288,23 +288,23 @@ bool FileSystem::remove(size_t inumber) {
     node.Valid = false;
     node.Size = 0;
 
-    if (!(--inode_counter[inumber / INODES_PER_BLOCK])) {
-      free_blocks[inumber / INODES_PER_BLOCK + 1] = false;
+    if (!(--inode_counter_[inumber / INODES_PER_BLOCK])) {
+      free_blocks_[inumber / INODES_PER_BLOCK + 1] = false;
     }
 
     for (uint32_t i = 0; i < POINTERS_PER_INODE; i++) {
-      free_blocks[node.Direct[i]] = false;
+      free_blocks_[node.Direct[i]] = false;
       node.Direct[i] = 0;
     }
 
     if (node.Indirect) {
       Block indirect;
       fs_disk->read(node.Indirect, indirect.Data);
-      free_blocks[node.Indirect] = false;
+      free_blocks_[node.Indirect] = false;
       node.Indirect = 0;
 
       for (uint32_t i = 0; i < POINTERS_PER_BLOCK; i++) {
-        if (indirect.Pointers[i]) free_blocks[indirect.Pointers[i]] = false;
+        if (indirect.Pointers[i]) free_blocks_[indirect.Pointers[i]] = false;
       }
     }
 
@@ -320,7 +320,7 @@ bool FileSystem::remove(size_t inumber) {
 }
 
 ssize_t FileSystem::stat(size_t inumber) {
-  if (!mounted) return -1;
+  if (!mounted_) return -1;
 
   Inode node;
 
@@ -339,7 +339,7 @@ void FileSystem::read_helper(uint32_t blocknum, int offset, int *length, char **
 }
 
 ssize_t FileSystem::read(size_t inumber, char *data, int length, size_t offset) {
-  if (!mounted) return -1;
+  if (!mounted_) return -1;
 
   int size_inode = stat(inumber);
 
@@ -418,11 +418,11 @@ ssize_t FileSystem::read(size_t inumber, char *data, int length, size_t offset) 
 }
 
 uint32_t FileSystem::allocate_block() {
-  if (!mounted) return 0;
+  if (!mounted_) return 0;
 
-  for (uint32_t i = MetaData.InodeBlocks + 1; i < MetaData.Blocks; i++) {
-    if (free_blocks[i] == 0) {
-      free_blocks[i] = true;
+  for (uint32_t i = meta_data_.InodeBlocks + 1; i < meta_data_.Blocks; i++) {
+    if (free_blocks_[i] == 0) {
+      free_blocks_[i] = true;
       return (uint32_t) i;
     }
   }
@@ -431,7 +431,7 @@ uint32_t FileSystem::allocate_block() {
 }
 
 ssize_t FileSystem::write_ret(size_t inumber, Inode *node, int ret) {
-  if (!mounted) return -1;
+  if (!mounted_) return -1;
 
   int i = inumber / INODES_PER_BLOCK;
   int j = inumber % INODES_PER_BLOCK;
@@ -445,7 +445,7 @@ ssize_t FileSystem::write_ret(size_t inumber, Inode *node, int ret) {
 }
 
 void FileSystem::read_buffer(int offset, int *read, int length, char *data, uint32_t blocknum) {
-  if (!mounted) return;
+  if (!mounted_) return;
 
   char *ptr = (char *) calloc(Disk::BLOCK_SIZE, sizeof(char));
 
@@ -466,7 +466,7 @@ bool FileSystem::check_allocation(Inode *node,
                                   uint32_t &blocknum,
                                   bool write_indirect,
                                   Block indirect) {
-  if (!mounted) return false;
+  if (!mounted_) return false;
 
   if (!blocknum) {
     blocknum = allocate_block();
@@ -481,7 +481,7 @@ bool FileSystem::check_allocation(Inode *node,
 }
 
 ssize_t FileSystem::write(size_t inumber, char *data, int length, size_t offset) {
-  if (!mounted) return -1;
+  if (!mounted_) return -1;
 
   Inode node;
   Block indirect;
@@ -499,8 +499,8 @@ ssize_t FileSystem::write(size_t inumber, char *data, int length, size_t offset)
       node.Direct[ii] = 0;
     }
     node.Indirect = 0;
-    inode_counter[inumber / INODES_PER_BLOCK]++;
-    free_blocks[inumber / INODES_PER_BLOCK + 1] = true;
+    inode_counter_[inumber / INODES_PER_BLOCK]++;
+    free_blocks_[inumber / INODES_PER_BLOCK + 1] = true;
   } else {
     node.Size = max((int) node.Size, length + (int) offset);
   }

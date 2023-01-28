@@ -63,7 +63,7 @@ void Disk::ValidCheck(int block_num, const std::shared_ptr<char> &data) const {
   }
 
   if (!mounted()) {
-    ss << "Disk is not mounted";
+    ss << "Disk is not mounted_";
     throw std::invalid_argument(ss.str());
   }
 

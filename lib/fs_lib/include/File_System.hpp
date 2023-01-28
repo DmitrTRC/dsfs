@@ -4,11 +4,12 @@
 
 #ifndef DSFS_DEV_FILE_SYSTEM_HPP
 #define DSFS_DEV_FILE_SYSTEM_HPP
+
 #include "Disk.hpp"
 
-#include <string>
-
+#include <array>
 #include <cstdint>
+#include <string>
 #include <vector>
 
 using namespace std;
@@ -23,99 +24,11 @@ class FileSystem {
   const static uint32_t ENTRIES_PER_DIR = 7; //    Number of Files/Directory entries within a Directory
   const static uint32_t DIR_PER_BLOCK = 8; //    Number of Directories per 4KB block
 
-  ssize_t write(size_t inumber, char *data, int length, size_t offset);
- private:
-  struct SuperBlock {
-    uint32_t MagicNumber;
-    uint32_t Blocks;
-    uint32_t InodeBlocks;
-    uint32_t DirBlocks;
-    uint32_t Inodes;
-    uint32_t Protected;
-    char PasswordHash[257];
-  };
 
-  struct Dirent {
-    uint8_t type;
-    uint8_t valid;
-    uint32_t i_num;
-    char Name[NAME_SIZE];
-  };
 
-  struct Directory {
-    uint16_t Valid;
-    uint32_t I_num;
-    char Name[NAME_SIZE];
-    Dirent Table[ENTRIES_PER_DIR];
-  };
+  FileSystem();
 
-  struct Inode {
-    uint32_t Valid;
-    uint32_t Size;
-    uint32_t Direct[FileSystem::POINTERS_PER_INODE];
-    uint32_t Indirect;
-  };
-
-  union Block {
-    struct SuperBlock Super;
-    struct Inode Inodes[FileSystem::INODES_PER_BLOCK];
-    uint32_t Pointers[FileSystem::POINTERS_PER_BLOCK];
-    char Data[Disk::BLOCK_SIZE];
-    struct Directory Directories[FileSystem::DIR_PER_BLOCK];
-  };
-
-  // Internal member variables
-  Disk *fs_disk;
-  vector<bool> free_blocks;
-  vector<int> inode_counter;
-  vector<uint32_t> dir_counter;
-  struct SuperBlock MetaData;         //  Caches the SuperBlock to save a disk-read
-  bool mounted;                       //  Boolean to check if the disk is mounted and saved
-
-  // Layer 1 Core Functions
-  ssize_t create();
-
-  bool remove(size_t inumber);
-
-  ssize_t stat(size_t inumber);
-
-  ssize_t read(size_t inumber, char *data, int length, size_t offset);
-
-  //  Helper functions for Layer 1
-  bool load_inode(size_t inumber, Inode *node);
-
-  ssize_t allocate_free_block();
-
-  void read_helper(uint32_t blocknum, int offset, int *length, char **data, char **ptr);
-
-  ssize_t write_ret(size_t inumber, Inode *node, int ret);
-
-  void read_buffer(int offset, int *read, int length, char *data, uint32_t blocknum);
-
-  bool check_allocation(Inode *node,
-                        int read,
-                        int orig_offset,
-                        uint32_t &blocknum,
-                        bool write_indirect,
-                        Block indirect);
-
-  uint32_t allocate_block();
-
-  Directory curr_dir;
-
-  Directory add_dir_entry(Directory dir, uint32_t inum, uint32_t type, char name[]);
-
-  void write_dir_back(struct Directory dir);
-
-  int dir_lookup(Directory dir, char name[]);
-
-  Directory read_dir_from_offset(uint32_t offset);
-
-  Directory rmdir_helper(Directory parent, char name[]);
-
-  Directory rm_helper(Directory parent, char name[]);
-
- public:
+  ~FileSystem();
 
   static void debug(Disk *disk);
 
@@ -155,6 +68,98 @@ class FileSystem {
   void exit();
 
   void stat();
+
+ private:
+  struct SuperBlock {
+    uint32_t MagicNumber;
+    uint32_t Blocks;
+    uint32_t InodeBlocks;
+    uint32_t DirBlocks;
+    uint32_t Inodes;
+    uint32_t Protected;
+    std::array<char, 257> PasswordHash;
+  };
+
+  struct Dirent {
+    uint8_t type;
+    uint8_t valid;
+    uint32_t i_num;
+    std::array<char, NAME_SIZE> name;
+  };
+
+  struct Directory {
+    uint16_t Valid;
+    uint32_t I_num;
+    std::array<char, NAME_SIZE> Name;
+    std::array<Dirent, ENTRIES_PER_DIR> Entries;
+  };
+
+  struct Inode {
+    uint32_t Valid;
+    uint32_t Size;
+    std::array<uint32_t, FileSystem::POINTERS_PER_INODE> Direct;
+    uint32_t Indirect;
+  };
+
+  std::variant<SuperBlock, std::array<Inode, FileSystem::INODES_PER_BLOCK>,
+               std::array<std::uint32_t, FileSystem::POINTERS_PER_BLOCK>,
+               std::array<char, Disk::BLOCK_SIZE>,
+               std::array<Directory, FileSystem::DIR_PER_BLOCK>> Block;
+
+  // Internal member variables
+  std::shared_ptr<Disk> fs_disk;
+
+  std::vector<bool> free_blocks_;
+  std::vector<int> inode_counter_;
+  std::vector<uint32_t> dir_counter_;
+  struct SuperBlock meta_data_;         //  Caches the SuperBlock to save a disk-read
+  bool mounted_;                       //  Boolean to check if the disk is mounted_ and saved
+
+  // Base Layer Core Functions
+  ssize_t create();
+
+  bool remove(size_t);
+
+  ssize_t stat(size_t inumber);
+
+  ssize_t read(size_t inumber, char *data, int length, size_t offset);
+
+  ssize_t write(size_t inumber, char *data, int length, size_t offset);
+
+  //  Helper functions for Layer 1
+  bool load_inode(size_t inumber, Inode *node);
+
+  ssize_t allocate_free_block();
+
+  void read_helper(uint32_t blocknum, int offset, int *length, char **data, char **ptr);
+
+  ssize_t write_ret(size_t inumber, Inode *node, int ret);
+
+  void read_buffer(int offset, int *read, int length, char *data, uint32_t blocknum);
+
+  bool check_allocation(Inode *node,
+                        int read,
+                        int orig_offset,
+                        uint32_t &blocknum,
+                        bool write_indirect,
+                        Block indirect);
+
+  uint32_t allocate_block();
+
+  Directory curr_dir;
+
+  Directory add_dir_entry(Directory dir, uint32_t inum, uint32_t type, char name[]);
+
+  void write_dir_back(struct Directory dir);
+
+  int dir_lookup(Directory dir, char name[]);
+
+  Directory read_dir_from_offset(uint32_t offset);
+
+  Directory rmdir_helper(Directory parent, char name[]);
+
+  Directory rm_helper(Directory parent, char name[]);
+
 };
 
 #endif //DSFS_DEV_FILE_SYSTEM_HPP

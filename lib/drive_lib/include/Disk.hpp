@@ -47,7 +47,7 @@ class Disk {
   /// Return size of disk (in terms of blocks)
   [[nodiscard]] inline std::size_t size() const { return blocks_; }
 
-  /// Return whether or not disk is mounted
+  /// Return whether or not disk is mounted_
   [[nodiscard]] inline bool mounted() const { return mounts_ > 0; }
 
   /// Increment mounts
