@@ -92,7 +92,7 @@ TEST(DISK, Write_Test) {
   disk.open("test.dat", 2);
   disk.mount();
 
-  std::array<char, Disk::BLOCK_SIZE> data = {0};
+  std::array<char, Disk::BLOCK_SIZE> data{};
 
   EXPECT_THROW(disk.write(-1, data), std::invalid_argument);
   EXPECT_THROW(disk.write(2, data), std::invalid_argument);
@@ -126,13 +126,13 @@ TEST(DISK, ReadWriteData_Test) {
   disk.open("test.dat", 2);
   disk.mount();
 
-  std::array<char, Disk::BLOCK_SIZE> Z_data = {0};
+  std::array<char, Disk::BLOCK_SIZE> Z_data{0};
   std::fill(Z_data.begin(), Z_data.end(), 'Z');
 
-  std::array<char, Disk::BLOCK_SIZE> X_data = {0};
+  std::array<char, Disk::BLOCK_SIZE> X_data{0};
   std::fill(X_data.begin(), X_data.end(), 'Z');
 
-  std::array<char, Disk::BLOCK_SIZE> data = {0};
+  std::array<char, Disk::BLOCK_SIZE> data{0};
 
   EXPECT_NO_THROW(disk.write(0, Z_data));
   EXPECT_NO_THROW(disk.write(1, X_data));
@@ -162,7 +162,7 @@ TEST(DISK, test_close) {
   disk.open("test.dat", 2);
   disk.mount();
 
-  std::array<char, Disk::BLOCK_SIZE> data = {0};
+  std::array<char, Disk::BLOCK_SIZE> data{0};
 
   EXPECT_NO_THROW(disk.write(0, data));
   EXPECT_NO_THROW(disk.write(1, data));

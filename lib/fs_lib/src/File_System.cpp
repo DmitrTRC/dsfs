@@ -2,11 +2,10 @@
 #include "sha256.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 
 #include <iostream>
-
-using namespace std;
 
 FileSystem::FileSystem() {
   mounted_ = false;
@@ -17,13 +16,13 @@ FileSystem::FileSystem() {
 void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
   Block b_super_block, b_char_block;
 
-  std::shared_ptr<char> buffer = std::make_shared<char>(sizeof(Block));
+  std::array<char, Disk::BLOCK_SIZE> buffer = {};
 
   disk->read(0, buffer);
 
   b_char_block = buffer;
 
-  unique_ptr<SuperBlock> sb_Ptr = std::make_unique<SuperBlock>(std::get<SuperBlock>(b_char_block));
+  std::unique_ptr<SuperBlock> sb_Ptr = std::make_unique<SuperBlock>(std::get<SuperBlock>(b_char_block));
 
   std::cout << "Superblock:" << std::endl;
   std::cout << "  Magic Number: " << sb_Ptr->MagicNumber << std::endl;
@@ -32,7 +31,7 @@ void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
   std::cout << "  Inodes: " << sb_Ptr->Inodes << std::endl;
   std::cout << "  Dir Blocks: " << sb_Ptr->DirBlocks << std::endl;
   std::cout << "  Protected: " << sb_Ptr->Protected << std::endl;
-//  std::cout << "  Password Hash: " << sb_Ptr->PasswordHash << std::endl;
+  std::cout << "  Password Hash: " << sb_Ptr->PasswordHash << std::endl;
 
 }
 /*
@@ -77,7 +76,7 @@ bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
       }
       std::get<std::array<Inode, FileSystem::INODES_PER_BLOCK>>(b_inode_block)[j].Indirect = 0;
     }
-    disk->write(i, std::get<std::shared_ptr<char>>(b_inode_block));
+    disk->write(i, std::get<std::array<char, Disk::BLOCK_SIZE>>(b_inode_block));
   }
 
   //Clear all data blocks
@@ -85,11 +84,12 @@ bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
   for (uint32_t i = 1 + b_data_block.InodeBlocks; i < b_data_block.Blocks - b_data_block.DirBlocks; i++) {
     Block data_block;
     for (uint32_t j = 0; j < Disk::BLOCK_SIZE; j++) {
-      std::get<std::shared_ptr<char>>(data_block)[j] = 0;
+      std::get<std::array<char, Disk::BLOCK_SIZE>>(data_block)[j] = 0;
     }
   }
 
   // Fill with 0
+
 
 }
 

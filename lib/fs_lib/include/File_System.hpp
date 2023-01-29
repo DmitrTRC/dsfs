@@ -7,10 +7,17 @@
 
 #include "Disk.hpp"
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <string>
 #include <vector>
+
+template<std::size_t N>
+std::ostream &operator<<(std::ostream &os, std::array<char, N> const &v1) {
+  std::for_each(begin(v1), end(v1), [&os](int val) { os << val << " "; });
+  return os;
+}
 
 class FileSystem {
  public:
@@ -21,6 +28,8 @@ class FileSystem {
   const static uint32_t NAME_SIZE = 16; //    Max Name size for files/directories
   const static uint32_t ENTRIES_PER_DIR = 7; //    Number of Files/Directory entries within a Directory
   const static uint32_t DIR_PER_BLOCK = 8; //    Number of Directories per 4KB block
+
+
 
 
 
