@@ -32,7 +32,7 @@ class FileSystem {
 
   static bool format(const std::shared_ptr<Disk> &disk);
 
-  bool mount(Disk *disk);
+  bool mount(const std::shared_ptr<Disk> &disk);
 
 
   //  Security Functions
@@ -102,7 +102,7 @@ class FileSystem {
   using Block = std::variant<SuperBlock,
                              std::array<Inode, FileSystem::INODES_PER_BLOCK>,
                              std::array<std::uint32_t, FileSystem::POINTERS_PER_BLOCK>,
-                             std::shared_ptr<char>,
+                             std::array<char, Disk::BLOCK_SIZE>,
                              std::array<Directory, FileSystem::DIR_PER_BLOCK>>;
 
   // Internal member variables

@@ -4,6 +4,7 @@
 
 #include "Disk.hpp"
 
+#include <array>
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
@@ -43,7 +44,7 @@ Disk::~Disk() {
 
 }
 
-void Disk::ValidCheck(int block_num, const std::shared_ptr<char> &data) const {
+void Disk::ValidCheck(int block_num, const std::array<char, Disk::BLOCK_SIZE> &data) const {
 
   std::stringstream ss;
 
@@ -57,7 +58,7 @@ void Disk::ValidCheck(int block_num, const std::shared_ptr<char> &data) const {
     throw std::invalid_argument(ss.str());
   }
 
-  if (data == nullptr) {
+  if (data.size() != BLOCK_SIZE or data.empty()) {
     ss << "Invalid data buffer";
     throw std::invalid_argument(ss.str());
   }
@@ -69,7 +70,7 @@ void Disk::ValidCheck(int block_num, const std::shared_ptr<char> &data) const {
 
 }
 
-void Disk::read(int block_num, std::shared_ptr<char> &data) {
+void Disk::read(int block_num, std::array<char, Disk::BLOCK_SIZE> &data) {
 
   ValidCheck(block_num, data);
 
@@ -92,8 +93,8 @@ void Disk::read(int block_num, std::shared_ptr<char> &data) {
     ss << "Unable to read (BAD descriptor) " << block_num << ": " << strerror(errno);
     throw std::runtime_error(ss.str());
   }
-
-  FileDescriptor_.read(data.get(), static_cast<long>(BLOCK_SIZE));
+//Read the data from the disk
+  FileDescriptor_.read(data.data(), Disk::BLOCK_SIZE);
 
   if (FileDescriptor_.fail()) {
     std::stringstream ss;
@@ -105,7 +106,7 @@ void Disk::read(int block_num, std::shared_ptr<char> &data) {
 
 }
 
-void Disk::write(int block_num, const std::shared_ptr<char> &data) {
+void Disk::write(int block_num, const std::array<char, Disk::BLOCK_SIZE> &data) {
 
   ValidCheck(block_num, data);
 
@@ -123,7 +124,7 @@ void Disk::write(int block_num, const std::shared_ptr<char> &data) {
     throw std::runtime_error(ss.str());
   }
 
-  FileDescriptor_.write(data.get(), static_cast<long>(BLOCK_SIZE));
+  FileDescriptor_.write(reinterpret_cast<const char *>(data.data()), BLOCK_SIZE);
 
   if (FileDescriptor_.fail()) {
     std::stringstream ss;

@@ -59,7 +59,7 @@ bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
   std::get<SuperBlock>(block).Inodes = std::get<SuperBlock>(block).InodeBlocks * FileSystem::INODES_PER_BLOCK;
   std::get<SuperBlock>(block).DirBlocks = static_cast<std::uint32_t>(std::ceil((disk->size() * 1.00) / 100));
 
-  disk->write(0, std::get<std::shared_ptr<char>>(block));
+  disk->write(0, std::get<std::array<char, Disk::BLOCK_SIZE>>(block));
 
   std::get<SuperBlock>(block).Protected = false;
 

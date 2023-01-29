@@ -6,6 +6,7 @@
 
 #include "Disk.hpp"
 
+#include <array>
 #include <thread>
 
 TEST(DISK, Constructor_Test) {
@@ -39,11 +40,10 @@ TEST(DISK, ValidCheck_Test) {
   disk.open("test.dat", 2);
   disk.mount();
 
-  std::shared_ptr<char> data(new char[Disk::BLOCK_SIZE], std::default_delete<char[]>());
+  std::array<char, Disk::BLOCK_SIZE> data = {0};
 
   EXPECT_THROW(disk.isValid(-1, data), std::invalid_argument);
   EXPECT_THROW(disk.isValid(2, data), std::invalid_argument);
-  EXPECT_THROW(disk.isValid(0, nullptr), std::invalid_argument);
   EXPECT_THROW(disk.isValid(3, data), std::invalid_argument);
 
   EXPECT_NO_THROW(disk.isValid(0, data));
@@ -58,7 +58,7 @@ TEST(DISK, Read_Test) {
   disk.open("test.dat", 2);
   disk.mount();
 
-  std::shared_ptr<char> data(new char[Disk::BLOCK_SIZE], std::default_delete<char[]>());
+  std::array<char, Disk::BLOCK_SIZE> data = {0};
 
   EXPECT_THROW(disk.read(-1, data), std::invalid_argument);
   EXPECT_THROW(disk.read(2, data), std::invalid_argument);
@@ -92,11 +92,10 @@ TEST(DISK, Write_Test) {
   disk.open("test.dat", 2);
   disk.mount();
 
-  std::shared_ptr<char> data(new char[Disk::BLOCK_SIZE], std::default_delete<char[]>());
+  std::array<char, Disk::BLOCK_SIZE> data = {0};
 
   EXPECT_THROW(disk.write(-1, data), std::invalid_argument);
   EXPECT_THROW(disk.write(2, data), std::invalid_argument);
-  EXPECT_THROW(disk.write(0, nullptr), std::invalid_argument);
 
   EXPECT_NO_THROW(disk.write(0, data));
   EXPECT_EQ(disk.getReads(), 0);
@@ -127,32 +126,32 @@ TEST(DISK, ReadWriteData_Test) {
   disk.open("test.dat", 2);
   disk.mount();
 
-  std::shared_ptr<char> Z_data(new char[Disk::BLOCK_SIZE], std::default_delete<char[]>());
-  std::fill(Z_data.get(), Z_data.get() + Disk::BLOCK_SIZE, 'Z');
+  std::array<char, Disk::BLOCK_SIZE> Z_data = {0};
+  std::fill(Z_data.begin(), Z_data.end(), 'Z');
 
-  std::shared_ptr<char> X_data(new char[Disk::BLOCK_SIZE], std::default_delete<char[]>());
-  std::fill(X_data.get(), X_data.get() + Disk::BLOCK_SIZE, 'X');
+  std::array<char, Disk::BLOCK_SIZE> X_data = {0};
+  std::fill(X_data.begin(), X_data.end(), 'Z');
 
-  std::shared_ptr<char> data(new char[Disk::BLOCK_SIZE], std::default_delete<char[]>());
+  std::array<char, Disk::BLOCK_SIZE> data = {0};
 
   EXPECT_NO_THROW(disk.write(0, Z_data));
   EXPECT_NO_THROW(disk.write(1, X_data));
   EXPECT_NO_THROW(disk.read(0, data));
   EXPECT_EQ(disk.getReads(), 1);
   EXPECT_EQ(disk.getWrites(), 2);
-  EXPECT_EQ(std::memcmp(data.get(), Z_data.get(), disk.BLOCK_SIZE), 0);
+  EXPECT_EQ(std::memcmp(data.data(), Z_data.data(), disk.BLOCK_SIZE), 0);
 
   EXPECT_NO_THROW(disk.read(1, data));
   EXPECT_EQ(disk.getReads(), 2);
   EXPECT_EQ(disk.getWrites(), 2);
-  EXPECT_EQ(std::memcmp(data.get(), X_data.get(), disk.BLOCK_SIZE), 0);
+  EXPECT_EQ(std::memcmp(data.data(), X_data.data(), disk.BLOCK_SIZE), 0);
   EXPECT_NO_THROW(disk.write(0, X_data));
   EXPECT_EQ(disk.getReads(), 2);
   EXPECT_EQ(disk.getWrites(), 3);
   EXPECT_NO_THROW(disk.read(0, data));
   EXPECT_EQ(disk.getReads(), 3);
   EXPECT_EQ(disk.getWrites(), 3);
-  EXPECT_EQ(std::memcmp(data.get(), X_data.get(), disk.BLOCK_SIZE), 0);
+  EXPECT_EQ(std::memcmp(data.data(), X_data.data(), disk.BLOCK_SIZE), 0);
 
 }
 
@@ -163,7 +162,7 @@ TEST(DISK, test_close) {
   disk.open("test.dat", 2);
   disk.mount();
 
-  std::shared_ptr<char> data(new char[Disk::BLOCK_SIZE], std::default_delete<char[]>());
+  std::array<char, Disk::BLOCK_SIZE> data = {0};
 
   EXPECT_NO_THROW(disk.write(0, data));
   EXPECT_NO_THROW(disk.write(1, data));

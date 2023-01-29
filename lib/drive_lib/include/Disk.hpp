@@ -13,19 +13,6 @@
 #include <string>
 
 class Disk {
- private:
-  std::fstream FileDescriptor_;    /// File descriptor for disk image
-  std::size_t blocks_;        /// Number of blocks in disk image
-  std::size_t reads_;        /// Number of reads performed
-  std::size_t writes_;        /// Number of writes performed
-  std::size_t mounts_;        /// Number of mounts
-
-  /** Check parameters
-   @param	block_num    Block to operate on
-   @param	data	    Buffer to operate on
-   Throws invalid_argument exception on error.
-   */
-  void ValidCheck(int block_num, const std::shared_ptr<char> &data) const;
 
  public:
   /// Number of bytes per block
@@ -61,7 +48,7 @@ class Disk {
    * @param block_num
    * @param data
    */
-  void read(int block_num, std::shared_ptr<char> &data);
+  void read(int block_num, std::array<char, Disk::BLOCK_SIZE> &data);
 
   size_t getReads() const {
     return reads_;
@@ -76,18 +63,32 @@ class Disk {
    * @param block_num
    * @param data
    */
-  void write(int block_num, const std::shared_ptr<char> &data);
+  void write(int block_num, const std::array<char, Disk::BLOCK_SIZE> &data);
 
   //Only for testing
   void close();
 
-  void isValid(int block_num, const std::shared_ptr<char> &data) const {
+  void isValid(int block_num, const std::array<char, Disk::BLOCK_SIZE> &data) const {
     ValidCheck(block_num, data);
   }
 
   static size_t getBlockSize() {
     return BLOCK_SIZE;
   }
+
+ private:
+  std::fstream FileDescriptor_;    /// File descriptor for disk image
+  std::size_t blocks_;        /// Number of blocks in disk image
+  std::size_t reads_;        /// Number of reads performed
+  std::size_t writes_;        /// Number of writes performed
+  std::size_t mounts_;        /// Number of mounts
+
+  /** Check parameters
+   @param	block_num    Block to operate on
+   @param	data	    Buffer to operate on
+   Throws invalid_argument exception on error.
+   */
+  void ValidCheck(int block_num, const std::array<char, Disk::BLOCK_SIZE> &data) const;
 
 };
 
