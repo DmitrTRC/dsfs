@@ -36,16 +36,16 @@ class Shell_lib {
 
   void cmd_quit_(const Command_Args &);
 
-  void cmd_read_(const Command_Args &);
-
-  void cmd_write_(const Command_Args &);
+//  void cmd_read_(const Command_Args &);
+//
+//  void cmd_write_(const Command_Args &);
 
   void register_commands();
 
-  Disk *disk_;
+  std::shared_ptr<Disk> disk_;
 
-  bool copyin_(size_t i_number, const string &path);
-  bool copyout_(const string &, size_t);
+  static bool copyin_(size_t i_number, const std::string &path);
+  static bool copyout_(const std::string &, size_t);
 };
 
 #endif //DSFS_MAIN_SHELL_LIB_HPP

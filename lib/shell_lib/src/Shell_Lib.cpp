@@ -20,7 +20,7 @@ Shell_lib::Shell_lib(int c_argc, char *c_argv[]) {
   std::string disk_file = c_argv[1];
   int n_blocks = std::stoi(c_argv[2]);
 
-  disk_ = new Disk();
+  disk_ = std::make_shared<Disk>();
 
   try {
     disk_->open(disk_file, n_blocks);
