@@ -14,8 +14,12 @@
 #include <vector>
 
 template<std::size_t N>
-std::ostream &operator<<(std::ostream &os, std::array<char, N> const &v1) {
-  std::for_each(begin(v1), end(v1), [&os](int val) { os << val << " "; });
+std::ostream &operator<<(std::ostream &os, std::array<std::byte, N> const &v1) {
+
+  std::for_each(v1.begin(), v1.end(), [&os](std::byte b) {
+    os << std::hex << static_cast<int>(b) << " ";
+  });
+
   return os;
 }
 
@@ -78,13 +82,13 @@ class FileSystem {
 
  private:
   struct SuperBlock {
-    uint32_t MagicNumber;
-    uint32_t Blocks;
-    uint32_t InodeBlocks;
-    uint32_t DirBlocks;
-    uint32_t Inodes;
-    uint32_t Protected;
-    std::array<char, 257> PasswordHash;
+    u_int32_t MagicNumber;
+    u_int32_t Blocks;
+    u_int32_t InodeBlocks;
+    u_int32_t DirBlocks;
+    u_int32_t Inodes;
+    u_int32_t Protected;
+    std::array<u_char, 257> PasswordHash;
   };
 
   struct Dirent {
@@ -111,7 +115,7 @@ class FileSystem {
   using Block = std::variant<SuperBlock,
                              std::array<Inode, FileSystem::INODES_PER_BLOCK>,
                              std::array<std::uint32_t, FileSystem::POINTERS_PER_BLOCK>,
-                             std::array<char, Disk::BLOCK_SIZE>,
+                             std::array<std::byte, Disk::BLOCK_SIZE>,
                              std::array<Directory, FileSystem::DIR_PER_BLOCK>>;
 
   // Internal member variables
