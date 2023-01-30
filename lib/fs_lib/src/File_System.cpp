@@ -24,7 +24,7 @@ void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
 
   std::unique_ptr<SuperBlock> sb_Ptr = std::make_unique<SuperBlock>(std::get<SuperBlock>(b_byte_block));
 
-  std::cout << "Superblock:" << std::endl;
+  std::cout << "SuperBlock:" << std::endl;
   std::cout << "  Magic Number: " << sb_Ptr->MagicNumber << std::endl;
   std::cout << "  Blocks: " << sb_Ptr->Blocks << std::endl;
   std::cout << "  Inode Blocks: " << sb_Ptr->InodeBlocks << std::endl;
