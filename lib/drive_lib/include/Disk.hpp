@@ -48,7 +48,7 @@ class Disk {
    * @param block_num
    * @param data
    */
-  void read(int block_num, std::array<char, Disk::BLOCK_SIZE> &data);
+  void read(int block_num, std::array<std::byte, Disk::BLOCK_SIZE> &data);
 
   size_t getReads() const {
     return reads_;
@@ -63,12 +63,12 @@ class Disk {
    * @param block_num
    * @param data
    */
-  void write(int block_num, const std::array<char, Disk::BLOCK_SIZE> &data);
+  void write(int block_num, const std::array<std::byte, Disk::BLOCK_SIZE> &data);
 
   //Only for testing
   void close();
 
-  void isValid(int block_num, const std::array<char, Disk::BLOCK_SIZE> &data) const {
+  void isValid(int block_num, const std::array<std::byte, Disk::BLOCK_SIZE> &data) const {
     ValidCheck(block_num, data);
   }
 
@@ -88,7 +88,7 @@ class Disk {
    @param	data	    Buffer to operate on
    Throws invalid_argument exception on error.
    */
-  void ValidCheck(int block_num, const std::array<char, Disk::BLOCK_SIZE> &data) const;
+  void ValidCheck(int block_num, const std::array<std::byte, Disk::BLOCK_SIZE> &data) const;
 
 };
 

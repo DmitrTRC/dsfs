@@ -48,6 +48,7 @@ void Shell_lib::Run() {
   std::vector<std::string> cmd_line;
   std::string line, cmd;
 
+  //Main loop
   while (cmd != "quit") {
 
     std::cout << "sfs> ";
