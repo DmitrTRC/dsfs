@@ -65,7 +65,7 @@ bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
   std::fill(std::get<SuperBlock>(block).PasswordHash.begin(), std::get<SuperBlock>(block).PasswordHash.end(), 0);
 
   //Clear all other blocks
-  for (uint32_t i = 1; i < disk->size(); i++) {
+  for (auto i = 1; i < disk->size(); i++) {
     Block b_inode_block;
     for (uint32_t j = 0; j < FileSystem::INODES_PER_BLOCK; j++) {
       std::get<std::array<Inode, FileSystem::INODES_PER_BLOCK>>(b_inode_block)[j].Valid = false;
@@ -84,7 +84,7 @@ bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
   for (uint32_t i = 1 + b_data_block.InodeBlocks; i < b_data_block.Blocks - b_data_block.DirBlocks; i++) {
     Block data_block;
     for (uint32_t j = 0; j < Disk::BLOCK_SIZE; j++) {
-      std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(data_block)[j] = static_cast<std::byte>(0);
+      std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(data_block)[j] = {0};
     }
   }
 
