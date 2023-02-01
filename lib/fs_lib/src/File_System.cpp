@@ -67,6 +67,7 @@ bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
   //Clear all other blocks
   for (auto i = 1; i < disk->size(); i++) {
     Block b_inode_block;
+
     for (uint32_t j = 0; j < FileSystem::INODES_PER_BLOCK; j++) {
       std::get<std::array<Inode, FileSystem::INODES_PER_BLOCK>>(b_inode_block)[j].Valid = false;
       std::get<std::array<Inode, FileSystem::INODES_PER_BLOCK>>(b_inode_block)[j].Size = 0;
@@ -74,22 +75,45 @@ bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
       for (uint32_t k = 0; k < FileSystem::POINTERS_PER_INODE; k++) {
         std::get<std::array<Inode, FileSystem::INODES_PER_BLOCK>>(b_inode_block)[j].Direct[k] = 0;
       }
+
       std::get<std::array<Inode, FileSystem::INODES_PER_BLOCK>>(b_inode_block)[j].Indirect = 0;
+
     }
+
     disk->write(i, std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(b_inode_block));
   }
+
+  //Use std::span to clear all data blocks
 
   //Clear all data blocks
   auto b_data_block = std::get<SuperBlock>(block);
   for (uint32_t i = 1 + b_data_block.InodeBlocks; i < b_data_block.Blocks - b_data_block.DirBlocks; i++) {
     Block data_block;
-    for (uint32_t j = 0; j < Disk::BLOCK_SIZE; j++) {
-      std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(data_block)[j] = {0};
-    }
+    std::fill(std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(data_block).begin(),
+              std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(data_block).end(), std::byte(0));
+    disk->write(static_cast<int>(i), std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(data_block));
   }
 
-  // Fill with 0
+  //Clear all directory blocks
+  auto b_dir_block = std::get<SuperBlock>(block);
 
+  for (uint32_t i = b_dir_block.Blocks - b_dir_block.DirBlocks; i < b_dir_block.Blocks; i++) {
+    Block dir_block;
+    std::fill(std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(dir_block).begin(),
+              std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(dir_block).end(), std::byte(0));
+    disk->write(static_cast<int>(i), std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(dir_block));
+  }
+
+  //Create Root directory
+  Directory root;
+
+  root.Name[0] = '/';
+  root.Name[1] = '\0';
+
+  root.I_num = 0;
+  root.Valid = 0;
+
+  std::fill(root.Table.begin(), root.Children.end(), 0);
   return true;
 }
 

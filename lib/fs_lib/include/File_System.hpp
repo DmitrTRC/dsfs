@@ -99,6 +99,14 @@ class FileSystem {
   };
 
   struct Directory {
+
+    Directory() : Valid(0), I_num(-1), Name(), Entries() {}
+    Directory(uint32_t valid,
+              uint32_t i_num,
+              std::array<char, NAME_SIZE> name,
+              std::array<Dirent, ENTRIES_PER_DIR> entries)
+        : Valid(valid), I_num(i_num), Name(name), Entries(entries) {}
+
     uint16_t Valid;
     uint32_t I_num;
     std::array<char, NAME_SIZE> Name;
