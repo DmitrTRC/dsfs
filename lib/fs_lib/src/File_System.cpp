@@ -58,9 +58,12 @@ bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
   std::get<SuperBlock>(block).Inodes = std::get<SuperBlock>(block).InodeBlocks * FileSystem::INODES_PER_BLOCK;
   std::get<SuperBlock>(block).DirBlocks = static_cast<std::uint32_t>(std::ceil((disk->size() * 1.00) / 100));
 
-  disk->write(0, std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(block));
+  //FIXME: Exception generated here "std::bad_variant_access"
 
-  std::get<SuperBlock>(block).Protected = false;
+  std::array<std::byte, Disk::BLOCK_SIZE> data = reinterpret_cast<std::array<std::byte, Disk::BLOCK_SIZE> &>(block);
+  disk->write(0, data);
+
+  std::get<SuperBlock>(block).Protected = 0;
 
   std::fill(std::get<SuperBlock>(block).PasswordHash.begin(), std::get<SuperBlock>(block).PasswordHash.end(), 0);
 
@@ -97,11 +100,20 @@ bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
   //Clear all directory blocks
   auto b_dir_block = std::get<SuperBlock>(block);
 
+  //FIXME: This is not working
   for (uint32_t i = b_dir_block.Blocks - b_dir_block.DirBlocks; i < b_dir_block.Blocks; i++) {
-    Block dir_block;
-    std::fill(std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(dir_block).begin(),
-              std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(dir_block).end(), std::byte(0));
-    disk->write(static_cast<int>(i), std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(dir_block));
+    Block data_block;
+    Directory dir;
+
+    dir.Name[0] = '\0';
+    dir.I_num = 0;
+    dir.Valid = 0;
+
+    //TEST: This is not working
+    std::fill(std::get<std::array<Directory, FileSystem::DIR_PER_BLOCK>>(data_block).begin(),
+              std::get<std::array<Directory, FileSystem::DIR_PER_BLOCK>>(data_block).end(), dir);
+
+    disk->write(static_cast<int>(i), std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(data_block));
   }
 
   //Create Root directory
@@ -111,9 +123,39 @@ bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
   root.Name[1] = '\0';
 
   root.I_num = 0;
-  root.Valid = 0;
+  root.Valid = 1;
 
-  std::fill(root.Table.begin(), root.Children.end(), 0);
+  Dirent temp;
+
+  temp.i_num = 0;
+  temp.type = 0;
+  temp.valid = 1;
+
+  temp.name[0] = '.';
+  temp.name[1] = '\0';
+
+  root.Entries[0] = temp;
+
+  temp.name[0] = '.';
+  temp.name[1] = '.';
+  temp.name[2] = '\0';
+
+  root.Entries[1] = temp;
+
+  Block dir_block;
+
+  std::get<std::array<Directory, FileSystem::DIR_PER_BLOCK>>(dir_block)[0] = root;
+
+  //TEST: This is not working -1?
+  disk->write(static_cast<int>(b_dir_block.Blocks - b_dir_block.DirBlocks),
+              std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(dir_block));
+
   return true;
+}
+FileSystem::~FileSystem() {
+  if (fs_disk->mounted()) {
+    fs_disk->unmount();
+  }
+
 }
 

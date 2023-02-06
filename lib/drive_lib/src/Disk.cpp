@@ -108,6 +108,7 @@ void Disk::read(int block_num, std::array<std::byte, Disk::BLOCK_SIZE> &data) {
 
 void Disk::write(int block_num, const std::array<std::byte, Disk::BLOCK_SIZE> &data) {
 
+  // FIXME: Exception  is thrown here
   ValidCheck(block_num, data);
 
   if (FileDescriptor_.seekp(block_num * static_cast<int>(BLOCK_SIZE), std::ios::beg).fail()) {

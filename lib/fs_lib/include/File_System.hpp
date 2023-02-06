@@ -80,6 +80,10 @@ class FileSystem {
 
   void stat();
 
+  // Test Functions
+  auto get_cur_disk() { return fs_disk; }
+  auto mounted() { return mounted_; }
+
  private:
   struct SuperBlock {
     u_int32_t MagicNumber;

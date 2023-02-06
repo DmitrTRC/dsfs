@@ -16,6 +16,7 @@ target_include_directories(dsfs_test PRIVATE
 
 target_link_libraries(dsfs_test
                       sub::ds
+                      sub::fs
                       GTest::gtest_main
                       )
 
