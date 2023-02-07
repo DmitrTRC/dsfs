@@ -19,7 +19,7 @@ class Disk {
   static const std::size_t BLOCK_SIZE = 4096; /// 4K blocks
 
   /// Default constructor
-  Disk() : FileDescriptor_(nullptr), blocks_(0), reads_(0), writes_(0), mounts_(0) {}
+  Disk();
 
   /// Destructor
   ~Disk();
