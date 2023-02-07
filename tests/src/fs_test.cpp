@@ -9,6 +9,8 @@
 #include <array>
 #include <thread>
 
+using namespace fs;
+
 TEST(FS, Format_Test) {
 
   FileSystem fs;

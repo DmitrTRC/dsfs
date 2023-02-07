@@ -6,12 +6,9 @@
 #include <cmath>
 
 #include <iostream>
+#include <memory>
 
-FileSystem::FileSystem() {
-  mounted_ = false;
-  fs_disk = std::make_shared<Disk>();
-
-}
+using namespace fs;
 
 void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
   Block b_super_block, b_byte_block;
@@ -156,6 +153,11 @@ FileSystem::~FileSystem() {
   if (fs_disk->mounted()) {
     fs_disk->unmount();
   }
+
+}
+
+FileSystem::FileSystem(const std::string &path, size_t size) : mounted_(false), fs_disk(nullptr) {
+  fs_disk = std::make_shared<Disk>(path, size);
 
 }
 

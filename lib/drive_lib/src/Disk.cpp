@@ -154,3 +154,9 @@ void Disk::close() {
 
 }
 Disk::Disk() : FileDescriptor_(nullptr), blocks_(0), reads_(0), writes_(0), mounts_(0) {}
+
+Disk::Disk(std::string path, std::size_t n_blocks) {
+
+  open(path, n_blocks);
+
+}

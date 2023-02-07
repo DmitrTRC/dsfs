@@ -13,8 +13,10 @@
 #include <string>
 #include <vector>
 
-constexpr std::string_view DEFAULT_DISK_PATH = "disk.img";
-constexpr int DEFAULT_DISK_SIZE = 100;
+namespace fs {
+
+const std::string DEFAULT_DISK_PATH_ = "disk.img";
+const int DEFAULT_DISK_SIZE_ = 100;
 
 template<std::size_t N>
 std::ostream &operator<<(std::ostream &os, std::array<std::byte, N> const &v1) {
@@ -36,11 +38,9 @@ class FileSystem {
   const static uint32_t ENTRIES_PER_DIR = 7; //    Number of Files/Directory entries within a Directory
   const static uint32_t DIR_PER_BLOCK = 8; //    Number of Directories per 4KB block
 
+  FileSystem() : FileSystem(DEFAULT_DISK_PATH_, DEFAULT_DISK_SIZE_) {}
 
-
-
-
-  FileSystem();
+  FileSystem(const std::string &path, size_t size);
 
   ~FileSystem();
 
@@ -88,7 +88,9 @@ class FileSystem {
   auto mounted() { return mounted_; }
 
  private:
+
   struct SuperBlock {
+    SuperBlock() : MagicNumber(0), Blocks(0), InodeBlocks(0), DirBlocks(0), Inodes(0), Protected(0), PasswordHash() {}
     u_int32_t MagicNumber;
     u_int32_t Blocks;
     u_int32_t InodeBlocks;
@@ -139,7 +141,7 @@ class FileSystem {
   std::vector<bool> free_blocks_;
   std::vector<int> inode_counter_;
   std::vector<uint32_t> dir_counter_;
-  struct SuperBlock meta_data_;         //  Caches the SuperBlock to save a disk-read
+  SuperBlock meta_data_;         //  Caches the SuperBlock to save a disk-read
   bool mounted_;                       //  Boolean to check if the disk is mounted_ and saved
 
   // Base Layer Core Functions
@@ -188,5 +190,7 @@ class FileSystem {
   Directory rm_helper(Directory parent, char name[]);
 
 };
+
+}
 
 #endif //DSFS_DEV_FILE_SYSTEM_HPP

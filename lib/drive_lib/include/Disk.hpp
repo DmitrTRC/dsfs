@@ -21,7 +21,8 @@ class Disk {
   /// Default constructor
   Disk();
 
-  /// Destructor
+  Disk(std::string path, std::size_t n_blocks);
+
   ~Disk();
 
   /** Open disk image
