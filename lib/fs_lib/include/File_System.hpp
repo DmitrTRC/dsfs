@@ -13,6 +13,9 @@
 #include <string>
 #include <vector>
 
+constexpr std::string_view DEFAULT_DISK_PATH = "disk.img";
+constexpr int DEFAULT_DISK_SIZE = 100;
+
 template<std::size_t N>
 std::ostream &operator<<(std::ostream &os, std::array<std::byte, N> const &v1) {
 
