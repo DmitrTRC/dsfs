@@ -15,8 +15,9 @@
 
 namespace fs {
 
-const std::string DEFAULT_DISK_PATH_ = "disk.img";
-const int DEFAULT_DISK_SIZE_ = 100;
+//TODO : Move to shell
+//const std::string DEFAULT_DISK_PATH_ = "disk.img";
+//const int DEFAULT_DISK_SIZE_ = 100;
 
 template<std::size_t N>
 std::ostream &operator<<(std::ostream &os, std::array<std::byte, N> const &v1) {
@@ -38,9 +39,7 @@ class FileSystem {
   const static uint32_t ENTRIES_PER_DIR = 7; //    Number of Files/Directory entries within a Directory
   const static uint32_t DIR_PER_BLOCK = 8; //    Number of Directories per 4KB block
 
-  FileSystem() : FileSystem(DEFAULT_DISK_PATH_, DEFAULT_DISK_SIZE_) {}
-
-  FileSystem(const std::string &path, size_t size);
+  FileSystem() : mounted_(false) {}
 
   ~FileSystem();
 

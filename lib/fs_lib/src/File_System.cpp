@@ -58,6 +58,7 @@ bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
   //FIXME: Exception generated here "std::bad_variant_access"
 
   std::array<std::byte, Disk::BLOCK_SIZE> data = reinterpret_cast<std::array<std::byte, Disk::BLOCK_SIZE> &>(block);
+  //
   disk->write(0, data);
 
   std::get<SuperBlock>(block).Protected = 0;
@@ -155,9 +156,88 @@ FileSystem::~FileSystem() {
   }
 
 }
+bool FileSystem::mount(const std::shared_ptr<Disk> &disk) {
 
-FileSystem::FileSystem(const std::string &path, size_t size) : mounted_(false), fs_disk(nullptr) {
-  fs_disk = std::make_shared<Disk>(path, size);
+  if (disk->mounted()) return false;
 
+  Block block;
+
+  disk->read(0, std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(block));
+
+  auto super_block = std::get<SuperBlock>(block);
+
+  //Debug purposes. Simplify the code
+  if (super_block.MagicNumber != FileSystem::MAGIC_NUMBER) return false;
+  if (super_block.InodeBlocks != static_cast<std::uint32_t>(std::ceil((disk->size() * 1.00) / 10))) return false;
+  if (super_block.Inodes != super_block.InodeBlocks * FileSystem::INODES_PER_BLOCK) return false;
+  if (super_block.DirBlocks != static_cast<std::uint32_t>(std::ceil((disk->size() * 1.00) / 100))) return false;
+
+  // Password check
+  //TODO: Implement password check
+  //
+
+  disk->mount();
+
+  fs_disk = disk;
+
+  meta_data_ = super_block;
+
+  free_blocks_.resize(meta_data_.Blocks, false);
+
+  inode_counter_.resize(meta_data_.Inodes, 0);
+
+  free_blocks_[0] = true;
+
+  //Read all inodes
+
+  for (uint32_t i = 1; i < meta_data_.InodeBlocks + 1; i++) {
+    Block b_inode_block;
+    disk->read(i, std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(b_inode_block));
+
+    for (uint32_t j = 0; j < FileSystem::INODES_PER_BLOCK; j++) {
+      auto inode = std::get<std::array<Inode, FileSystem::INODES_PER_BLOCK>>(b_inode_block)[j];
+
+      if (inode.Valid) {
+        inode_counter_[i - 1]++;
+
+        if (inode.Valid) {
+          free_blocks_[i] = true;
+        }
+
+        for (uint32_t k = 0; k < FileSystem::POINTERS_PER_INODE; k++) {
+
+          if (inode.Direct[k] != 0) {
+            if (inode.Direct[k] < meta_data_.Blocks) {
+              free_blocks_[inode.Direct[k]] = true;
+            } else {
+              return false;
+            }
+
+          }
+        }
+        return false;
+        if (inode.Indirect != 0) {
+//          if (inode.Indirect < meta_data_.Blocks) {
+//            free_blocks_[inode.Indirect] = true;
+//
+//            Block b_indirect_block;
+//
+//            for (uint32_t dirs = 0; dirs < meta_data_.DirBlocks; dirs++) {
+//              disk->read(meta_data_.Blocks - 1 - dirs,
+//                         std::get<std::array<Directory, FileSystem::DIR_PER_BLOCK>>(b_indirect_block));
+//
+//              for (uint32_t offset = 0; offset < FileSystem::DIR_PER_BLOCK; offset++) {
+//                if (b_indirect_block.)
+//              }
+//            }
+//          }
+//
+//        }
+        }
+      }
+    }
+  }
+
+  return true;
 }
 
