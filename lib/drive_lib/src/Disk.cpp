@@ -13,7 +13,9 @@ void Disk::open(const std::string &path, size_t n_blocks) {
 
   if (n_blocks < 2) throw std::runtime_error("Disk size must be at least 2 blocks");
 
-  FileDescriptor_.open(path, std::ios::in | std::ios::out | std::ios::binary | std::ios::trunc);
+  show_file_permissions(path);
+
+  FileDescriptor_.open(path, std::ios::in | std::ios::out | std::ios::binary);
 
   if ((!FileDescriptor_.is_open()) or (!FileDescriptor_.good())) {
     std::stringstream ss;
@@ -60,11 +62,6 @@ void Disk::ValidCheck(int block_num, const std::array<std::byte, Disk::BLOCK_SIZ
 
   if (data.size() != BLOCK_SIZE or data.empty()) {
     ss << "Invalid data buffer";
-    throw std::invalid_argument(ss.str());
-  }
-
-  if (!mounted()) {
-    ss << "Disk is not mounted_";
     throw std::invalid_argument(ss.str());
   }
 
@@ -159,4 +156,24 @@ Disk::Disk(std::string path, std::size_t n_blocks) {
 
   open(path, n_blocks);
 
+}
+
+void Disk::show_file_permissions(const std::filesystem::path &path) const {
+  using std::filesystem::perms;
+
+  perms p = std::filesystem::status(path).permissions();
+
+  auto show = [=](char op, perms perm) {
+    std::cout << (perms::none == (perm & p) ? '-' : op);
+  };
+  show('r', perms::owner_read);
+  show('w', perms::owner_write);
+  show('x', perms::owner_exec);
+  show('r', perms::group_read);
+  show('w', perms::group_write);
+  show('x', perms::group_exec);
+  show('r', perms::others_read);
+  show('w', perms::others_write);
+  show('x', perms::others_exec);
+  std::cout << '\n';
 }

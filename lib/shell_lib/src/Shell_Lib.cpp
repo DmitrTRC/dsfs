@@ -101,7 +101,7 @@ void Shell_lib::cmd_format_(const Command_Args &args) {
     return;
   }
 
-  FileSystem::format(disk_);
+  fs::FileSystem::format(disk_);
 
 }
 

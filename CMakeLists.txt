@@ -43,7 +43,9 @@ add_executable(
 
 
 target_link_libraries(${PROJECT_NAME}
-                      sub::shell
+                      sub::fs
+                      sub::ds
+                      #                      sub::shell
                       )
 
 ######### TEST SECTION ###########

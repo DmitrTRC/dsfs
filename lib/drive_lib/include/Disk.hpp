@@ -25,6 +25,9 @@ class Disk {
 
   ~Disk();
 
+  //Debugging functions
+  void show_file_permissions(const std::filesystem::path &path) const;
+
   /** Open disk image
   * @param	path	    Path to disk image
   * @param	n_blocks	    Number of blocks in disk image
