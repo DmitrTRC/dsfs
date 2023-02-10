@@ -95,7 +95,7 @@ class FileSystem {
 
   struct SuperBlock {
     SuperBlock() : MagicNumber(0), Blocks(0), InodeBlocks(0), DirBlocks(0), Inodes(0), Protected(0), PasswordHash() {}
-    SuperBlock(std::array<std::byte, Disk::BLOCK_SIZE> block);
+    explicit SuperBlock(std::array<std::byte, Disk::BLOCK_SIZE> &block);
 
     u_int32_t MagicNumber;
     u_int32_t Blocks;
@@ -143,7 +143,8 @@ class FileSystem {
     std::array<std::byte, Disk::BLOCK_SIZE> Data;
     std::array<Directory, FileSystem::DIR_PER_BLOCK> Directories;
 
-    Block();
+    Block() : Data() {}
+
   };
 
   // Internal member variables
@@ -202,6 +203,6 @@ class FileSystem {
 
 };
 
-}
+} // namespace fs
 
 #endif //DSFS_DEV_FILE_SYSTEM_HPP

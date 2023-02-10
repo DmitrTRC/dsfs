@@ -8,7 +8,7 @@
 #include <iostream>
 #include <memory>
 
-using namespace fs;
+namespace fs {
 
 void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
   Block block;
@@ -290,3 +290,15 @@ bool FileSystem::mount(const std::shared_ptr<Disk> &disk) {
   return false;
 }
 
+//TODO: Refactor this function to STL algorithms
+FileSystem::SuperBlock::SuperBlock(std::array<std::byte, Disk::BLOCK_SIZE> &block) {
+  std::memcpy(&MagicNumber, &block[0], sizeof(MagicNumber));
+  std::memcpy(&Blocks, &block[4], sizeof(Blocks));
+  std::memcpy(&InodeBlocks, &block[8], sizeof(InodeBlocks));
+  std::memcpy(&Inodes, &block[12], sizeof(Inodes));
+  std::memcpy(&DirBlocks, &block[16], sizeof(DirBlocks));
+  std::memcpy(&Protected, &block[20], sizeof(Protected));
+  std::memcpy(&PasswordHash, &block[24], sizeof(PasswordHash));
+
+}
+} // namespace fs

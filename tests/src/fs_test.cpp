@@ -64,11 +64,12 @@ TEST(FS, Mount_Test) {
 }
 
 TEST(FS, Debug_Test) {
-  using namespace fs;
-  std::shared_ptr<Disk> disk = std::make_shared<Disk>();
-  // disk->open("image.5.img", 5);
 
-  //FileSystem fs;
+  std::shared_ptr<Disk> disk = std::make_shared<Disk>();
+
+  disk->open("image.5.img", 5);
+
+  FileSystem fs;
   // FileSystem::debug(disk);
 
 }
