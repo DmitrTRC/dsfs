@@ -24,7 +24,7 @@ template<std::size_t N>
 std::ostream &operator<<(std::ostream &os, std::array<std::byte, N> const &v1) {
 
   std::for_each(v1.begin(), v1.end(), [&os](std::byte b) {
-    os << std::hex << static_cast<int>(b) << " ";
+	os << std::hex << static_cast<int>(b) << " ";
   });
 
   return os;
@@ -32,7 +32,8 @@ std::ostream &operator<<(std::ostream &os, std::array<std::byte, N> const &v1) {
 
 class FileSystem {
  public:
-  const static uint32_t MAGIC_NUMBER = 0xf0f03410; //Magic number helps in checking Validity of the FileSystem on disk
+  const static uint32_t
+	  MAGIC_NUMBER = 0xf0f03410; //Magic number helps in checking Validity of the FileSystem on disk
   const static uint32_t INODES_PER_BLOCK = 128; //    Number of Inodes which can be contained in a block of (4kb)
   const static uint32_t POINTERS_PER_INODE = 5; //    Number of Direct block pointers in an Inode Block
   const static uint32_t POINTERS_PER_BLOCK = 1024; //    Number of block pointers in one Indirect pointer
@@ -90,56 +91,57 @@ class FileSystem {
  private:
 
   struct SuperBlock {
-    SuperBlock() : MagicNumber(0), Blocks(0), InodeBlocks(0), DirBlocks(0), Inodes(0), Protected(0), PasswordHash() {}
-    explicit SuperBlock(std::array<std::byte, Disk::BLOCK_SIZE> &block);
+	SuperBlock()
+		: MagicNumber(0), Blocks(0), InodeBlocks(0), DirBlocks(0), Inodes(0), Protected(0), PasswordHash() {}
+	explicit SuperBlock(std::array<std::byte, Disk::BLOCK_SIZE> &block);
 
-    u_int32_t MagicNumber;
-    u_int32_t Blocks;
-    u_int32_t InodeBlocks;
-    u_int32_t DirBlocks;
-    u_int32_t Inodes;
-    u_int32_t Protected;
-    std::array<std::byte, 257> PasswordHash;
+	u_int32_t MagicNumber;
+	u_int32_t Blocks;
+	u_int32_t InodeBlocks;
+	u_int32_t DirBlocks;
+	u_int32_t Inodes;
+	u_int32_t Protected;
+	std::array<std::byte, 257> PasswordHash;
   };
 
   struct Dirent {
-    uint8_t type;
-    uint8_t valid;
-    uint32_t i_num;
-    std::array<char, NAME_SIZE> name;
+	uint8_t type = 0;
+	uint8_t valid = 0;
+	uint32_t i_num = 0;
+	std::array<char, NAME_SIZE> name{};
   };
 
   struct Directory {
 
-    Directory() : Valid(0), I_num(-1), Name(), Entries() {}
-    Directory(uint32_t valid,
-              uint32_t i_num,
-              std::array<char, NAME_SIZE> name,
-              std::array<Dirent, ENTRIES_PER_DIR> entries)
-        : Valid(valid), I_num(i_num), Name(name), Entries(entries) {}
+	Directory() : Valid(0), I_num(-1), Name(), TableOfEntries() {}
+	Directory(uint32_t valid,
+			  uint32_t i_num,
+			  std::array<char, NAME_SIZE> name,
+			  std::array<Dirent, ENTRIES_PER_DIR> entries)
+		: Valid(valid), I_num(i_num), Name(name), TableOfEntries(entries) {}
 
-    uint16_t Valid;
-    uint32_t I_num;
-    std::array<char, NAME_SIZE> Name;
-    std::array<Dirent, ENTRIES_PER_DIR> Entries;
+	uint16_t Valid;
+	uint32_t I_num;
+	std::array<char, NAME_SIZE> Name;
+	std::array<Dirent, ENTRIES_PER_DIR> TableOfEntries;
   };
 
   struct Inode {
-    uint32_t Valid;
-    uint32_t Size;
-    std::array<uint32_t, FileSystem::POINTERS_PER_INODE> Direct;
-    uint32_t Indirect;
+	uint32_t Valid;
+	uint32_t Size;
+	std::array<uint32_t, FileSystem::POINTERS_PER_INODE> Direct;
+	uint32_t Indirect;
   };
 
   union Block {
 
-    SuperBlock Super;
-    std::array<Inode, FileSystem::INODES_PER_BLOCK> Inodes;
-    std::array<std::uint32_t, FileSystem::POINTERS_PER_BLOCK> Pointers;
-    std::array<std::byte, Disk::BLOCK_SIZE> Data;
-    std::array<Directory, FileSystem::DIR_PER_BLOCK> Directories;
+	SuperBlock Super;
+	std::array<Inode, FileSystem::INODES_PER_BLOCK> Inodes;
+	std::array<std::uint32_t, FileSystem::POINTERS_PER_BLOCK> Pointers;
+	std::array<std::byte, Disk::BLOCK_SIZE> Data;
+	std::array<Directory, FileSystem::DIR_PER_BLOCK> Directories;
 
-    Block() : Data() {}
+	Block() : Data() {}
 
   };
 

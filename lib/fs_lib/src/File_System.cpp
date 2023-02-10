@@ -17,9 +17,9 @@ void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
 
   std::cout << "SuperBlock:" << std::endl;
 
-  if (block.Super.MagicNumber != MAGIC_NUMBER) {
-    std::cout << "  Magic Number: " << block.Super.MagicNumber << " Is INVALID! Exiting... " << std::endl;
-    return;
+  if (block.Super.MagicNumber!=MAGIC_NUMBER) {
+	std::cout << "  Magic Number: " << block.Super.MagicNumber << " Is INVALID! Exiting... " << std::endl;
+	return;
   }
 
   std::cout << "  Magic Number: " << block.Super.MagicNumber << " is Valid" << std::endl;
@@ -33,38 +33,38 @@ void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
 
   for (auto i = 1; i <= block.Super.InodeBlocks; ++i) {
 
-    disk->read(i, block.Data);
+	disk->read(i, block.Data);
 
-    for (auto &node : block.Inodes) {
+	for (auto &node : block.Inodes) {
 
-      if (node.Valid) {
-        std::cout << "  Inode: " << inode_count << " Size: " << node.Size << std::endl;
-        std::cout << "    Direct Blocks: ";
+	  if (node.Valid) {
+		std::cout << "  Inode: " << inode_count << " Size: " << node.Size << std::endl;
+		std::cout << "    Direct Blocks: ";
 
-        for (auto &direct : node.Direct) {
+		for (auto &direct : node.Direct) {
 
-          if (direct) {
-            std::cout << direct << " ";
-          }
+		  if (direct) {
+			std::cout << direct << " ";
+		  }
 
-        }
+		}
 
-        std::cout << std::endl;
+		std::cout << std::endl;
 
-        if (node.Indirect) {
-          std::cout << "    Indirect Blocks: ";
+		if (node.Indirect) {
+		  std::cout << "    Indirect Blocks: ";
 
-          disk->read(node.Indirect, block.Data);
+		  disk->read(node.Indirect, block.Data);
 
-          for (auto &indirect : block.Pointers) {
-            if (indirect) {
-              std::cout << indirect << " ";
-            }
-          }
-          std::cout << std::endl;
-        }
-      }
-    }
+		  for (auto &indirect : block.Pointers) {
+			if (indirect) {
+			  std::cout << indirect << " ";
+			}
+		  }
+		  std::cout << std::endl;
+		}
+	  }
+	}
   }
 
   std::cout << "  Inode Size: " << sizeof(Inode) << std::endl;
@@ -77,134 +77,122 @@ void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
   std::cout << "  Protected: " << block.Super.Protected << std::endl;
   std::cout << "  PasswordHash Size: " << block.Super.PasswordHash.size() << std::endl;
 }
-/*
- * Format the disk
- * write superblock
- * Reinitialising password protection
- * clear all other blocks
- * clear individual Inodes
- * clear all direct Pointers
- * clear indirect Pointer
- * Free Data Blocks
- * Free Directory Blocks
- * Create Root directory
- * Create table entries for "." and ".."
- * Empty the directories
- */
+
 bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
-//  if (disk->mounted()) return false;
-//
-//  Block block;
-//  std::get<SuperBlock>(block).MagicNumber = FileSystem::MAGIC_NUMBER;
-//  std::get<SuperBlock>(block).Blocks = static_cast<std::uint32_t>(disk->size());
-//  std::get<SuperBlock>(block).InodeBlocks = static_cast<std::uint32_t>(std::ceil((disk->size() * 1.00) / 10));
-//  std::get<SuperBlock>(block).Inodes = std::get<SuperBlock>(block).InodeBlocks * FileSystem::INODES_PER_BLOCK;
-//  std::get<SuperBlock>(block).DirBlocks = static_cast<std::uint32_t>(std::ceil((disk->size() * 1.00) / 100));
-//
-//  //FIXME: Exception generated here "std::bad_variant_access"
-//
-//  std::array<std::byte, Disk::BLOCK_SIZE> data = reinterpret_cast<std::array<std::byte, Disk::BLOCK_SIZE> &>(block);
-//  //
-//  disk->write(0, data);
-//
-//  std::get<SuperBlock>(block).Protected = 0;
-//
-//  std::fill(std::get<SuperBlock>(block).PasswordHash.begin(), std::get<SuperBlock>(block).PasswordHash.end(), 0);
-//
-//  //Clear all other blocks
-//  for (auto i = 1; i < disk->size(); i++) {
-//    Block b_inode_block;
-//
-//    for (uint32_t j = 0; j < FileSystem::INODES_PER_BLOCK; j++) {
-//      std::get<std::array<Inode, FileSystem::INODES_PER_BLOCK>>(b_inode_block)[j].Valid = false;
-//      std::get<std::array<Inode, FileSystem::INODES_PER_BLOCK>>(b_inode_block)[j].Size = 0;
-//
-//      for (uint32_t k = 0; k < FileSystem::POINTERS_PER_INODE; k++) {
-//        std::get<std::array<Inode, FileSystem::INODES_PER_BLOCK>>(b_inode_block)[j].Direct[k] = 0;
-//      }
-//
-//      std::get<std::array<Inode, FileSystem::INODES_PER_BLOCK>>(b_inode_block)[j].Indirect = 0;
-//
-//    }
-//
-//    disk->write(i, std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(b_inode_block));
-//  }
-//
-//  //Use std::span to clear all data blocks
-//
-//  //Clear all data blocks
-//  auto b_data_block = std::get<SuperBlock>(block);
-//  for (uint32_t i = 1 + b_data_block.InodeBlocks; i < b_data_block.Blocks - b_data_block.DirBlocks; i++) {
-//    Block data_block;
-//    std::fill(std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(data_block).begin(),
-//              std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(data_block).end(), std::byte(0));
-//    disk->write(static_cast<int>(i), std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(data_block));
-//  }
-//
-//  //Clear all directory blocks
-//  auto b_dir_block = std::get<SuperBlock>(block);
-//
-//  //FIXME: This is not working
-//  for (uint32_t i = b_dir_block.Blocks - b_dir_block.DirBlocks; i < b_dir_block.Blocks; i++) {
-//    Block data_block;
-//    Directory dir;
-//
-//    dir.Name[0] = '\0';
-//    dir.I_num = 0;
-//    dir.Valid = 0;
-//
-//    //TEST: This is not working
-//    std::fill(std::get<std::array<Directory, FileSystem::DIR_PER_BLOCK>>(data_block).begin(),
-//              std::get<std::array<Directory, FileSystem::DIR_PER_BLOCK>>(data_block).end(), dir);
-//
-//    disk->write(static_cast<int>(i), std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(data_block));
-//  }
-//
-//  //Create Root directory
-//  Directory root;
-//
-//  root.Name[0] = '/';
-//  root.Name[1] = '\0';
-//
-//  root.I_num = 0;
-//  root.Valid = 1;
-//
-//  Dirent temp;
-//
-//  temp.i_num = 0;
-//  temp.type = 0;
-//  temp.valid = 1;
-//
-//  temp.name[0] = '.';
-//  temp.name[1] = '\0';
-//
-//  root.Entries[0] = temp;
-//
-//  temp.name[0] = '.';
-//  temp.name[1] = '.';
-//  temp.name[2] = '\0';
-//
-//  root.Entries[1] = temp;
-//
-//  Block dir_block;
-//
-//  std::get<std::array<Directory, FileSystem::DIR_PER_BLOCK>>(dir_block)[0] = root;
-//
-//  //TEST: This is not working -1?
-//  disk->write(static_cast<int>(b_dir_block.Blocks - b_dir_block.DirBlocks),
-//              std::get<std::array<std::byte, Disk::BLOCK_SIZE>>(dir_block));
+
+  if (disk->mounted()) return false;
+
+  Block block;
+
+  block.Super.MagicNumber = MAGIC_NUMBER;
+  block.Super.Blocks = static_cast<std::uint32_t>(disk->size());
+  block.Super.InodeBlocks = static_cast<std::uint32_t>(std::ceil((disk->size()*1.00)/10));
+  block.Super.Inodes = block.Super.InodeBlocks*INODES_PER_BLOCK;
+  block.Super.DirBlocks = static_cast<std::uint32_t>(std::ceil((disk->size()*1.00)/100));
+
+  // ------- 1-d Write super block -------
+  disk->write(0, block.Data);
+
+  block.Super.Protected = 0; //Warning: Not saved to disk
+  block.Super.PasswordHash.fill(std::byte(0));
+
+  for (auto i = 1; i <= block.Super.InodeBlocks; ++i) {
+	Block inode_block;
+
+	for (auto &inode : inode_block.Inodes) {
+	  inode.Valid = false;
+	  inode.Size = 0;
+	  inode.Direct.fill(0);
+	  inode.Indirect = 0;
+	}
+
+	// ------- 2-d Write inodes -------
+	disk->write(i, inode_block.Data);
+  }
+
+  // ------- 3-d Write data blocks -------
+
+  for (uint32_t i = block.Super.InodeBlocks + 1; i < block.Super.Blocks - block.Super.DirBlocks; ++i) {
+	Block data_block;
+	data_block.Data.fill(std::byte(0));
+	disk->write(i, data_block.Data);
+  }
+
+  // ------- 4-d Write directory blocks -------
+
+  for (auto i = block.Super.Blocks - block.Super.DirBlocks; i < block.Super.Blocks; ++i) {
+
+	Block data_block;
+	Directory dir;
+
+	dir.I_num = -1;
+	dir.Valid = 0;
+
+	//fill dir.TableOfEntries with empty directories
+
+	dir.TableOfEntries.fill(Dirent());
+
+	data_block.Directories.fill(dir);
+
+	disk->write(i, data_block.Data);
+
+  }
+  // ------- 5-d Write root directory -------
+
+
+  Directory root;
+
+  // Set root directory name
+  root.Name[0] = '/';
+  root.Name[1] = '\0';
+
+  root.I_num = 0;
+  root.Valid = 1;
+
+  Dirent temp_entry;
+
+  temp_entry.i_num = 0;
+  temp_entry.type = 0;
+  temp_entry.valid = 1;
+
+  // Set root directory entries
+
+//      char tstr1[] = ".";
+//      char tstr2[] = "..";
+//      strcpy(temp_entry.name,tstr1);
+//      memcpy(&(root.TableOfEntries[0]),&temp_entry,sizeof(Dirent));
+//      strcpy(temp_entry.name,tstr2);
+//      memcpy(&(root.TableOfEntries[1]),&temp_entry,sizeof(Dirent));
+
+  temp_entry.name[0] = '.';
+  temp_entry.name[1] = '\0';
+
+  root.TableOfEntries[0] = temp_entry;
+
+  temp_entry.name[0] = '.';
+  temp_entry.name[1] = '.';
+  temp_entry.name[2] = '\0';
+
+  root.TableOfEntries[1] = temp_entry;
+
+  Block dir_block;
+
+  dir_block.Directories[0] = root;
+
+  disk->write(block.Super.Blocks - 1, dir_block.Data);
 
   return true;
 }
+
 FileSystem::~FileSystem() {
 
   if (not fs_disk) {
-    std::cout << "No disk mounted! FileSystem closing" << std::endl;
-    return;
+	std::cout << "No disk mounted! FileSystem closing" << std::endl;
+	return;
   }
 
   if (fs_disk->mounted()) {
-    fs_disk->unmount();
+	fs_disk->unmount();
   }
 
 }
@@ -227,10 +215,10 @@ bool FileSystem::mount(const std::shared_ptr<Disk> &disk) {
   SuperBlock super_block(data); //Replace 3 with name of the variant
 
   //Debug purposes. Simplify the code
-  if (super_block.MagicNumber != FileSystem::MAGIC_NUMBER) return false;
-  if (super_block.InodeBlocks != static_cast<std::uint32_t>(std::ceil((disk->size() * 1.00) / 10))) return false;
-  if (super_block.Inodes != super_block.InodeBlocks * FileSystem::INODES_PER_BLOCK) return false;
-  if (super_block.DirBlocks != static_cast<std::uint32_t>(std::ceil((disk->size() * 1.00) / 100))) return false;
+  if (super_block.MagicNumber!=FileSystem::MAGIC_NUMBER) return false;
+  if (super_block.InodeBlocks!=static_cast<std::uint32_t>(std::ceil((disk->size()*1.00)/10))) return false;
+  if (super_block.Inodes!=super_block.InodeBlocks*FileSystem::INODES_PER_BLOCK) return false;
+  if (super_block.DirBlocks!=static_cast<std::uint32_t>(std::ceil((disk->size()*1.00)/100))) return false;
 
   // Password check
   //TODO: Implement password check
