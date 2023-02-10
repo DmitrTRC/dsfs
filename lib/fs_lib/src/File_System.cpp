@@ -32,17 +32,25 @@ void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
   uint32_t inode_count = 0; //TODO: Refactor to closure
 
   for (auto i = 1; i <= block.Super.InodeBlocks; ++i) {
+
     disk->read(i, block.Data);
+
     for (auto &node : block.Inodes) {
+
       if (node.Valid) {
         std::cout << "  Inode: " << inode_count << " Size: " << node.Size << std::endl;
         std::cout << "    Direct Blocks: ";
+
         for (auto &direct : node.Direct) {
+
           if (direct) {
             std::cout << direct << " ";
           }
-          std::cout << std::endl;
+
         }
+
+        std::cout << std::endl;
+
         if (node.Indirect) {
           std::cout << "    Indirect Blocks: ";
 
