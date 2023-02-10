@@ -256,32 +256,67 @@ bool FileSystem::mount(const std::shared_ptr<Disk> &disk) {
 					if (inode.Indirect < meta_data_.Blocks) {
 						free_blocks_[inode.Indirect] = true;
 
+						Block indirect_block;
 
+						fs_disk->read(inode.Indirect, indirect_block.Data);
 
-
-
-//--------------------- ??? ---------------------
-//        if (inode.Indirect != 0) {
-////          if (inode.Indirect < meta_data_.Blocks) {
-//            free_blocks_[inode.Indirect] = true;
-//
-//            Block b_indirect_block;
-//
-//            for (uint32_t dirs = 0; dirs < meta_data_.DirBlocks; dirs++) {
-//              disk->read(meta_data_.Blocks - 1 - dirs,
-//                         std::get<std::array<Directory, FileSystem::DIR_PER_BLOCK>>(b_indirect_block));
-//
-//              for (uint32_t offset = 0; offset < FileSystem::DIR_PER_BLOCK; offset++) {
-//                if (b_indirect_block.)
-//              }
-//            }
-//          }
-//
-//        }
-//
-
+						for (auto &block_num : indirect_block.Pointers) {
+							if (block_num) {
+								if (block_num < meta_data_.Blocks) {
+									free_blocks_[block_num] = true;
+								} else {
+									std::cerr << "Invalid block number in inode" << std::endl;
+									return false;
+								}
+							}
+						}
+					} else {
+						std::cerr << "Invalid block number in inode" << std::endl;
 						return false;
 					}
+				}
+			}
+		}
+	}
 
-//TODO: Refactor this function to STL algorithms
-				} // namespace fs
+// ------ Resize dir_counter ------
+
+	dir_counter_.resize(meta_data_.DirBlocks, 0);
+
+	// ------- 2-d Read directory blocks -------
+
+	Block dir_block;
+
+	for (auto dirs = 0; dirs < meta_data_.DirBlocks; ++dirs) {
+		disk->read(meta_data_.Blocks - dirs - 1, dir_block.Data);
+
+		for (auto &dir : dir_block.Directories) {
+			if (dir.Valid) {
+				dir_counter_[dirs]++;
+				free_blocks_[meta_data_.Blocks - dirs - 1] = true;
+
+				for (auto &entry : dir.TableOfEntries) {
+					if (entry.valid) {
+						if (entry.i_num < meta_data_.Inodes) {
+							inode_counter_[entry.i_num]++;
+						} else {
+							std::cerr << "Invalid inode number in directory" << std::endl;
+							return false;
+						}
+					}
+				}
+
+			}
+		}
+
+		if (dirs==0) {
+			curDir = dir_block.Directories[0];
+		}
+
+	}
+	mounted_ = true;
+
+	return true;
+}
+
+} // namespace fs

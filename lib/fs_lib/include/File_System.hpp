@@ -184,7 +184,7 @@ class FileSystem {
 //
 //  uint32_t allocate_block();
 //
-//  Directory curr_dir;
+  Directory curDir;
 //
 //  Directory add_dir_entry(Directory dir, uint32_t inum, uint32_t type, char name[]);
 //
