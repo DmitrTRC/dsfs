@@ -27,12 +27,15 @@ TEST(FS, Constructor_Test) {
 }
 
 TEST(FS, Format_Test) {
-
 	std::shared_ptr<Disk> disk = std::make_shared<Disk>();
+	FileSystem fs;
 
 	disk->open("image.5.img", 5);
 
-	FileSystem fs;
+	fs.set_cur_disk(disk);
+
+	EXPECT_EQ(fs.get_cur_disk()->size(), 5);
+	EXPECT_EQ(fs.get_cur_disk()->mounted(), false);
 
 	EXPECT_NO_THROW(FileSystem::format(fs.get_cur_disk()));
 //

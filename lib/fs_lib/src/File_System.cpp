@@ -236,12 +236,15 @@ bool FileSystem::mount(const std::shared_ptr<Disk> &disk) {
 		disk->read(i, block.Data);
 
 		for (auto &inode : block.Inodes) {
+
 			if (inode.Valid) {
 				inode_counter_[i - 1]++;
 				free_blocks_[i] = true;
 
 				for (auto &block_num : inode.Direct) {
+
 					if (block_num) {
+
 						if (block_num < meta_data_.Blocks) {
 							free_blocks_[block_num] = true;
 						} else {
@@ -253,6 +256,7 @@ bool FileSystem::mount(const std::shared_ptr<Disk> &disk) {
 				}
 
 				if (inode.Indirect) {
+
 					if (inode.Indirect < meta_data_.Blocks) {
 						free_blocks_[inode.Indirect] = true;
 
@@ -261,7 +265,9 @@ bool FileSystem::mount(const std::shared_ptr<Disk> &disk) {
 						fs_disk->read(inode.Indirect, indirect_block.Data);
 
 						for (auto &block_num : indirect_block.Pointers) {
+
 							if (block_num) {
+
 								if (block_num < meta_data_.Blocks) {
 									free_blocks_[block_num] = true;
 								} else {
