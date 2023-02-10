@@ -23,11 +23,11 @@ namespace fs {
 template<std::size_t N>
 std::ostream &operator<<(std::ostream &os, std::array<std::byte, N> const &v1) {
 
-  std::for_each(v1.begin(), v1.end(), [&os](std::byte b) {
-	os << std::hex << static_cast<int>(b) << " ";
-  });
+	std::for_each(v1.begin(), v1.end(), [&os](std::byte b) {
+	  os << std::hex << static_cast<int>(b) << " ";
+	});
 
-  return os;
+	return os;
 }
 
 class FileSystem {
@@ -88,6 +88,7 @@ class FileSystem {
   auto get_cur_disk() { return fs_disk; }
   auto mounted() { return mounted_; }
 
+  void set_cur_disk(std::shared_ptr<Disk> &disk);
  private:
 
   struct SuperBlock {

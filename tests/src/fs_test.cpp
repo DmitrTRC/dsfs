@@ -14,31 +14,35 @@ using namespace fs;
 
 TEST(FS, Constructor_Test) {
 
-  FileSystem fs;
-//
-//  EXPECT_EQ(fs.get_cur_disk()->size(), 0);
-//  EXPECT_EQ(fs.get_cur_disk()->mounted(), false);
-//  EXPECT_NO_THROW(fs.get_cur_disk()->mount());
-//  EXPECT_EQ(fs.get_cur_disk()->mounted(), true);
+	FileSystem fs;
+	std::shared_ptr<Disk> disk = std::make_shared<Disk>();
 
-  EXPECT_EQ(true, true);
+	disk->open("image.5.img", 5);
+
+	fs.set_cur_disk(disk);
+
+	EXPECT_EQ(fs.get_cur_disk()->size(), 5);
+	EXPECT_EQ(fs.mounted(), false);
+
 }
 
 TEST(FS, Format_Test) {
 
-  EXPECT_EQ(true, true);
+	std::shared_ptr<Disk> disk = std::make_shared<Disk>();
 
-//  FileSystem fs;
+	disk->open("image.5.img", 5);
+
+	FileSystem fs;
+
+	EXPECT_NO_THROW(FileSystem::format(fs.get_cur_disk()));
 //
-//  FileSystem::format(fs.get_cur_disk());
-//
-//  EXPECT_EQ(fs.get_cur_disk()->mounted(), true);
+//	EXPECT_EQ(fs.get_cur_disk()->mounted(), true);
 //
 //  EXPECT_EQ(fs.get_cur_disk()->size(), 2);
 //  EXPECT_EQ(fs.get_cur_disk()->mounted(), true);
 //  EXPECT_EQ(fs.mounted(), true);
 
-  //Check each block
+	//Check each block
 
 //  std::array<std::byte, Disk::BLOCK_SIZE> data = {};
 //
@@ -64,7 +68,7 @@ TEST(FS, Format_Test) {
 
 TEST(FS, Mount_Test) {
 // Using image.5.img as a test disk
-  EXPECT_EQ(true, true);
+	EXPECT_EQ(true, true);
 //  std::shared_ptr<Disk> disk = std::make_shared<Disk>();
 //  disk->open("image.5.img", 5);
 //
@@ -77,11 +81,11 @@ TEST(FS, Mount_Test) {
 
 TEST(FS, Debug_Test) {
 
-  std::shared_ptr<Disk> disk = std::make_shared<Disk>();
+	std::shared_ptr<Disk> disk = std::make_shared<Disk>();
 
-  disk->open("image.5.img", 5);
+	disk->open("image.5.img", 5);
 
-  EXPECT_NO_THROW(fs::FileSystem::debug(disk));
+	EXPECT_NO_THROW(fs::FileSystem::debug(disk));
 
 }
 

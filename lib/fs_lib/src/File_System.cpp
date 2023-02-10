@@ -22,7 +22,7 @@ void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
 		return;
 	}
 
-	std::cout << "  Magic Number: " << block.Super.MagicNumber << " is Valid" << std::endl;
+	std::cout << "  Magic Number: " << std::hex << block.Super.MagicNumber << std::endl;
 	std::cout << "  Blocks: " << block.Super.Blocks << std::endl;
 	std::cout << "  Inode Blocks: " << block.Super.InodeBlocks << std::endl;
 	std::cout << "  Inodes: " << block.Super.Inodes << std::endl;
@@ -317,6 +317,9 @@ bool FileSystem::mount(const std::shared_ptr<Disk> &disk) {
 	mounted_ = true;
 
 	return true;
+}
+void FileSystem::set_cur_disk(std::shared_ptr<Disk> &disk) {
+	fs_disk = disk;
 }
 
 } // namespace fs
