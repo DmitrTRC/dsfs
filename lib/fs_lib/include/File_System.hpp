@@ -103,7 +103,7 @@ class FileSystem {
     u_int32_t DirBlocks;
     u_int32_t Inodes;
     u_int32_t Protected;
-    std::array<u_char, 257> PasswordHash;
+    std::array<std::byte, 257> PasswordHash;
   };
 
   struct Dirent {

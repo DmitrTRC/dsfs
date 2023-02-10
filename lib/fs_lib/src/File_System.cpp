@@ -65,14 +65,9 @@ void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
   std::cout << "  Data Size: " << sizeof(std::byte) << std::endl;
 
   std::cout << "  Directory Blocks: " << block.Super.DirBlocks << std::endl;
-  std::cout << "  Indirect Blocks: " << block.Super.Blocks - block.Super.InodeBlocks - block.Super.DirBlocks - 1
-            << std::endl;
-  std::cout << "  Data Blocks: " << block.Super.Blocks - block.Super.InodeBlocks - block.Super.DirBlocks - 1
-            << std::endl;
 
   std::cout << "  Protected: " << block.Super.Protected << std::endl;
-  std::cout << "  Password Hash: " << block.Super.PasswordHash.data() << std::endl;
-
+  std::cout << "  PasswordHash Size: " << block.Super.PasswordHash.size() << std::endl;
 }
 /*
  * Format the disk
