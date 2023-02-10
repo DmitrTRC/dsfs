@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
 //
 //  p_fs_shell->Run();
 
-
+  fs::FileSystem fs;
 
   return 0;
 

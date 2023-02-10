@@ -189,6 +189,12 @@ bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
   return true;
 }
 FileSystem::~FileSystem() {
+
+  if (not fs_disk) {
+    std::cout << "No disk mounted! FileSystem closing" << std::endl;
+    return;
+  }
+
   if (fs_disk->mounted()) {
     fs_disk->unmount();
   }

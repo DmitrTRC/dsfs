@@ -36,7 +36,7 @@ class Disk {
   void open(const std::string &path, std::size_t n_blocks);
 
   /// Return size of disk (in terms of blocks)
-  [[nodiscard]] inline std::size_t size() const { return blocks_; }
+  [[nodiscard]] std::size_t size() const { return blocks_; }
 
   /// Return whether disk is mounted_
   [[nodiscard]] inline bool mounted() const { return mounts_ > 0; }

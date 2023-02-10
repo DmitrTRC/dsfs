@@ -40,13 +40,9 @@ class FileSystem {
   const static uint32_t ENTRIES_PER_DIR = 7; //    Number of Files/Directory entries within a Directory
   const static uint32_t DIR_PER_BLOCK = 8; //    Number of Directories per 4KB block
 
-  FileSystem() : mounted_(false) {}
+  FileSystem() = default;
 
   ~FileSystem();
-
-  // Debugging functions
-
-  void show_file_permissions(const std::filesystem::path &path);
 
   static void debug(const std::shared_ptr<Disk> &disk);
 
@@ -154,7 +150,7 @@ class FileSystem {
   std::vector<int> inode_counter_;
   std::vector<uint32_t> dir_counter_;
   SuperBlock meta_data_;         //  Caches the SuperBlock to save a disk-read
-  bool mounted_;                       //  Boolean to check if the disk is mounted_ and saved
+  bool mounted_ = false;                       //  Boolean to check if the disk is mounted_ and saved
 
   // Base Layer Core Functions
 //  ssize_t create();
