@@ -24,10 +24,10 @@ TEST(DISK, Open_Test) {
 
   Disk disk;
 
-  EXPECT_THROW(disk.open("test", 0), std::runtime_error);
-  EXPECT_THROW(disk.open("test", 1), std::runtime_error);
-  EXPECT_NO_THROW(disk.open("test", 2));
-  EXPECT_EQ(disk.size(), 2);
+  EXPECT_THROW(disk.open("image.5.test", 0), std::runtime_error);
+  EXPECT_THROW(disk.open("image.5.test", 1), std::runtime_error);
+  EXPECT_NO_THROW(disk.open("image.5.test", 5));
+  EXPECT_EQ(disk.size(), 5);
   disk.mount();
   EXPECT_EQ(disk.mounted(), true);
 
@@ -37,14 +37,14 @@ TEST(DISK, ValidCheck_Test) {
 
   Disk disk;
 
-  disk.open("test.dat", 2);
+  disk.open("image.5.test", 5);
   disk.mount();
 
   std::array<std::byte, Disk::BLOCK_SIZE> data = {};
 
   EXPECT_THROW(disk.isValid(-1, data), std::invalid_argument);
-  EXPECT_THROW(disk.isValid(2, data), std::invalid_argument);
-  EXPECT_THROW(disk.isValid(3, data), std::invalid_argument);
+  EXPECT_THROW(disk.isValid(6, data), std::invalid_argument);
+  EXPECT_THROW(disk.isValid(7, data), std::invalid_argument);
 
   EXPECT_NO_THROW(disk.isValid(0, data));
   EXPECT_NO_THROW(disk.isValid(1, data));
@@ -55,13 +55,13 @@ TEST(DISK, Read_Test) {
 
   Disk disk;
 
-  disk.open("test.dat", 2);
+  disk.open("image.5.test", 5);
   disk.mount();
 
   std::array<std::byte, Disk::BLOCK_SIZE> data = {};
 
   EXPECT_THROW(disk.read(-1, data), std::invalid_argument);
-  EXPECT_THROW(disk.read(2, data), std::invalid_argument);
+  EXPECT_THROW(disk.read(7, data), std::invalid_argument);
 
   EXPECT_NO_THROW(disk.read(0, data));
   EXPECT_EQ(disk.getReads(), 1);
@@ -89,13 +89,13 @@ TEST(DISK, Write_Test) {
 
   Disk disk;
 
-  disk.open("test.dat", 2);
+  disk.open("image.5.test", 5);
   disk.mount();
 
   std::array<std::byte, Disk::BLOCK_SIZE> data = {};
 
   EXPECT_THROW(disk.write(-1, data), std::invalid_argument);
-  EXPECT_THROW(disk.write(2, data), std::invalid_argument);
+  EXPECT_THROW(disk.write(7, data), std::invalid_argument);
 
   EXPECT_NO_THROW(disk.write(0, data));
   EXPECT_EQ(disk.getReads(), 0);
@@ -117,13 +117,17 @@ TEST(DISK, Write_Test) {
   EXPECT_EQ(disk.getReads(), 0);
   EXPECT_EQ(disk.getWrites(), 5);
 
+  EXPECT_NO_THROW(disk.write(4, data));
+  EXPECT_EQ(disk.getReads(), 0);
+  EXPECT_EQ(disk.getWrites(), 6);
+
 }
 
 TEST(DISK, ReadWriteData_Test) {
 
   Disk disk;
 
-  disk.open("test.dat", 2);
+  disk.open("image.5.test", 5);
   disk.mount();
 
   std::array<std::byte, Disk::BLOCK_SIZE> Z_data = {};
@@ -159,7 +163,7 @@ TEST(DISK, test_close) {
 
   Disk disk;
 
-  disk.open("test.dat", 2);
+  disk.open("image.5.test", 5);
   disk.mount();
 
   std::array<std::byte, Disk::BLOCK_SIZE> data = {};
@@ -187,7 +191,7 @@ TEST(DISK, test_mount) {
 
   Disk disk;
 
-  disk.open("test.dat", 2);
+  disk.open("image.5.test", 5);
 
   EXPECT_NO_THROW(disk.mount());
   EXPECT_NO_THROW(disk.mount());
@@ -202,7 +206,7 @@ TEST(DISK, test_unmount) {
 
   Disk disk;
 
-  disk.open("test.dat", 2);
+  disk.open("image.5.test", 5);
 
   EXPECT_NO_THROW(disk.mount());
   EXPECT_NO_THROW(disk.unmount());
@@ -218,7 +222,7 @@ TEST(DISK, test_mounted) {
 
   Disk disk;
 
-  disk.open("test.dat", 2);
+  disk.open("image.5.test", 5);
 
   EXPECT_FALSE(disk.mounted());
 
@@ -240,7 +244,7 @@ TEST(DISK, test_get_Block_Size) {
 
   Disk disk;
 
-  disk.open("test.dat", 2);
+  disk.open("image.5.test", 5);
 
   EXPECT_EQ(disk.getBlockSize(), 4096);
 
@@ -252,9 +256,9 @@ TEST(DISK, test_get_Number_Of_Blocks) {
 
   Disk disk;
 
-  disk.open("test.dat", 2);
+  disk.open("image.5.test", 5);
 
-  EXPECT_EQ(disk.size(), 2);
+  EXPECT_EQ(disk.size(), 5);
 
   EXPECT_NO_THROW(disk.close());
 
