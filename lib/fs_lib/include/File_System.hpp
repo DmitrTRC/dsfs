@@ -93,7 +93,6 @@ class FileSystem {
   struct SuperBlock {
 	SuperBlock()
 		: MagicNumber(0), Blocks(0), InodeBlocks(0), DirBlocks(0), Inodes(0), Protected(0), PasswordHash() {}
-	explicit SuperBlock(std::array<std::byte, Disk::BLOCK_SIZE> &block);
 
 	u_int32_t MagicNumber;
 	u_int32_t Blocks;
