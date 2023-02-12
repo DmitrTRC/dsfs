@@ -93,15 +93,15 @@ class FileSystem {
 
   struct SuperBlock {
 	SuperBlock()
-		: MagicNumber(0), Blocks(0), InodeBlocks(0), DirBlocks(0), Inodes(0), Protected(0), PasswordHash() {}
+		: MagicNumber(0), Blocks(0), InodeBlocks(0), DirBlocks(0), Inodes(0) {}
 
 	u_int32_t MagicNumber;
 	u_int32_t Blocks;
 	u_int32_t InodeBlocks;
-	u_int32_t DirBlocks;
 	u_int32_t Inodes;
-	u_int32_t Protected;
-	std::array<std::byte, 257> PasswordHash;
+	u_int32_t DirBlocks;
+//	std::array<std::byte, 257> PasswordHash;
+//	u_int32_t Protected;
   };
 
   struct Dirent {

@@ -22,7 +22,7 @@ void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
 		return;
 	}
 
-	std::cout << "  Magic Number: " << std::hex << block.Super.MagicNumber << std::endl;
+	std::cout << "  Magic Number: " << std::hex << block.Super.MagicNumber << std::dec << std::endl;
 	std::cout << "  Blocks: " << block.Super.Blocks << std::endl;
 	std::cout << "  Inode Blocks: " << block.Super.InodeBlocks << std::endl;
 	std::cout << "  Inodes: " << block.Super.Inodes << std::endl;
@@ -74,8 +74,8 @@ void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
 
 	std::cout << "  Directory Blocks: " << block.Super.DirBlocks << std::endl;
 
-	std::cout << "  Protected: " << block.Super.Protected << std::endl;
-	std::cout << "  PasswordHash Size: " << block.Super.PasswordHash.size() << std::endl;
+//	std::cout << "  Protected: " << block.Super.Protected << std::endl;
+//	std::cout << "  PasswordHash Size: " << block.Super.PasswordHash.size() << std::endl;
 }
 
 bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
@@ -93,8 +93,8 @@ bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
 	// ------- 1-d Write super block -------
 	disk->write(0, block.Data);
 
-	block.Super.Protected = 0; //Warning: Not saved to disk
-	block.Super.PasswordHash.fill(std::byte(0));
+//	block.Super.Protected = 0; //Warning: Not saved to disk
+//	block.Super.PasswordHash.fill(std::byte(0));
 
 	for (auto i = 1; i <= block.Super.InodeBlocks; ++i) {
 		Block inode_block;
@@ -204,20 +204,20 @@ bool FileSystem::mount(const std::shared_ptr<Disk> &disk) {
 	if (block.Super.Inodes!=block.Super.InodeBlocks*INODES_PER_BLOCK) return false;
 	if (block.Super.DirBlocks!=static_cast<std::uint32_t>(std::ceil((disk->size()*1.00)/100))) return false;
 
-	if (block.Super.Protected) {
-		std::cout << "Enter password: ";
-
-		std::string password;
-		std::cin >> password;
-
-		//TODO : Implement password hashing
-
-		if (password=="admin") return true;
-
-		std::cout << "Wrong password!" << std::endl;
-
-		return false;
-	}
+//	if (block.Super.Protected) {
+//		std::cout << "Enter password: ";
+//
+//		std::string password;
+//		std::cin >> password;
+//
+//		//TODO : Implement password hashing
+//
+//		if (password=="admin") return true;
+//
+//		std::cout << "Wrong password!" << std::endl;
+//
+//		return false;
+//	}
 
 	disk->mount();
 
