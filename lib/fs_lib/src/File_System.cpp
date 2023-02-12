@@ -448,5 +448,26 @@ bool fs::FileSystem::load_inode(size_t i_number, FileSystem::Inode &inode) {
 
 	return false;
 }
+ssize_t FileSystem::stat(size_t i_number) {
+
+	if (not mounted_) {
+		std::cerr << "No disk mounted!" << std::endl;
+		return -1;
+	}
+
+	if ((i_number > meta_data_.Inodes) || (i_number < 1)) {
+		std::cerr << "Invalid inode number!" << std::endl;
+		return -1;
+	}
+
+	Inode inode;
+
+	if (not load_inode(i_number, inode)) {
+		std::cerr << "Invalid inode number!" << std::endl;
+		return -1;
+	}
+
+	return inode.Size;
+}
 
 } // namespace fs

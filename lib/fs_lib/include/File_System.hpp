@@ -175,8 +175,13 @@ class FileSystem {
    * @return true if the remove operation was successful; false otherwise
   */
   bool remove(size_t);
-//
-//  ssize_t stat(size_t inumber);
+
+  /**
+   * @brief check size of an inode
+   * @param i_number index into the inode table of inode whose size is to be determined
+   * @return size of the inode; -1 if the inode is invalid
+  */
+  ssize_t stat(size_t i_number);
 //
 //  ssize_t read(size_t inumber, char *data, int length, size_t offset);
 //
