@@ -182,8 +182,16 @@ class FileSystem {
    * @return size of the inode; -1 if the inode is invalid
   */
   ssize_t stat(size_t i_number);
-//
-//  ssize_t read(size_t inumber, char *data, int length, size_t offset);
+
+  /**
+   * @brief reads the data from the inode
+   * @param i_number index into the inode table of the inode to be read
+   * @param offset Start reading from index = offset
+   * @param length Number of bytes to be read
+   * @param data data buffer
+   * @return number of bytes read; -1 if the inode is invalid
+  */
+  ssize_t read(size_t i_number, std::array<std::byte, Disk::BLOCK_SIZE> &data, int length, size_t offset);
 //
 //  ssize_t write(size_t inumber, char *data, int length, size_t offset);
 //
@@ -199,7 +207,17 @@ class FileSystem {
 //
 //  ssize_t allocate_free_block();
 //
-//  void read_helper(uint32_t blocknum, int offset, int *length, char **data, char **ptr);
+
+  /**
+   * @brief Reads the block from disk and changes the pointers accordingly
+   * @param blocknum index into the free block bitmap
+   * @param offset Start reading from index = offset
+   * @param length Number of bytes to be read
+   * @param data data buffer
+   * @param ptr Buffer to store the read data
+   * @return Void function; returns nothing
+  */
+  void read_helper(uint32_t blocknum, int offset, int *length, char **data, char **ptr);
 //
 //  ssize_t write_ret(size_t inumber, Inode *node, int ret);
 //

@@ -469,5 +469,8 @@ ssize_t FileSystem::stat(size_t i_number) {
 
 	return inode.Size;
 }
+ssize_t FileSystem::read(size_t i_number, std::array<std::byte, Disk::BLOCK_SIZE> &data, int length, size_t offset) {
+	return 0;
+}
 
 } // namespace fs
