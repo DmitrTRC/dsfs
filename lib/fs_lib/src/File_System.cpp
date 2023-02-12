@@ -470,7 +470,40 @@ ssize_t FileSystem::stat(size_t i_number) {
 	return inode.Size;
 }
 ssize_t FileSystem::read(size_t i_number, std::array<std::byte, Disk::BLOCK_SIZE> &data, int length, size_t offset) {
-	return 0;
+
+	if (not mounted_) {
+		std::cerr << "No disk mounted!" << std::endl;
+		return -1;
+	}
+
+	auto inode_size = stat(i_number);
+
+	if (offset > inode_size) {
+		std::cerr << "Offset is greater than file size!" << std::endl;
+		return -1;
+	}
+
+	if (length + static_cast<int>(offset) > inode_size) {
+		length = static_cast<int>(inode_size - offset);
+	}
+
+	Inode inode;
+
+	if (not load_inode(i_number, inode)) {
+		std::cerr << "Invalid inode number!" << std::endl;
+		return -1;
+	}
+
+	if (offset < POINTERS_PER_INODE*Disk::BLOCK_SIZE) {
+
+		uint32_t direct_node = offset/Disk::BLOCK_SIZE;
+		offset = offset%Disk::BLOCK_SIZE;
+
+		if (inode.Direct[direct_node]) {
+
+		}
+	}
+
 }
 
 } // namespace fs
