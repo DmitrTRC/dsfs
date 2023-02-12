@@ -7,8 +7,8 @@
 #include <array>
 #include <filesystem>
 #include <iostream>
-#include <stdexcept>
 #include <sstream>
+#include <stdexcept>
 
 void Disk::open(const std::string &path, size_t n_blocks) {
 
@@ -92,7 +92,7 @@ void Disk::read(int block_num, std::array<std::byte, Disk::BLOCK_SIZE> &data) {
 	}
 //Read the data from the disk
 	FileDescriptor_.read(reinterpret_cast<char *>(data.data()), Disk::BLOCK_SIZE);
-//FIXME:
+
 	if (FileDescriptor_.fail()) {
 		std::stringstream ss;
 		ss << "Unable to read " << block_num << ": " << strerror(errno);
@@ -105,7 +105,7 @@ void Disk::read(int block_num, std::array<std::byte, Disk::BLOCK_SIZE> &data) {
 
 void Disk::write(int block_num, const std::array<std::byte, Disk::BLOCK_SIZE> &data) {
 
-	// FIXME: Exception  is thrown here
+
 	ValidCheck(block_num, data);
 
 	if (FileDescriptor_.seekp(block_num*static_cast<int>(BLOCK_SIZE), std::ios::beg).fail()) {
@@ -152,13 +152,13 @@ void Disk::close() {
 }
 Disk::Disk() : FileDescriptor_(nullptr), blocks_(0), reads_(0), writes_(0), mounts_(0) {}
 
-Disk::Disk(std::string path, std::size_t n_blocks) {
+Disk::Disk(const std::string &path, std::size_t n_blocks) {
 
 	open(path, n_blocks);
 
 }
 
-void Disk::show_file_permissions(const std::filesystem::path &path) const {
+void Disk::show_file_permissions(const std::filesystem::path &path) {
 	using std::filesystem::perms;
 
 	perms p = std::filesystem::status(path).permissions();

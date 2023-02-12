@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[]) {
 
-  std::cout << "DHFS Starting" << std::endl;
+	std::cout << "DHFS Starting" << std::endl;
 
 //  std::unique_ptr<Shell_lib> p_fs_shell;
 //
@@ -32,8 +32,8 @@ int main(int argc, char *argv[]) {
 //
 //  p_fs_shell->Run();
 
-  fs::FileSystem fs;
+	fs::FileSystem fs;
 
-  return 0;
+	return 0;
 
 }

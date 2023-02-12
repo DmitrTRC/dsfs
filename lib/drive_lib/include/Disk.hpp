@@ -8,7 +8,6 @@
 
 #include <cinttypes>
 #include <cstddef>
-
 #include <fstream>
 #include <string>
 
@@ -21,12 +20,12 @@ class Disk {
   /// Default constructor
   Disk();
 
-  Disk(std::string path, std::size_t n_blocks);
+  Disk(const std::string &path, std::size_t n_blocks);
 
   ~Disk();
 
   //Debugging functions
-  void show_file_permissions(const std::filesystem::path &path) const;
+  static void show_file_permissions(const std::filesystem::path &path);
 
   /** Open disk image
   * @param	path	    Path to disk image
@@ -73,19 +72,19 @@ class Disk {
   void close();
 
   void isValid(int block_num, const std::array<std::byte, Disk::BLOCK_SIZE> &data) const {
-    ValidCheck(block_num, data);
+	  ValidCheck(block_num, data);
   }
 
   static size_t getBlockSize() {
-    return BLOCK_SIZE;
+	  return BLOCK_SIZE;
   }
 
  private:
   std::fstream FileDescriptor_;    /// File descriptor for disk image
-  std::size_t blocks_;        /// Number of blocks in disk image
-  std::size_t reads_;        /// Number of reads performed
-  std::size_t writes_;        /// Number of writes performed
-  std::size_t mounts_;        /// Number of mounts
+  std::size_t blocks_{};        /// Number of blocks in disk image
+  std::size_t reads_{};        /// Number of reads performed
+  std::size_t writes_{};        /// Number of writes performed
+  std::size_t mounts_{};        /// Number of mounts
 
   /** Check parameters
    @param	block_num    Block to operate on
