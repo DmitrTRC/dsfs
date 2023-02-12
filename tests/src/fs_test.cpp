@@ -54,12 +54,12 @@ TEST(FS, Mount_Test) {
 
 	FileSystem::debug(disk);
 
-//	FileSystem fs;
-//
-//	fs.set_cur_disk(disk);
-//	fs.mount(disk);
-//
-//	EXPECT_EQ(fs.get_cur_disk()->mounted(), true);
+	FileSystem fs;
+
+	fs.set_cur_disk(disk);
+	fs.mount(disk);
+
+	EXPECT_EQ(fs.get_cur_disk()->mounted(), true);
 
 }
 

@@ -327,5 +327,126 @@ bool FileSystem::mount(const std::shared_ptr<Disk> &disk) {
 void FileSystem::set_cur_disk(std::shared_ptr<Disk> &disk) {
 	fs_disk = disk;
 }
+ssize_t FileSystem::create() {
+	if (not mounted_) {
+		std::cerr << "No disk mounted!" << std::endl;
+		return -1;
+	}
+
+	Block block;
+	fs_disk->read(0, block.Data);
+
+	for (uint32_t i = 1; i <= meta_data_.InodeBlocks; i++) {
+
+		if (inode_counter_[i - 1]==INODES_PER_BLOCK) continue;
+
+		fs_disk->read(i, block.Data);
+
+		for (uint32_t j = 0; j < INODES_PER_BLOCK; j++) {
+
+			if (!block.Inodes[j].Valid) {
+				block.Inodes[j].Valid = true;
+				block.Inodes[j].Size = 0;
+				block.Inodes[j].Indirect = 0;
+
+				for (auto &block_num : block.Inodes[j].Direct) {
+					block_num = 0;
+				}
+
+				free_blocks_[i] = true;
+				inode_counter_[i - 1]++;
+
+				fs_disk->write(i, block.Data);
+
+				return (((i - 1)*INODES_PER_BLOCK) + j);
+			}
+		}
+	}
+
+	return -1;
+
+}
+bool FileSystem::remove(size_t i_number) {
+
+	if (not mounted_) {
+		std::cerr << "No disk mounted!" << std::endl;
+		return false;
+	}
+
+	if ((i_number > meta_data_.Inodes) || (i_number < 1)) {
+		std::cerr << "Invalid inode number!" << std::endl;
+		return false;
+	}
+
+	Inode inode;
+
+	if (not load_inode(i_number, inode)) {
+		std::cerr << "Invalid inode number!" << std::endl;
+		return false;
+	}
+
+	inode.Valid = false;
+	inode.Size = 0;
+
+	for (auto &block_num : inode.Direct) {
+		if (block_num) {
+			free_blocks_[block_num] = false;
+			block_num = 0;
+		}
+	}
+
+	if (inode.Indirect) {
+		Block indirect_block;
+
+		fs_disk->read(inode.Indirect, indirect_block.Data);
+
+		free_blocks_[inode.Indirect] = false;
+		inode.Indirect = 0;
+
+		for (auto &block_num : indirect_block.Pointers) {
+			if (block_num) {
+				free_blocks_[block_num] = false;
+				block_num = 0;
+			}
+		}
+
+	}
+
+	Block block;
+	fs_disk->read(i_number/INODES_PER_BLOCK + 1, block.Data);
+	block.Inodes[i_number%INODES_PER_BLOCK] = inode;
+	fs_disk->write(i_number/INODES_PER_BLOCK + 1, block.Data);
+
+	return true;
+}
+
+bool fs::FileSystem::load_inode(size_t i_number, FileSystem::Inode &inode) {
+
+	if (not mounted_) {
+		std::cerr << "No disk mounted!" << std::endl;
+		return false;
+	}
+
+	if ((i_number > meta_data_.Inodes) || (i_number < 1)) {
+		std::cerr << "Invalid inode number!" << std::endl;
+		return false;
+	}
+
+	Block block;
+
+	auto i = i_number/INODES_PER_BLOCK;
+	auto j = i_number%INODES_PER_BLOCK;
+
+	if (inode_counter_[i]) {
+		fs_disk->read(i + 1, block.Data);
+
+		if (block.Inodes[j].Valid) {
+			inode = block.Inodes[j];
+			return true;
+		}
+	}
+
+	return false;
+}
 
 } // namespace fs

@@ -49,6 +49,11 @@ class FileSystem {
 
   static bool format(const std::shared_ptr<Disk> &disk);
 
+  /**
+     * @brief mounts the file system onto the disk
+     * @param disk the disk to be mounted
+     * @return true if the mount operation was successful; false otherwise
+    */
   bool mount(const std::shared_ptr<Disk> &disk);
 
 
@@ -131,6 +136,8 @@ class FileSystem {
 	uint32_t Size;
 	std::array<uint32_t, FileSystem::POINTERS_PER_INODE> Direct;
 	uint32_t Indirect;
+
+	Inode() : Valid(0), Size(0), Direct(), Indirect(0) {}
   };
 
   union Block {
@@ -155,9 +162,19 @@ class FileSystem {
   bool mounted_ = false;                       //  Boolean to check if the disk is mounted_ and saved
 
   // Base Layer Core Functions
-//  ssize_t create();
-//
-//  bool remove(size_t);
+
+  /**
+   * @brief creates a new inode
+   * @return the inumber of the newly created inode
+  */
+  ssize_t create();
+
+  /**
+   * @brief removes the inode
+   * @param inumber index into the inode table of the inode to be removed
+   * @return true if the remove operation was successful; false otherwise
+  */
+  bool remove(size_t);
 //
 //  ssize_t stat(size_t inumber);
 //
@@ -166,7 +183,14 @@ class FileSystem {
 //  ssize_t write(size_t inumber, char *data, int length, size_t offset);
 //
 //  //  Helper functions for Layer 1
-//  bool load_inode(size_t inumber, Inode *node);
+
+  /**
+   * @brief loads inode corresponding to i_number into node
+   * @param i_number index into inode table
+   * @param node pointer to inode
+   * @return boolean value indicative of success of the load operation
+  */
+  bool load_inode(size_t i_number, Inode &node);
 //
 //  ssize_t allocate_free_block();
 //
