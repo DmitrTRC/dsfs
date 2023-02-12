@@ -54,11 +54,11 @@ class Disk {
   void read(int block_num, std::array<std::byte, Disk::BLOCK_SIZE> &data);
 
   size_t getReads() const {
-    return reads_;
+	  return reads_;
   }
 
   size_t getWrites() const {
-    return writes_;
+	  return writes_;
   }
 
   /**
