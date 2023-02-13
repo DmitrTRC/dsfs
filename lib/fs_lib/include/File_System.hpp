@@ -209,7 +209,7 @@ class FileSystem {
 //
 
   /**
-   * @brief Reads the block from disk and changes the pointers accordingly
+   * @brief Read the block from disk and changes the pointers accordingly
    * @param blocknum index into the free block bitmap
    * @param offset Start reading from index = offset
    * @param length Number of bytes to be read
@@ -217,7 +217,19 @@ class FileSystem {
    * @param ptr Buffer to store the read data
    * @return Void function; returns nothing
   */
-  void read_helper(uint32_t blocknum, int offset, int *length, char **data, char **ptr);
+
+  template<typename T, typename U>
+  void read_helper(uint32_t blocknum, int offset, int &length, T &data, U &ptr) {
+
+	  fs_disk->read(blocknum, ptr);
+
+	  int read = std::min(length, static_cast<int>(Disk::BLOCK_SIZE) - offset);
+	  std::copy(ptr.begin() + offset, ptr.begin() + offset + read, data.begin());
+	  length -= read;
+	  data = data + read;
+
+  }
+
 //
 //  ssize_t write_ret(size_t inumber, Inode *node, int ret);
 //
