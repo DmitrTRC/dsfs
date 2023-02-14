@@ -81,7 +81,7 @@ class FileSystem {
 //
 //  bool copyout(char name[], const char *path);
 //
-//  bool copyin(const char *path, char name[]);
+  bool copyin(const std::string path, const std::string name);
 //
 //  bool ls_dir(char name[]);
 //
@@ -218,17 +218,11 @@ class FileSystem {
    * @return Void function; returns nothing
   */
 
-  template<typename T, typename U>
-  void read_helper(uint32_t blocknum, int offset, int &length, T &data, U &ptr) {
-
-	  fs_disk->read(blocknum, ptr);
-
-	  int read = std::min(length, static_cast<int>(Disk::BLOCK_SIZE) - offset);
-	  std::copy(ptr.begin() + offset, ptr.begin() + offset + read, data.begin());
-	  length -= read;
-	  data = data + read;
-
-  }
+  void read_helper(uint32_t blocknum,
+				   int offset,
+				   int &length,
+				   std::array<std::byte, Disk::BLOCK_SIZE> &data,
+				   std::array<std::byte, Disk::BLOCK_SIZE> &ptr);
 
 //
 //  ssize_t write_ret(size_t inumber, Inode *node, int ret);

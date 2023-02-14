@@ -505,5 +505,47 @@ ssize_t FileSystem::read(size_t i_number, std::array<std::byte, Disk::BLOCK_SIZE
 	}
 
 }
+void FileSystem::read_helper(uint32_t blocknum,
+							 int offset,
+							 int &length,
+							 std::array<std::byte, Disk::BLOCK_SIZE> &data,
+							 std::array<std::byte, Disk::BLOCK_SIZE> &ptr) {
 
-} // namespace fs
+	if (length <= 0) {
+		return;
+	}
+
+	Block block;
+	fs_disk->read(blocknum, block.Data);
+
+	if (length > Disk::BLOCK_SIZE) {
+		if (offset) {
+			for (int i = offset; i < Disk::BLOCK_SIZE; i++) {
+				ptr[Disk::BLOCK_SIZE - length] = block.Data[i];
+				length--;
+			}
+		} else {
+			for (int i = 0; i < Disk::BLOCK_SIZE; i++) {
+				ptr[Disk::BLOCK_SIZE - length] = block.Data[i];
+				length--;
+			}
+		}
+	} else {
+		if (offset) {
+			for (int i = offset; i < length; i++) {
+				ptr[Disk::BLOCK_SIZE - length] = block.Data[i];
+				length--;
+			}
+		} else {
+			for (int i = 0; i < length; i++) {
+				ptr[Disk::BLOCK_SIZE - length] = block.Data[i];
+				length--;
+			}
+		}
+	}
+
+}
+
+}
+
+

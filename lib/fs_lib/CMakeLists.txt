@@ -9,7 +9,7 @@ add_library(${PROJECT_NAME}
             src/sha256.cpp
             include/sha256.hpp
             include/sha2xx_common.hpp
-            )
+            src/FS_Extension.cpp)
 
 add_library(sub::fs ALIAS ${PROJECT_NAME})
 
