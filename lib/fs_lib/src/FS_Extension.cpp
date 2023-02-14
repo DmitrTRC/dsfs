@@ -71,3 +71,36 @@ bool fs::FileSystem::copyin(const std::string path, const std::string name) {
 
 	return true;
 }
+
+bool fs::FileSystem::touch(const std::string name) {
+
+	if (!mounted_) {
+		std::cout << "File system is not mounted" << std::endl;
+		return false;
+	}
+
+	if (name.size() > NAME_SIZE) {
+		std::cout << "File name is too long" << std::endl;
+		return false;
+	}
+
+	if (dir_lookup(curDir, name)!=-1) {
+		std::cout << "File already exists" << std::endl;
+		return false;
+	}
+
+	int i_number = create();
+
+	if (i_number==-1) {
+		std::cout << "Error creating file" << std::endl;
+		return false;
+	}
+
+	{
+		return false; // TODO: implement
+	}
+	return true;
+
+}
+
+

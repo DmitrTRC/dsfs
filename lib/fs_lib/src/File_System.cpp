@@ -469,7 +469,7 @@ ssize_t FileSystem::stat(size_t i_number) {
 
 	return inode.Size;
 }
-ssize_t FileSystem::read(size_t i_number, std::array<std::byte, Disk::BLOCK_SIZE> &data, int length, size_t offset) {
+ssize_t FileSystem::read(size_t i_number, std::vector<std::byte> &data, size_t offset) {
 
 	if (not mounted_) {
 		std::cerr << "No disk mounted!" << std::endl;
@@ -477,14 +477,17 @@ ssize_t FileSystem::read(size_t i_number, std::array<std::byte, Disk::BLOCK_SIZE
 	}
 
 	auto inode_size = stat(i_number);
+	auto length = data.size();
 
 	if (offset > inode_size) {
 		std::cerr << "Offset is greater than file size!" << std::endl;
 		return -1;
 	}
 
-	if (length + static_cast<int>(offset) > inode_size) {
-		length = static_cast<int>(inode_size - offset);
+	if (offset + length > inode_size) {
+		length = inode_size - offset;
+	} else {
+		length = data.size();
 	}
 
 	Inode inode;
@@ -494,58 +497,16 @@ ssize_t FileSystem::read(size_t i_number, std::array<std::byte, Disk::BLOCK_SIZE
 		return -1;
 	}
 
-	if (offset < POINTERS_PER_INODE*Disk::BLOCK_SIZE) {
-
-		uint32_t direct_node = offset/Disk::BLOCK_SIZE;
-		offset = offset%Disk::BLOCK_SIZE;
-
-		if (inode.Direct[direct_node]) {
-
-		}
-	}
-
-}
-void FileSystem::read_helper(uint32_t blocknum,
-							 int offset,
-							 int &length,
-							 std::array<std::byte, Disk::BLOCK_SIZE> &data,
-							 std::array<std::byte, Disk::BLOCK_SIZE> &ptr) {
-
-	if (length <= 0) {
-		return;
-	}
-
 	Block block;
-	fs_disk->read(blocknum, block.Data);
 
-	if (length > Disk::BLOCK_SIZE) {
-		if (offset) {
-			for (int i = offset; i < Disk::BLOCK_SIZE; i++) {
-				ptr[Disk::BLOCK_SIZE - length] = block.Data[i];
-				length--;
-			}
+	for (auto i = 0; i < DIRECT_BLOCKS; i++) {
+		if (offset < BLOCK_SIZE) {
+			fs_disk->read(inode.Direct[i], block.Data);
+			std::memcpy(data.data() + i*BLOCK_SIZE, block.Data + offset, BLOCK_SIZE - offset);
+			offset = 0;
 		} else {
-			for (int i = 0; i < Disk::BLOCK_SIZE; i++) {
-				ptr[Disk::BLOCK_SIZE - length] = block.Data[i];
-				length--;
-			}
-		}
-	} else {
-		if (offset) {
-			for (int i = offset; i < length; i++) {
-				ptr[Disk::BLOCK_SIZE - length] = block.Data[i];
-				length--;
-			}
-		} else {
-			for (int i = 0; i < length; i++) {
-				ptr[Disk::BLOCK_SIZE - length] = block.Data[i];
-				length--;
-			}
+			offset -= BLOCK_SIZE;
 		}
 	}
 
 }
-
-}
-
-

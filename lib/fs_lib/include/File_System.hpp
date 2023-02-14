@@ -67,7 +67,7 @@ class FileSystem {
 
   //  Directories and Files
 
-//  bool touch(char name[]);
+  bool touch(const std::string name);
 //
 //  bool mkdir(char name[]);
 //
@@ -191,7 +191,7 @@ class FileSystem {
    * @param data data buffer
    * @return number of bytes read; -1 if the inode is invalid
   */
-  ssize_t read(size_t i_number, std::array<std::byte, Disk::BLOCK_SIZE> &data, int length, size_t offset);
+  ssize_t read(size_t i_number, std::vector<std::byte> &data, size_t offset);
 //
 //  ssize_t write(size_t inumber, char *data, int length, size_t offset);
 //
