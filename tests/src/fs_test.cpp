@@ -73,3 +73,26 @@ TEST(FS, Debug_Test) {
 
 }
 
+TEST(FS, Read_Test) {
+	std::shared_ptr<Disk> disk = std::make_shared<Disk>();
+	disk->open("image.5.img", 5);
+
+	FileSystem::debug(disk);
+
+	FileSystem fs;
+
+	fs.set_cur_disk(disk);
+	fs.mount(disk);
+
+	EXPECT_EQ(fs.get_cur_disk()->mounted(), true);
+
+	// Test reading from a file , read first inode
+
+	std::vector<std::byte> data;
+
+//	fs.read(1, data, 4096);
+//
+//	EXPECT_EQ(data.size(), 4096);
+
+}
+

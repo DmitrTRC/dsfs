@@ -191,11 +191,14 @@ class FileSystem {
    * @param data data buffer
    * @return number of bytes read; -1 if the inode is invalid
   */
+ public: // Debugging purposes
   ssize_t read(size_t i_number, std::vector<std::byte> &data, size_t offset);
-//
-//  ssize_t write(size_t inumber, char *data, int length, size_t offset);
-//
-//  //  Helper functions for Layer 1
+
+ private:
+
+//  ssize_t write(size_t inumber, std::vector<std::byte> &data, int length, size_t offset);
+
+  //  Helper functions for Base Layer
 
   /**
    * @brief loads inode corresponding to i_number into node
