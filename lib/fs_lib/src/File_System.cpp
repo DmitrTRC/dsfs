@@ -499,14 +499,28 @@ ssize_t FileSystem::read(size_t i_number, std::vector<std::byte> &data, size_t o
 
 	Block block;
 
-	for (auto i = 0; i < DIRECT_BLOCKS; i++) {
-		if (offset < BLOCK_SIZE) {
-			fs_disk->read(inode.Direct[i], block.Data);
-			std::memcpy(data.data() + i*BLOCK_SIZE, block.Data + offset, BLOCK_SIZE - offset);
-			offset = 0;
+	size_t block_num = offset/Disk::BLOCK_SIZE;
+	size_t block_offset = offset%Disk::BLOCK_SIZE;
+
+	size_t bytes_read = 0;
+
+	while (bytes_read < length) {
+		if (block_num < 10) {
+			fs_disk->read(inode.Direct[block_num], block.Data);
 		} else {
-			offset -= BLOCK_SIZE;
+			Block indirect_block;
+			fs_disk->read(inode.Indirect, indirect_block.Data);
+			fs_disk->read(indirect_block.Pointers[block_num - 10], block.Data);
 		}
+
+		for (size_t i = block_offset; i < Disk::BLOCK_SIZE; i++) {
+			data[bytes_read] = block.Data[i];
+			bytes_read++;
+			if (bytes_read==length) break;
+		}
+
+		block_offset = 0;
+		block_num++;
 	}
 
 }
