@@ -218,11 +218,11 @@ class FileSystem {
    * @return Void function; returns nothing
   */
 
-//  void read_helper(uint32_t blocknum,
-//				   int offset,
-//				   int &length,
-//				   std::shared_ptr<std::vector<std::byte>> &data,
-//				   std::shared_ptr<std::vector<std::byte>> &ptr);
+  void read_helper(uint32_t blocknum,
+				   int offset,
+				   int *length, // Convert to smart pointer
+				   std::vector<std::byte> &data,
+				   std::vector<std::byte>::iterator &tail_ptr);
 
 //
 //  ssize_t write_ret(size_t inumber, Inode *node, int ret);

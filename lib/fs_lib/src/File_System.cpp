@@ -477,7 +477,7 @@ ssize_t FileSystem::read(size_t i_number, std::vector<std::byte> &data, size_t o
 	}
 
 	auto inode_size = stat(i_number);
-	auto length = data.size();
+	int length = data.size();
 
 	if (offset > inode_size) {
 		std::cerr << "Offset is greater than file size!" << std::endl;
@@ -492,35 +492,105 @@ ssize_t FileSystem::read(size_t i_number, std::vector<std::byte> &data, size_t o
 
 	Inode inode;
 
-	if (not load_inode(i_number, inode)) {
-		std::cerr << "Invalid inode number!" << std::endl;
-		return -1;
-	}
+	// Tail ptr
+	auto tail_ptr = data.begin();
 
-	Block block;
+	int to_read = length;
 
-	size_t block_num = offset/Disk::BLOCK_SIZE;
-	size_t block_offset = offset%Disk::BLOCK_SIZE;
+	if (offset < POINTERS_PER_INODE*Disk::BLOCK_SIZE) {
+		std::uint32_t direct_node = offset/Disk::BLOCK_SIZE;
+		offset = offset%Disk::BLOCK_SIZE;
 
-	size_t bytes_read = 0;
+		if (inode.Direct[direct_node]) {
+			read_helper(inode.Direct[direct_node], offset, &length, data, tail_ptr);
+			while (length > 0 && direct_node < POINTERS_PER_INODE && inode.Direct[direct_node]) {
+				direct_node++;
+				read_helper(inode.Direct[direct_node], 0, &length, data, tail_ptr);
+			}
 
-	while (bytes_read < length) {
-		if (block_num < 10) {
-			fs_disk->read(inode.Direct[block_num], block.Data);
+			if (length <= 0) {
+				return to_read;
+			}
+
+			if (direct_node==POINTERS_PER_INODE && inode.Indirect) {
+				Block indirect_block;
+				fs_disk->read(inode.Indirect, indirect_block.Data);
+
+				for (auto &block_num : indirect_block.Pointers) {
+					if (block_num && length > 0) {
+						read_helper(block_num, 0, &length, data, tail_ptr);
+					} else {
+						break;
+					}
+				}
+
+				if (length <= 0) return to_read;
+				else {
+					return to_read - length;
+				}
+			} else {
+				return to_read - length;
+			}
+
 		} else {
+			return 0;
+		}
+
+	} else {
+		if (not inode.Indirect) {
+			offset -= POINTERS_PER_INODE*Disk::BLOCK_SIZE;
+			std::uint32_t indirect_node = offset/Disk::BLOCK_SIZE;
+			offset = offset%Disk::BLOCK_SIZE;
+
 			Block indirect_block;
 			fs_disk->read(inode.Indirect, indirect_block.Data);
-			fs_disk->read(indirect_block.Pointers[block_num - 10], block.Data);
+
+			if (indirect_block.Pointers[indirect_node] && length > 0) {
+				indirect_node++;
+				read_helper(indirect_block.Pointers[indirect_node], offset, &length, data, tail_ptr);
+			}
+
+			for (auto &block_num : indirect_block.Pointers) {
+				if (block_num && length > 0) {
+					read_helper(block_num, 0, &length, data, tail_ptr);
+				} else {
+					break;
+				}
+
+			}
+
+			if (length <= 0) {
+				return to_read;
+
+			} else {
+				return to_read - length;
+			}
+
+		} else {
+			return 0;
 		}
 
-		for (size_t i = block_offset; i < Disk::BLOCK_SIZE; i++) {
-			data[bytes_read] = block.Data[i];
-			bytes_read++;
-			if (bytes_read==length) break;
-		}
-
-		block_offset = 0;
-		block_num++;
 	}
+
+}
+
+void FileSystem::read_helper(uint32_t blocknum,
+							 int offset,
+							 int *length,
+							 std::vector<std::byte> &data,
+							 std::vector<std::byte>::iterator &tail_ptr) {
+
+	Block block;
+	fs_disk->read(blocknum, block.Data);
+
+	if (offset + (*length) > Disk::BLOCK_SIZE) {
+		*length = Disk::BLOCK_SIZE - offset;
+	}
+
+	std::copy(block.Data.begin() + offset, block.Data.begin() + offset + (*length), tail_ptr);
+	tail_ptr += (*length);
+	*length -= (*length);
+
+}
 
 }
