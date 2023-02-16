@@ -227,9 +227,8 @@ class FileSystem {
 				   std::vector<std::byte> &data,
 				   std::vector<std::byte>::iterator &tail_ptr);
 
-//
-//  ssize_t write_ret(size_t inumber, Inode *node, int ret);
-//
+  ssize_t write_ret(size_t i_number, Inode &node, int ret);
+
 //  void read_buffer(int offset, int *read, int length, char *data, uint32_t blocknum);
 //
 //  bool check_allocation(Inode *node,
@@ -239,7 +238,7 @@ class FileSystem {
 //                        bool write_indirect,
 //                        Block indirect);
 //
-//  uint32_t allocate_block();
+  uint32_t allocate_block();
 //
   Directory curDir;
 //

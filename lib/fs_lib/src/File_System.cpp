@@ -592,5 +592,23 @@ void FileSystem::read_helper(uint32_t blocknum,
 	*length -= (*length);
 
 }
+uint32_t FileSystem::allocate_block() {
+
+	if (not mounted_) {
+		std::cerr << "No disk mounted!" << std::endl;
+		return 0;
+	}
+
+	for (uint32_t i = meta_data_.InodeBlocks + 1; i < meta_data_.Blocks; ++i) {
+
+		if (free_blocks_[i]==0) {
+			free_blocks_[i] = true;
+
+			return static_cast<uint32_t>(i);
+		}
+
+	}
+	return 0;
+}
 
 }
