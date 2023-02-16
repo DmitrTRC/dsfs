@@ -629,5 +629,21 @@ ssize_t FileSystem::write_ret(size_t i_number, FileSystem::Inode &node, int ret)
 	return static_cast<ssize_t>(ret);
 
 }
+void FileSystem::read_buffer(int offset, int *read, int length, std::vector<std::byte> &data, uint32_t blocknum) {
+	if (not mounted_) {
+		std::cerr << "No disk mounted!" << std::endl;
+		return;
+	}
+
+	Block block;
+
+	for (int i = offset; i < static_cast<int>(Disk::BLOCK_SIZE) && *read < length; i++) {
+		block.Data[i] = data[*read];
+		*read = *read + 1;
+	}
+
+	fs_disk->write(static_cast<int>(blocknum), block.Data);
+
+}
 
 }

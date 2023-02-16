@@ -229,8 +229,19 @@ class FileSystem {
 
   ssize_t write_ret(size_t i_number, Inode &node, int ret);
 
-//  void read_buffer(int offset, int *read, int length, char *data, uint32_t blocknum);
-//
+  /**
+   * @brief  - sanity check
+   * - allocate memory to ptr which acts as buffer for reading from disk
+   * - read data into ptr and change pointers accordingly
+   * - free the allocated memory
+   * @param offset 	starts writing at index = offset
+   * @param read  number of bytes read
+   * @param length number of bytes to be written
+   * @param data data buffer
+   * @param blocknum index into the free block bitmap
+   */
+  void read_buffer(int offset, int *read, int length, std::vector<std::byte> &data, uint32_t blocknum);
+
 //  bool check_allocation(Inode *node,
 //                        int read,
 //                        int orig_offset,
