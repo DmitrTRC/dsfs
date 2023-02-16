@@ -610,5 +610,24 @@ uint32_t FileSystem::allocate_block() {
 	}
 	return 0;
 }
+ssize_t FileSystem::write_ret(size_t i_number, FileSystem::Inode &node, int ret) {
+
+	if (not mounted_) {
+		std::cerr << "No disk mounted!" << std::endl;
+		return -1;
+	}
+
+	int i = static_cast<int>(i_number/INODES_PER_BLOCK);
+	int j = static_cast<int>(i_number%INODES_PER_BLOCK);
+
+	Block block;
+
+	fs_disk->read(i + 1, block.Data);
+	block.Inodes[j] = node;
+	fs_disk->write(i + 1, block.Data);
+
+	return static_cast<ssize_t>(ret);
+
+}
 
 }
