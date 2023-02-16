@@ -242,15 +242,15 @@ class FileSystem {
    */
   void read_buffer(int offset, int *read, int length, std::vector<std::byte> &data, uint32_t blocknum);
 
-//  bool check_allocation(Inode *node,
-//                        int read,
-//                        int orig_offset,
-//                        uint32_t &blocknum,
-//                        bool write_indirect,
-//                        Block indirect);
-//
+  bool check_allocation(Inode inode,
+						int read,
+						int orig_offset,
+						uint32_t &blocknum,
+						bool write_indirect,
+						Block indirect);
+
   uint32_t allocate_block();
-//
+
   Directory curDir;
 //
 //  Directory add_dir_entry(Directory dir, uint32_t inum, uint32_t type, char name[]);

@@ -645,5 +645,32 @@ void FileSystem::read_buffer(int offset, int *read, int length, std::vector<std:
 	fs_disk->write(static_cast<int>(blocknum), block.Data);
 
 }
+bool FileSystem::check_allocation(Inode inode,
+								  int read,
+								  int orig_offset,
+								  uint32_t &blocknum,
+								  bool write_indirect,
+								  FileSystem::Block indirect) {
+
+	if (not mounted_) {
+		std::cerr << "No disk mounted!" << std::endl;
+		return false;
+	}
+
+	if (!blocknum) {
+		blocknum = allocate_block();
+		if (!blocknum) {
+			std::cerr << "No more blocks available!" << std::endl;
+			inode.Size = orig_offset + read;
+			if (write_indirect) {
+				fs_disk->write(static_cast<int>(inode.Indirect), indirect.Data);
+			}
+
+			return false;
+		}
+	}
+
+	return true;
+}
 
 }
