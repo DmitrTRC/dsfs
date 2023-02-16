@@ -196,7 +196,7 @@ class FileSystem {
 
  private:
 
-//  ssize_t write(size_t inumber, std::vector<std::byte> &data, int length, size_t offset);
+  ssize_t write(size_t inumber, std::vector<std::byte> &data, int length, size_t offset);
 
   //  Helper functions for Base Layer
 
