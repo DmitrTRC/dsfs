@@ -508,6 +508,17 @@ bool FileSystem::cd(const std::array<char, NAME_SIZE> &name) {
 	return true;
 
 }
+bool FileSystem::ls() {
+
+	if (not mounted_) {
+		std::cout << "File system is not mounted" << std::endl;
+		return false;
+	}
+
+	auto name = ".";
+
+	return ls_dir(name);
 
 }
 
+}
