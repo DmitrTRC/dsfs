@@ -319,7 +319,7 @@ bool FileSystem::mkdir(const std::string &name) {
 	return true;
 
 }
-FileSystem::Directory FileSystem::rmdir_helper(Directory parent, std::string &name) {
+FileSystem::Directory FileSystem::rmdir_helper(Directory parent, std::array<char, NAME_SIZE> name) {
 
 	Directory dir, temp;
 	Block block;
@@ -334,14 +334,7 @@ FileSystem::Directory FileSystem::rmdir_helper(Directory parent, std::string &na
 		return dir;
 	}
 
-	if (name.empty() || name=="." || name==".." || name=="/" || name.length() > FileSystem::NAME_SIZE) { //TODO: Move
-		// this to a function or const array of constraints
-		std::cerr << "No valid directory name provided" << std::endl;
-		dir.Valid = 0;
-		return dir;
-	}
-
-	int offset = dir_lookup(parent, name);
+	int offset = dir_lookup(parent, static_cast<const std::string &>(name.data()));
 
 	if (offset==-1) {
 		std::cerr << "No such directory" << std::endl;
@@ -372,7 +365,7 @@ FileSystem::Directory FileSystem::rmdir_helper(Directory parent, std::string &na
 	for (auto &entry : dir.TableOfEntries) {
 
 		if (entry.valid==1) {
-			temp = rmdir_helper(dir, entry.name.data());
+			temp = rm_helper(dir, entry.name);
 
 			if (temp.Valid==0) {
 				return temp;
@@ -396,6 +389,44 @@ FileSystem::Directory FileSystem::rmdir_helper(Directory parent, std::string &na
 	write_dir_back(parent);
 
 	dir_counter_[block_idx]--;
+
+	return dir;
+
+}
+
+FileSystem::Directory FileSystem::rm_helper(Directory dir, std::array<char, NAME_SIZE> name) {
+
+	if (not mounted_) {
+		std::cerr << "File system is not mounted" << std::endl;
+		dir.Valid = 0;
+		return dir;
+	}
+
+	int offset = dir_lookup(dir, static_cast<const std::string &>(name.data()));
+
+	if (offset==-1) {
+		std::cerr << "No such file/directory" << std::endl;
+		dir.Valid = 0;
+		return dir;
+	}
+
+	if (dir.TableOfEntries[offset].type==0) {
+		return rmdir_helper(dir, name);
+	}
+
+	uint32_t i_num = dir.TableOfEntries[offset].i_num;
+
+	std::cout << "Removing Inode " << i_num << std::endl;
+
+	if (not remove(i_num)) {
+		std::cerr << "Failed to remove Inode" << std::endl;
+		dir.Valid = 0;
+		return dir;
+	}
+
+	dir.TableOfEntries[offset].valid = 0;
+
+	write_dir_back(dir);
 
 	return dir;
 
