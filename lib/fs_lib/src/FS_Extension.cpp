@@ -520,5 +520,21 @@ bool FileSystem::ls() {
 	return ls_dir(name);
 
 }
+bool FileSystem::rm(const std::array<char, NAME_SIZE> &name) {
+
+	if (not mounted_) {
+		std::cout << "File system is not mounted" << std::endl;
+		return false;
+	}
+
+	Directory temp_dir = rm_helper(curDir, name);
+
+	if (temp_dir.Valid==1) {
+		curDir = temp_dir;
+		return true;
+	}
+
+	return false;
+}
 
 }

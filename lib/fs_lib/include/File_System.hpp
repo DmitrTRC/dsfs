@@ -77,7 +77,7 @@ class FileSystem {
 
   bool ls();
 
-  bool rm(const std::string &name);
+  bool rm(const std::array<char, NAME_SIZE> &name);
 
   bool copyout(const std::string path, const std::string name);
 
