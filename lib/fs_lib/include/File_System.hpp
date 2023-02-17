@@ -105,7 +105,7 @@ class FileSystem {
 	u_int32_t InodeBlocks;
 	u_int32_t Inodes;
 	u_int32_t DirBlocks;
-	std::array<std::byte, 257> PasswordHash;
+	std::array<char, 257> PasswordHash;
 	u_int32_t Protected;
   };
 
