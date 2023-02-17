@@ -67,23 +67,23 @@ class FileSystem {
 
   //  Directories and Files
 
-//  bool touch(const std::string name);
-//
-//  bool mkdir(char name[]);
-//
-//  bool rmdir(char name[]);
-//
-//  bool cd(char name[]);
-//
-//  bool ls();
-//
-//  bool rm(char name[]);
-//
-//  bool copyout(char name[], const char *path);
-//
-//  bool copyin(const std::string path, const std::string name);
-//
-  bool ls_dir(const std::string &path);
+  bool touch(const std::string name);
+
+  bool mkdir(const std::string &name);
+
+  bool rmdir(const std::string &name);
+
+  bool cd(const std::string &name);
+
+  bool ls();
+
+  bool rm(const std::string &name);
+
+  bool copyout(const std::string path, const std::string name);
+
+  bool copyin(const std::string path, const std::string name);
+
+  bool ls_dir(const std::string &name);
 //
 //  void exit();
 //
