@@ -235,6 +235,90 @@ bool FileSystem::ls_dir(const std::string &name) {
 	return true;
 }
 
+bool FileSystem::mkdir(const std::string &name) {
+
+	if (not mounted_) {
+		std::cerr << "File system is not mounted" << std::endl;
+		return false;
+	}
+
+	if (name.empty() || name=="." || name==".." || name=="/" || name.length() > FileSystem::NAME_SIZE) { //TODO: Move
+		// this to a function or const array of constraints
+		std::cerr << "No valid directory name provided" << std::endl;
+		return false;
+	}
+
+	uint32_t block_idx = 0;
+
+	for (auto &dir : dir_counter_) {
+		if (dir < FileSystem::DIR_PER_BLOCK) {
+			break;
+		}
+		block_idx++;
+	}
+
+	if (block_idx==meta_data_.DirBlocks) {
+		std::cerr << "Directory limit reached" << std::endl;
+		return false;
+	}
+
+	Block block;
+
+	fs_disk->read(static_cast<int>(meta_data_.Blocks - 1 - block_idx), block.Data);
+
+	uint32_t offset = 0;
+
+	for (auto &dir : block.Directories) {
+		if (dir.Valid==0) {
+			break;
+		}
+		offset++;
+	}
+
+	if (offset==FileSystem::DIR_PER_BLOCK) {
+		std::cerr << "Directory limit reached" << std::endl;
+
+		return false;
+	}
+
+	Directory new_dir, temp_dir;
+
+	new_dir.Valid = 1;
+
+	new_dir.I_num = block_idx*FileSystem::DIR_PER_BLOCK + offset;
+
+	std::copy(name.begin(), name.end(), new_dir.Name.begin());
+
+	new_dir.Name[name.length()] = '\0';
+	std::string cur_str = ".", up_str = "..";
+	temp_dir = new_dir;
+
+	temp_dir = add_dir_entry(temp_dir, temp_dir.I_num, 0, cur_str);
+	temp_dir = add_dir_entry(temp_dir, curDir.I_num, 0, up_str);
+
+	if (temp_dir.Valid==0) {
+		std::cerr << "Error creating new directory" << std::endl;
+		return false;
+	}
+
+	new_dir = temp_dir;
+	temp_dir = add_dir_entry(curDir, new_dir.I_num, 0, new_dir.Name.data());
+
+	if (temp_dir.Valid==0) {
+		std::cerr << "Error adding new directory" << std::endl;
+		return false;
+	}
+
+	curDir = temp_dir;
+
+	write_dir_back(new_dir);
+	write_dir_back(curDir);
+
+	dir_counter_[block_idx]++;
+
+	return true;
+
+}
 
 
 //bool fs::FileSystem::copyin(const std::string path, const std::string name) {
