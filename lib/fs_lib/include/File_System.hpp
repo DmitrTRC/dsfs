@@ -59,7 +59,7 @@ class FileSystem {
 
   //  Security Functions
 
-//  bool set_password();
+  bool set_password();
 //
 //  bool change_password();
 //
@@ -105,8 +105,8 @@ class FileSystem {
 	u_int32_t InodeBlocks;
 	u_int32_t Inodes;
 	u_int32_t DirBlocks;
-//	std::array<std::byte, 257> PasswordHash;
-//	u_int32_t Protected;
+	std::array<std::byte, 257> PasswordHash;
+	u_int32_t Protected;
   };
 
   struct Dirent {

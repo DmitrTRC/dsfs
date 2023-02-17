@@ -2,14 +2,52 @@
 // Created by Dmitry Morozov on 14/2/23.
 //
 #include "File_System.hpp"
+#include "SHA256.h"
 
 #include <cinttypes>
 #include <fstream>
 #include <iostream>
 #include <iterator>
 #include <sstream>
+#include <string>
 #include <vector>
 
+namespace fs {
+
+bool FileSystem::set_password() {
+
+	if (not mounted_) {
+		std::cout << "File system is not mounted" << std::endl;
+		return false;
+	}
+
+	if (meta_data_.Protected) {
+
+		return change_password();
+	}
+
+	SHA256 hasher;
+	char pass[1000], line[1000];
+	Block block;
+
+	std::cout << "Enter new password: ";
+	std::getline(std::cin, pass);
+
+
+//	printf("Enter new password: ");
+//	if (fgets(line, BUFSIZ, stdin)==NULL) return false;
+//	sscanf(line, "%s", pass);
+
+	MetaData.Protected = 1;
+	strcpy(MetaData.PasswordHash, hasher(pass).c_str());
+
+	// Write chanes back to the disk */
+	block.Super = MetaData;
+	fs_disk->write(0, block.Data);
+	printf("New password set.\n");
+	return true;
+
+}
 bool fs::FileSystem::copyin(const std::string path, const std::string name) {
 
 	if (!mounted_) {
@@ -103,4 +141,5 @@ bool fs::FileSystem::touch(const std::string name) {
 
 }
 
-
+}
+}
