@@ -261,9 +261,9 @@ class FileSystem {
 
   Directory read_dir_from_offset(uint32_t offset);
 
-  Directory rmdir_helper(Directory parent, char name[]);
+  Directory rmdir_helper(Directory parent, std::string &name);
 
-  Directory rm_helper(Directory parent, char name[]);
+  Directory rm_helper(Directory parent, std::string &name);
 
 };
 

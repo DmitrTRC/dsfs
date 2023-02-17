@@ -319,7 +319,87 @@ bool FileSystem::mkdir(const std::string &name) {
 	return true;
 
 }
+FileSystem::Directory FileSystem::rmdir_helper(Directory parent, std::string &name) {
 
+	Directory dir, temp;
+	Block block;
+
+	uint32_t i_num;
+	uint32_t block_idx;
+	uint32_t block_off;
+
+	if (not mounted_) {
+		std::cerr << "File system is not mounted" << std::endl;
+		dir.Valid = 0;
+		return dir;
+	}
+
+	if (name.empty() || name=="." || name==".." || name=="/" || name.length() > FileSystem::NAME_SIZE) { //TODO: Move
+		// this to a function or const array of constraints
+		std::cerr << "No valid directory name provided" << std::endl;
+		dir.Valid = 0;
+		return dir;
+	}
+
+	int offset = dir_lookup(parent, name);
+
+	if (offset==-1) {
+		std::cerr << "No such directory" << std::endl;
+		dir.Valid = 0;
+		return dir;
+	}
+
+	i_num = parent.TableOfEntries[offset].i_num;
+
+	block_idx = i_num/FileSystem::DIR_PER_BLOCK;
+	block_off = i_num%FileSystem::DIR_PER_BLOCK;
+
+	fs_disk->read(static_cast<int>(meta_data_.Blocks - 1 - block_idx), block.Data);
+
+	dir = block.Directories[block_off];
+
+	if (dir.Valid==0) {
+		std::cerr << "Directory invalid" << std::endl;
+		return dir;
+	}
+
+	if (dir.Name==curDir.Name) {
+		std::cerr << "Current directory cannot be removed" << std::endl;
+		dir.Valid = 0;
+		return dir;
+	}
+
+	for (auto &entry : dir.TableOfEntries) {
+
+		if (entry.valid==1) {
+			temp = rmdir_helper(dir, entry.name.data());
+
+			if (temp.Valid==0) {
+				return temp;
+			}
+
+			dir = temp;
+		}
+
+		dir.TableOfEntries[offset].valid = 0;
+	}
+
+	fs_disk->read(static_cast<int>(meta_data_.Blocks - 1 - block_idx), block.Data);
+
+	dir.Valid = 0;
+	block.Directories[block_off] = dir;
+
+	fs_disk->write(static_cast<int>(meta_data_.Blocks - 1 - block_idx), block.Data);
+
+	parent.TableOfEntries[offset].valid = 0;
+
+	write_dir_back(parent);
+
+	dir_counter_[block_idx]--;
+
+	return dir;
+
+}
 
 //bool fs::FileSystem::copyin(const std::string path, const std::string name) {
 //
