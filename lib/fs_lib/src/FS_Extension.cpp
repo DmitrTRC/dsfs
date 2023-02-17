@@ -45,6 +45,99 @@ bool FileSystem::set_password() {
 
 }
 
+bool FileSystem::change_password() {
+
+	if (not mounted_) {
+		std::cout << "File system is not mounted" << std::endl;
+		return false;
+	}
+
+	if (meta_data_.Protected) {
+
+		SHA256 hash_f;
+		std::string pass;
+
+		std::cout << ("Enter current password: ");
+		std::getline(std::cin, pass);
+
+		if (hash_f(pass)!=std::string(meta_data_.PasswordHash.data())) {
+			std::cout << "Old password incorrect." << std::endl;
+			return false;
+		}
+
+		meta_data_.Protected = 0;
+
+	}
+
+	return FileSystem::set_password();
+
+}
+
+bool FileSystem::remove_password() {
+
+	if (not mounted_) {
+		std::cout << "File system is not mounted" << std::endl;
+		return false;
+	}
+
+	if (meta_data_.Protected) {
+
+		SHA256 hash_f;
+		std::string pass;
+
+		std::cout << ("Enter current password: ");
+		std::getline(std::cin, pass);
+
+		if (hash_f(pass)!=std::string(meta_data_.PasswordHash.data())) {
+			std::cout << "Old password incorrect." << std::endl;
+			return false;
+		}
+
+		meta_data_.Protected = 0;
+
+		Block block;
+
+		block.Super = meta_data_;
+		fs_disk->write(0, block.Data);
+		std::cout << "Password removed successfully." << std::endl;
+
+		return true;
+	}
+
+	return false;
+}
+
+FileSystem::Directory FileSystem::add_dir_entry(FileSystem::Directory &dir,
+												uint32_t i_num,
+												uint32_t type,
+												std::string name) {
+	Directory temp_dir = dir;
+
+	uint32_t idx = 0;
+
+	for (auto &entry : temp_dir.TableOfEntries) {
+		if (entry.valid==0) {
+			break;
+		}
+		idx++;
+	}
+
+	if (idx==FileSystem::ENTRIES_PER_DIR) {
+		std::cout << "Directory entry limit reached. Exiting..." << std::endl;
+		temp_dir.Valid = 0;
+		return temp_dir;
+	}
+
+	temp_dir.TableOfEntries[idx].i_num = i_num;
+	temp_dir.TableOfEntries[idx].type = type;
+	temp_dir.TableOfEntries[idx].valid = 1;
+
+	std::strcpy(temp_dir.TableOfEntries[idx].name.data(), name.c_str());
+
+	return temp_dir;
+
+}
+
 
 //bool fs::FileSystem::copyin(const std::string path, const std::string name) {
 //

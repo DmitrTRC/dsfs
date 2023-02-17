@@ -60,10 +60,10 @@ class FileSystem {
   //  Security Functions
 
   bool set_password();
-//
-//  bool change_password();
-//
-//  bool remove_password();
+
+  bool change_password();
+
+  bool remove_password();
 
   //  Directories and Files
 
@@ -252,13 +252,13 @@ class FileSystem {
   uint32_t allocate_block();
 
   Directory curDir;
-//
-//  Directory add_dir_entry(Directory dir, uint32_t inum, uint32_t type, char name[]);
-//
-//  void write_dir_back(struct Directory dir);
-//
-//  int dir_lookup(Directory dir, char name[]);
-//
+
+  Directory add_dir_entry(Directory &dir, uint32_t i_num, uint32_t type, std::string name);
+
+  void write_dir_back(struct Directory dir);
+
+  int dir_lookup(Directory dir, char name[]);
+
 //  Directory read_dir_from_offset(uint32_t offset);
 //
 //  Directory rmdir_helper(Directory parent, char name[]);
