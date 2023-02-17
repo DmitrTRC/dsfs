@@ -192,6 +192,50 @@ int FileSystem::dir_lookup(Directory &dir, const std::string &name) {
 
 }
 
+bool FileSystem::ls_dir(const std::string &name) {
+
+	if (not mounted_) {
+		std::cout << "File system is not mounted" << std::endl;
+		return false;
+	}
+
+	if (name.empty()) {
+		std::cout << "No directory name provided" << std::endl;
+		return false;
+	}
+
+	int offset = dir_lookup(curDir, name);
+
+	if (offset==-1) {
+		std::cout << "No such directory" << std::endl;
+		return false;
+	}
+
+	Directory dir = read_dir_from_offset(static_cast<uint32_t>(offset));
+
+	if (dir.Valid==0) {
+		std::cout << "Directory invalid" << std::endl;
+		return false;
+	}
+
+	std::cout << "   inum    |       name       | type" << std::endl;
+
+	for (auto &entry : dir.TableOfEntries) {
+		if (entry.valid==1) {
+			if (entry.type==1) {
+				std::cout << std::setw(10) << entry.i_num << " | " << std::setw(16) << entry.name.data() << " | "
+						  << std::setw(5) << "file" << std::endl;
+			} else {
+				std::cout << std::setw(10) << entry.i_num << " | " << std::setw(16) << entry.name.data() << " | "
+						  << std::setw(5) << "dir" << std::endl;
+			}
+		}
+	}
+
+	return true;
+}
+
+
 
 //bool fs::FileSystem::copyin(const std::string path, const std::string name) {
 //

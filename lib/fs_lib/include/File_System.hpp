@@ -83,7 +83,7 @@ class FileSystem {
 //
 //  bool copyin(const std::string path, const std::string name);
 //
-//  bool ls_dir(char name[]);
+  bool ls_dir(const std::string &path);
 //
 //  void exit();
 //
