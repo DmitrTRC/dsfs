@@ -138,6 +138,28 @@ FileSystem::Directory FileSystem::add_dir_entry(FileSystem::Directory &dir,
 
 }
 
+FileSystem::Directory FileSystem::read_dir_from_offset(uint32_t offset) {
+
+	if (offset >= FileSystem::ENTRIES_PER_DIR || curDir.TableOfEntries[offset].valid==0
+		|| curDir.TableOfEntries[offset].type!=0) {
+
+		Directory temp_dir;
+		temp_dir.Valid = 0;
+		return temp_dir;
+	}
+
+	uint32_t i_num = curDir.TableOfEntries[offset].i_num;
+	uint32_t block_idx = (i_num/FileSystem::DIR_PER_BLOCK);
+	uint32_t block_offset = (i_num%FileSystem::DIR_PER_BLOCK);
+
+	Block block;
+
+	fs_disk->read(static_cast<int>(meta_data_.Blocks - 1 - block_idx), block.Data);
+
+	return (block.Directories[block_offset]);
+}
+
+
 
 //bool fs::FileSystem::copyin(const std::string path, const std::string name) {
 //

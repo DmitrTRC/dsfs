@@ -259,11 +259,11 @@ class FileSystem {
 
   int dir_lookup(Directory dir, char name[]);
 
-//  Directory read_dir_from_offset(uint32_t offset);
-//
-//  Directory rmdir_helper(Directory parent, char name[]);
-//
-//  Directory rm_helper(Directory parent, char name[]);
+  Directory read_dir_from_offset(uint32_t offset);
+
+  Directory rmdir_helper(Directory parent, char name[]);
+
+  Directory rm_helper(Directory parent, char name[]);
 
 };
 
