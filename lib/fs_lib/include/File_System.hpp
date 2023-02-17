@@ -84,10 +84,10 @@ class FileSystem {
   bool copyin(const std::string path, const std::string name);
 
   bool ls_dir(const std::string &name);
-//
-//  void exit();
-//
-//  void stat();
+
+  void exit();
+
+  void stat();
 
   // Test Functions
   auto get_cur_disk() { return fs_disk; }

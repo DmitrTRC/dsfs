@@ -536,5 +536,66 @@ bool FileSystem::rm(const std::array<char, NAME_SIZE> &name) {
 
 	return false;
 }
+void FileSystem::exit() {
+
+	if (not mounted_) {
+		std::cout << "File system is not mounted" << std::endl;
+		return;
+	}
+
+	fs_disk->unmount();
+
+	mounted_ = false;
+
+}
+bool FileSystem::copyout(const std::string path, const std::string name) {
+
+	if (!mounted_) {
+		std::cout << "File system is not mounted" << std::endl;
+		return false;
+	}
+
+	int offset = dir_lookup(curDir, name);
+
+	if (offset==-1) {
+		std::cout << "No such file" << std::endl;
+		return false;
+	}
+
+	if (curDir.TableOfEntries[offset].type==0) {
+		std::cout << "Not a file" << std::endl;
+		return false;
+	}
+
+	uint32_t i_num = curDir.TableOfEntries[offset].i_num;
+
+	std::fstream stream(name, std::ios::binary | std::ios::out);
+
+	if (not stream.is_open()) {
+		std::cout << "Error opening file" << std::endl;
+		std::cout << "Error: " << strerror(errno) << std::endl;
+		return false;
+	}
+
+	std::vector<std::byte> buffer;
+	offset = 0;
+
+	std::istringstream iss(path);
+
+//	char buffer[4*BUFSIZ] = {0};
+//	offset = 0;
+//	while (true) {
+//		ssize_t result = read(inum, buffer, sizeof(buffer), offset);
+//		if (result <= 0) {
+//			break;
+//		}
+//		fwrite(buffer, 1, result, stream);
+//		offset += result;
+//	}
+//
+//	printf("%d bytes copied\n", offset);
+//	fclose(stream);
+//	return true;
+}
 
 }
