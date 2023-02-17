@@ -481,6 +481,31 @@ bool FileSystem::touch(const std::array<char, NAME_SIZE> &name) {
 	write_dir_back(curDir);
 
 	return true;
+}
+bool FileSystem::cd(const std::array<char, NAME_SIZE> &name) {
+
+	if (not mounted_) {
+		std::cout << "File system is not mounted" << std::endl;
+		return false;
+	}
+
+	int offset = dir_lookup(curDir, static_cast<const std::string &>(name.data()));
+
+	if (offset==-1) {
+		std::cout << "No such directory" << std::endl;
+		return false;
+	}
+
+	Directory temp_dir = read_dir_from_offset(offset);
+
+	if (temp_dir.Valid==0) {
+		std::cout << "Directory invalid" << std::endl;
+		return false;
+	}
+
+	curDir = temp_dir;
+
+	return true;
 
 }
 

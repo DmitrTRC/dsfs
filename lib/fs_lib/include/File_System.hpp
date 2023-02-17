@@ -73,7 +73,7 @@ class FileSystem {
 
   bool rmdir(const std::array<char, NAME_SIZE> &name);
 
-  bool cd(const std::string &name);
+  bool cd(const std::array<char, NAME_SIZE> &name);
 
   bool ls();
 
