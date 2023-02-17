@@ -159,6 +159,38 @@ FileSystem::Directory FileSystem::read_dir_from_offset(uint32_t offset) {
 	return (block.Directories[block_offset]);
 }
 
+void FileSystem::write_dir_back(Directory &dir) {
+
+	uint32_t block_idx = (dir.I_num/FileSystem::DIR_PER_BLOCK);
+	uint32_t block_offset = (dir.I_num%FileSystem::DIR_PER_BLOCK);
+
+	Block block;
+
+	fs_disk->read(static_cast<int>(meta_data_.Blocks - 1 - block_idx), block.Data);
+	block.Directories[block_offset] = dir;
+
+	fs_disk->write(static_cast<int>(meta_data_.Blocks - 1 - block_idx), block.Data);
+}
+
+int FileSystem::dir_lookup(Directory &dir, const std::string &name) {
+
+	uint32_t offset = 0;
+
+	for (auto &entry : dir.TableOfEntries) {
+		if ((entry.valid==1) && (std::string(entry.name.data())==name)) {
+			break;
+		}
+		offset++;
+
+	}
+
+	if (offset==FileSystem::ENTRIES_PER_DIR) {
+		return -1;
+	}
+
+	return static_cast<int>(offset);
+
+}
 
 
 //bool fs::FileSystem::copyin(const std::string path, const std::string name) {

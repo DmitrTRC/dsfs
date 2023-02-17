@@ -255,9 +255,9 @@ class FileSystem {
 
   Directory add_dir_entry(Directory &dir, uint32_t i_num, uint32_t type, std::string name);
 
-  void write_dir_back(struct Directory dir);
+  void write_dir_back(struct Directory &dir);
 
-  int dir_lookup(Directory dir, char name[]);
+  int dir_lookup(Directory &dir, const std::string &name);
 
   Directory read_dir_from_offset(uint32_t offset);
 
