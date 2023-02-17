@@ -717,7 +717,7 @@ ssize_t FileSystem::write(size_t inumber, std::vector<std::byte> &data, int leng
 
 		if (read==length) return write_ret(inumber, inode, length);
 		else {
-			for (int i = direct_node; i < (int)POINTERS_PER_INODE; i++) {
+			for (int i = direct_node; i < static_cast<int>(POINTERS_PER_INODE); i++) {
 				if (!check_allocation(inode, read, origin_offset, inode.Direct[direct_node], false, indirect_block)) {
 					return write_ret(inumber, inode, read);
 				}
@@ -770,7 +770,7 @@ ssize_t FileSystem::write(size_t inumber, std::vector<std::byte> &data, int leng
 
 			fs_disk->read(inode.Indirect, indirect_block.Data);
 
-			for (int i = 0; i < (int)POINTERS_PER_BLOCK; i++) {
+			for (int i = 0; i < static_cast<int>(POINTERS_PER_BLOCK); i++) {
 				indirect_block.Pointers[i] = 0;
 			}
 		}
@@ -792,7 +792,7 @@ ssize_t FileSystem::write(size_t inumber, std::vector<std::byte> &data, int leng
 				if (!check_allocation(inode, read, origin_offset, indirect_block.Pointers[j], true, indirect_block)) {
 					return write_ret(inumber, inode, read);
 				}
-				read_buffer(0, &read, length, data, indirect.Pointers[j]);
+				read_buffer(0, &read, length, data, indirect_block.Pointers[j]);
 
 				if (read==length) {
 					fs_disk->write(inode.Indirect, indirect_block.Data);
