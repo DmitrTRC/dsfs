@@ -67,11 +67,11 @@ class FileSystem {
 
   //  Directories and Files
 
-  bool touch(const std::string name);
+  bool touch(const std::array<char, NAME_SIZE> &name);
 
   bool mkdir(const std::string &name);
 
-  bool rmdir(const std::string &name);
+  bool rmdir(const std::array<char, NAME_SIZE> &name);
 
   bool cd(const std::string &name);
 
