@@ -67,7 +67,7 @@ class FileSystem {
 
   //  Directories and Files
 
-  bool touch(const std::string name);
+//  bool touch(const std::string name);
 //
 //  bool mkdir(char name[]);
 //
@@ -81,7 +81,7 @@ class FileSystem {
 //
 //  bool copyout(char name[], const char *path);
 //
-  bool copyin(const std::string path, const std::string name);
+//  bool copyin(const std::string path, const std::string name);
 //
 //  bool ls_dir(char name[]);
 //
@@ -91,7 +91,7 @@ class FileSystem {
 
   // Test Functions
   auto get_cur_disk() { return fs_disk; }
-  auto mounted() { return mounted_; }
+  [[nodiscard]] auto mounted() const { return mounted_; }
 
   void set_cur_disk(std::shared_ptr<Disk> &disk);
  private:
@@ -165,13 +165,13 @@ class FileSystem {
 
   /**
    * @brief creates a new inode
-   * @return the inumber of the newly created inode
+   * @return the i_number of the newly created inode
   */
   ssize_t create();
 
   /**
    * @brief removes the inode
-   * @param inumber index into the inode table of the inode to be removed
+   * @param i_number index into the inode table of the inode to be removed
    * @return true if the remove operation was successful; false otherwise
   */
   bool remove(size_t);
@@ -196,7 +196,7 @@ class FileSystem {
 
  private:
 
-  ssize_t write(size_t inumber, std::vector<std::byte> &data, int length, size_t offset);
+  ssize_t write(size_t i_number, std::vector<std::byte> &data, int length, size_t offset);
 
   //  Helper functions for Base Layer
 
@@ -213,7 +213,7 @@ class FileSystem {
 
   /**
    * @brief Read the block from disk and changes the pointers accordingly
-   * @param blocknum index into the free block bitmap
+   * @param block_num index into the free block bitmap
    * @param offset Start reading from index = offset
    * @param length Number of bytes to be read
    * @param data data buffer
@@ -221,7 +221,7 @@ class FileSystem {
    * @return Void function; returns nothing
   */
 
-  void read_helper(uint32_t blocknum,
+  void read_helper(uint32_t block_num,
 				   int offset,
 				   int *length, // Convert to smart pointer
 				   std::vector<std::byte> &data,
@@ -238,9 +238,9 @@ class FileSystem {
    * @param read  number of bytes read
    * @param length number of bytes to be written
    * @param data data buffer
-   * @param blocknum index into the free block bitmap
+   * @param block_num index into the free block bitmap
    */
-  void read_buffer(int offset, int *read, int length, std::vector<std::byte> &data, uint32_t blocknum);
+  void read_buffer(int offset, int *read, int length, std::vector<std::byte> &data, uint32_t block_num);
 
   bool check_allocation(Inode inode,
 						int read,

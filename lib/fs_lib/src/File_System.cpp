@@ -2,9 +2,7 @@
 #include "sha256.hpp"
 
 #include <algorithm>
-#include <array>
 #include <cmath>
-
 #include <iostream>
 #include <memory>
 
@@ -54,13 +52,15 @@ void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
 				if (node.Indirect) {
 					std::cout << "    Indirect Blocks: ";
 
-					disk->read(node.Indirect, block.Data);
+					disk->read(static_cast<int>(node.Indirect), block.Data);
 
 					for (auto &indirect : block.Pointers) {
+
 						if (indirect) {
 							std::cout << indirect << " ";
 						}
 					}
+
 					std::cout << std::endl;
 				}
 			}
@@ -71,7 +71,6 @@ void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
 	std::cout << "  Directory Size: " << sizeof(Directory) << std::endl;
 	std::cout << "  Indirect Size: " << sizeof(std::uint32_t) << std::endl;
 	std::cout << "  Data Size: " << sizeof(std::byte) << std::endl;
-
 	std::cout << "  Directory Blocks: " << block.Super.DirBlocks << std::endl;
 
 //	std::cout << "  Protected: " << block.Super.Protected << std::endl;
@@ -80,15 +79,17 @@ void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
 
 bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
 
-	if (disk->mounted()) return false;
+	if (disk->mounted()) {
+		return false;
+	}
 
 	Block block;
 
 	block.Super.MagicNumber = MAGIC_NUMBER;
 	block.Super.Blocks = static_cast<std::uint32_t>(disk->size());
-	block.Super.InodeBlocks = static_cast<std::uint32_t>(std::ceil((disk->size()*1.00)/10));
+	block.Super.InodeBlocks = static_cast<std::uint32_t>(std::ceil((static_cast<double >(disk->size())*1.00)/10));
 	block.Super.Inodes = block.Super.InodeBlocks*INODES_PER_BLOCK;
-	block.Super.DirBlocks = static_cast<std::uint32_t>(std::ceil((disk->size()*1.00)/100));
+	block.Super.DirBlocks = static_cast<std::uint32_t>(std::ceil((static_cast<double>(disk->size())*1.00)/100));
 
 	// ------- 1-d Write super block -------
 	disk->write(0, block.Data);
@@ -115,7 +116,7 @@ bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
 	for (uint32_t i = block.Super.InodeBlocks + 1; i < block.Super.Blocks - block.Super.DirBlocks; ++i) {
 		Block data_block;
 		data_block.Data.fill(std::byte(0));
-		disk->write(i, data_block.Data);
+		disk->write(static_cast<int>(i), data_block.Data);
 	}
 
 	// ------- 4-d Write directory blocks -------
@@ -134,7 +135,7 @@ bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
 
 		data_block.Directories.fill(dir);
 
-		disk->write(i, data_block.Data);
+		disk->write(static_cast<int>(i), data_block.Data);
 
 	}
 	// ------- 5-d Write root directory -------
@@ -173,7 +174,7 @@ bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
 	dir_block.Directories[0] = root;
 
 	// ------- 6-d Write root directory to disk -------
-	disk->write(block.Super.Blocks - 1, dir_block.Data);
+	disk->write(static_cast<int>(block.Super.Blocks - 1), dir_block.Data);
 
 	return true;
 }
@@ -193,16 +194,29 @@ FileSystem::~FileSystem() {
 
 bool FileSystem::mount(const std::shared_ptr<Disk> &disk) {
 
-	if (disk->mounted()) return false;
+	if (disk->mounted()) {
+		return false;
+	}
 
 	Block block;
 
 	disk->read(0, block.Data);
 
-	if (block.Super.MagicNumber!=MAGIC_NUMBER) return false;
-	if (block.Super.InodeBlocks!=static_cast<std::uint32_t>(std::ceil((disk->size()*1.00)/10))) return false;
-	if (block.Super.Inodes!=block.Super.InodeBlocks*INODES_PER_BLOCK) return false;
-	if (block.Super.DirBlocks!=static_cast<std::uint32_t>(std::ceil((disk->size()*1.00)/100))) return false;
+	if (block.Super.MagicNumber!=MAGIC_NUMBER) {
+		return false;
+	}
+
+	if (block.Super.InodeBlocks!=static_cast<std::uint32_t>(std::ceil((static_cast<double >(disk->size())*1.00)/10))) {
+		return false;
+	}
+
+	if (block.Super.Inodes!=block.Super.InodeBlocks*INODES_PER_BLOCK) {
+		return false;
+	}
+
+	if (block.Super.DirBlocks!=static_cast<std::uint32_t>(std::ceil((static_cast<double>(disk->size())*1.00)/100))) {
+		return false;
+	}
 
 //	if (block.Super.Protected) {
 //		std::cout << "Enter password: ";
@@ -262,7 +276,7 @@ bool FileSystem::mount(const std::shared_ptr<Disk> &disk) {
 
 						Block indirect_block;
 
-						fs_disk->read(inode.Indirect, indirect_block.Data);
+						fs_disk->read(static_cast<int>(inode.Indirect), indirect_block.Data);
 
 						for (auto &block_num : indirect_block.Pointers) {
 
@@ -294,15 +308,18 @@ bool FileSystem::mount(const std::shared_ptr<Disk> &disk) {
 	Block dir_block;
 
 	for (auto dirs = 0; dirs < meta_data_.DirBlocks; ++dirs) {
-		disk->read(meta_data_.Blocks - dirs - 1, dir_block.Data);
+		disk->read(static_cast<int>(meta_data_.Blocks) - dirs - 1, dir_block.Data);
 
 		for (auto &dir : dir_block.Directories) {
+
 			if (dir.Valid) {
 				dir_counter_[dirs]++;
 				free_blocks_[meta_data_.Blocks - dirs - 1] = true;
 
 				for (auto &entry : dir.TableOfEntries) {
+
 					if (entry.valid) {
+
 						if (entry.i_num < meta_data_.Inodes) {
 							inode_counter_[entry.i_num]++;
 						} else {
@@ -324,23 +341,29 @@ bool FileSystem::mount(const std::shared_ptr<Disk> &disk) {
 
 	return true;
 }
+
 void FileSystem::set_cur_disk(std::shared_ptr<Disk> &disk) {
 	fs_disk = disk;
 }
+
 ssize_t FileSystem::create() {
+
 	if (not mounted_) {
 		std::cerr << "No disk mounted!" << std::endl;
 		return -1;
 	}
 
 	Block block;
+
 	fs_disk->read(0, block.Data);
 
 	for (uint32_t i = 1; i <= meta_data_.InodeBlocks; i++) {
 
-		if (inode_counter_[i - 1]==INODES_PER_BLOCK) continue;
+		if (inode_counter_[i - 1]==INODES_PER_BLOCK) {
+			continue;
+		}
 
-		fs_disk->read(i, block.Data);
+		fs_disk->read(static_cast<int>(i), block.Data);
 
 		for (uint32_t j = 0; j < INODES_PER_BLOCK; j++) {
 
@@ -356,7 +379,7 @@ ssize_t FileSystem::create() {
 				free_blocks_[i] = true;
 				inode_counter_[i - 1]++;
 
-				fs_disk->write(i, block.Data);
+				fs_disk->write(static_cast<int>(i), block.Data);
 
 				return (((i - 1)*INODES_PER_BLOCK) + j);
 			}
@@ -366,6 +389,7 @@ ssize_t FileSystem::create() {
 	return -1;
 
 }
+
 bool FileSystem::remove(size_t i_number) {
 
 	if (not mounted_) {
@@ -389,6 +413,7 @@ bool FileSystem::remove(size_t i_number) {
 	inode.Size = 0;
 
 	for (auto &block_num : inode.Direct) {
+
 		if (block_num) {
 			free_blocks_[block_num] = false;
 			block_num = 0;
@@ -398,12 +423,13 @@ bool FileSystem::remove(size_t i_number) {
 	if (inode.Indirect) {
 		Block indirect_block;
 
-		fs_disk->read(inode.Indirect, indirect_block.Data);
+		fs_disk->read(static_cast<int>(inode.Indirect), indirect_block.Data);
 
 		free_blocks_[inode.Indirect] = false;
 		inode.Indirect = 0;
 
 		for (auto &block_num : indirect_block.Pointers) {
+
 			if (block_num) {
 				free_blocks_[block_num] = false;
 				block_num = 0;
@@ -413,9 +439,10 @@ bool FileSystem::remove(size_t i_number) {
 	}
 
 	Block block;
-	fs_disk->read(i_number/INODES_PER_BLOCK + 1, block.Data);
+
+	fs_disk->read(static_cast<int>(i_number/INODES_PER_BLOCK + 1), block.Data);
 	block.Inodes[i_number%INODES_PER_BLOCK] = inode;
-	fs_disk->write(i_number/INODES_PER_BLOCK + 1, block.Data);
+	fs_disk->write(static_cast<int>(i_number/INODES_PER_BLOCK + 1), block.Data);
 
 	return true;
 }
@@ -438,7 +465,7 @@ bool fs::FileSystem::load_inode(size_t i_number, FileSystem::Inode &inode) {
 	auto j = i_number%INODES_PER_BLOCK;
 
 	if (inode_counter_[i]) {
-		fs_disk->read(i + 1, block.Data);
+		fs_disk->read(static_cast<int>(i) + 1, block.Data);
 
 		if (block.Inodes[j].Valid) {
 			inode = block.Inodes[j];
@@ -448,6 +475,7 @@ bool fs::FileSystem::load_inode(size_t i_number, FileSystem::Inode &inode) {
 
 	return false;
 }
+
 ssize_t FileSystem::stat(size_t i_number) {
 
 	if (not mounted_) {
@@ -469,6 +497,7 @@ ssize_t FileSystem::stat(size_t i_number) {
 
 	return inode.Size;
 }
+
 ssize_t FileSystem::read(size_t i_number, std::vector<std::byte> &data, size_t offset) {
 
 	if (not mounted_) {
@@ -477,7 +506,7 @@ ssize_t FileSystem::read(size_t i_number, std::vector<std::byte> &data, size_t o
 	}
 
 	auto inode_size = stat(i_number);
-	int length = data.size();
+	int length = static_cast<int>(data.size());
 
 	if (offset > inode_size) {
 		std::cerr << "Offset is greater than file size!" << std::endl;
@@ -485,9 +514,9 @@ ssize_t FileSystem::read(size_t i_number, std::vector<std::byte> &data, size_t o
 	}
 
 	if (offset + length > inode_size) {
-		length = inode_size - offset;
+		length = static_cast<int>(inode_size - offset);
 	} else {
-		length = data.size();
+		length = static_cast<int>(data.size());
 	}
 
 	Inode inode;
@@ -502,7 +531,8 @@ ssize_t FileSystem::read(size_t i_number, std::vector<std::byte> &data, size_t o
 		offset = offset%Disk::BLOCK_SIZE;
 
 		if (inode.Direct[direct_node]) {
-			read_helper(inode.Direct[direct_node], offset, &length, data, tail_ptr);
+			read_helper(inode.Direct[direct_node], static_cast<int>(offset), &length, data, tail_ptr);
+
 			while (length > 0 && direct_node < POINTERS_PER_INODE && inode.Direct[direct_node]) {
 				direct_node++;
 				read_helper(inode.Direct[direct_node], 0, &length, data, tail_ptr);
@@ -514,9 +544,11 @@ ssize_t FileSystem::read(size_t i_number, std::vector<std::byte> &data, size_t o
 
 			if (direct_node==POINTERS_PER_INODE && inode.Indirect) {
 				Block indirect_block;
-				fs_disk->read(inode.Indirect, indirect_block.Data);
+
+				fs_disk->read(static_cast<int>(inode.Indirect), indirect_block.Data);
 
 				for (auto &block_num : indirect_block.Pointers) {
+
 					if (block_num && length > 0) {
 						read_helper(block_num, 0, &length, data, tail_ptr);
 					} else {
@@ -524,8 +556,9 @@ ssize_t FileSystem::read(size_t i_number, std::vector<std::byte> &data, size_t o
 					}
 				}
 
-				if (length <= 0) return to_read;
-				else {
+				if (length <= 0) {
+					return to_read;
+				} else {
 					return to_read - length;
 				}
 			} else {
@@ -537,20 +570,23 @@ ssize_t FileSystem::read(size_t i_number, std::vector<std::byte> &data, size_t o
 		}
 
 	} else {
+
 		if (not inode.Indirect) {
 			offset -= POINTERS_PER_INODE*Disk::BLOCK_SIZE;
 			std::uint32_t indirect_node = offset/Disk::BLOCK_SIZE;
 			offset = offset%Disk::BLOCK_SIZE;
 
 			Block indirect_block;
-			fs_disk->read(inode.Indirect, indirect_block.Data);
+
+			fs_disk->read(static_cast<int>(inode.Indirect), indirect_block.Data);
 
 			if (indirect_block.Pointers[indirect_node] && length > 0) {
 				indirect_node++;
-				read_helper(indirect_block.Pointers[indirect_node], offset, &length, data, tail_ptr);
+				read_helper(indirect_block.Pointers[indirect_node], static_cast<int>(offset), &length, data, tail_ptr);
 			}
 
 			for (auto &block_num : indirect_block.Pointers) {
+
 				if (block_num && length > 0) {
 					read_helper(block_num, 0, &length, data, tail_ptr);
 				} else {
@@ -561,7 +597,6 @@ ssize_t FileSystem::read(size_t i_number, std::vector<std::byte> &data, size_t o
 
 			if (length <= 0) {
 				return to_read;
-
 			} else {
 				return to_read - length;
 			}
@@ -574,17 +609,18 @@ ssize_t FileSystem::read(size_t i_number, std::vector<std::byte> &data, size_t o
 
 }
 
-void FileSystem::read_helper(uint32_t blocknum,
+void FileSystem::read_helper(uint32_t block_num,
 							 int offset,
 							 int *length,
-							 std::vector<std::byte> &data,
+							 std::vector<std::byte> &data, //FIXME: remove
 							 std::vector<std::byte>::iterator &tail_ptr) {
 
 	Block block;
-	fs_disk->read(blocknum, block.Data);
+
+	fs_disk->read(static_cast<int>(block_num), block.Data);
 
 	if (offset + (*length) > Disk::BLOCK_SIZE) {
-		*length = Disk::BLOCK_SIZE - offset;
+		*length = static_cast<int>(Disk::BLOCK_SIZE - offset);
 	}
 
 	std::copy(block.Data.begin() + offset, block.Data.begin() + offset + (*length), tail_ptr);
@@ -592,6 +628,7 @@ void FileSystem::read_helper(uint32_t blocknum,
 	*length -= (*length);
 
 }
+
 uint32_t FileSystem::allocate_block() {
 
 	if (not mounted_) {
@@ -608,8 +645,10 @@ uint32_t FileSystem::allocate_block() {
 		}
 
 	}
+
 	return 0;
 }
+
 ssize_t FileSystem::write_ret(size_t i_number, FileSystem::Inode &node, int ret) {
 
 	if (not mounted_) {
@@ -629,7 +668,8 @@ ssize_t FileSystem::write_ret(size_t i_number, FileSystem::Inode &node, int ret)
 	return static_cast<ssize_t>(ret);
 
 }
-void FileSystem::read_buffer(int offset, int *read, int length, std::vector<std::byte> &data, uint32_t blocknum) {
+
+void FileSystem::read_buffer(int offset, int *read, int length, std::vector<std::byte> &data, uint32_t block_num) {
 	if (not mounted_) {
 		std::cerr << "No disk mounted!" << std::endl;
 		return;
@@ -642,13 +682,13 @@ void FileSystem::read_buffer(int offset, int *read, int length, std::vector<std:
 		*read = *read + 1;
 	}
 
-	fs_disk->write(static_cast<int>(blocknum), block.Data);
+	fs_disk->write(static_cast<int>(block_num), block.Data);
 
 }
 bool FileSystem::check_allocation(Inode inode,
 								  int read,
 								  int orig_offset,
-								  uint32_t &blocknum,
+								  uint32_t &block_num,
 								  bool write_indirect,
 								  FileSystem::Block indirect) {
 
@@ -657,11 +697,13 @@ bool FileSystem::check_allocation(Inode inode,
 		return false;
 	}
 
-	if (!blocknum) {
-		blocknum = allocate_block();
-		if (!blocknum) {
+	if (!block_num) {
+		block_num = allocate_block();
+
+		if (!block_num) {
 			std::cerr << "No more blocks available!" << std::endl;
 			inode.Size = orig_offset + read;
+
 			if (write_indirect) {
 				fs_disk->write(static_cast<int>(inode.Indirect), indirect.Data);
 			}
@@ -669,10 +711,11 @@ bool FileSystem::check_allocation(Inode inode,
 			return false;
 		}
 	}
+
 	return true;
 }
 
-ssize_t FileSystem::write(size_t inumber, std::vector<std::byte> &data, int length, size_t offset) {
+ssize_t FileSystem::write(size_t i_number, std::vector<std::byte> &data, int length, size_t offset) {
 
 	if (not mounted_) {
 		std::cerr << "No disk mounted!" << std::endl;
@@ -682,13 +725,13 @@ ssize_t FileSystem::write(size_t inumber, std::vector<std::byte> &data, int leng
 	Inode inode;
 	Block indirect_block;
 	int read = 0;
-	int origin_offset = offset;
+	int origin_offset = static_cast<int>(offset);
 
 	if (length + offset > (POINTERS_PER_BLOCK + POINTERS_PER_INODE)*Disk::BLOCK_SIZE) {
 		return -1;
 	}
 
-	if (!load_inode(inumber, inode)) {
+	if (!load_inode(i_number, inode)) {
 		inode.Valid = true;
 		inode.Size = length + offset;
 
@@ -697,43 +740,50 @@ ssize_t FileSystem::write(size_t inumber, std::vector<std::byte> &data, int leng
 		}
 
 		inode.Indirect = 0;
-		inode_counter_[inumber/INODES_PER_BLOCK]++;
+		inode_counter_[i_number/INODES_PER_BLOCK]++;
 
-		free_blocks_[inumber/INODES_PER_BLOCK + 1] = true;
+		free_blocks_[i_number/INODES_PER_BLOCK + 1] = true;
 	} else {
 		inode.Size = std::max(static_cast<int>(inode.Size), length + static_cast<int>(offset));
 	}
 
 	if (offset < POINTERS_PER_INODE*Disk::BLOCK_SIZE) {
 
-		int direct_node = offset/Disk::BLOCK_SIZE;
+		int direct_node = static_cast<int>(offset/Disk::BLOCK_SIZE);
 		offset %= Disk::BLOCK_SIZE;
 
 		if (!check_allocation(inode, read, origin_offset, inode.Direct[direct_node], false, indirect_block)) {
-			return write_ret(inumber, inode, read);
+			return write_ret(i_number, inode, read);
 		}
 
-		read_buffer(offset, &read, length, data, inode.Direct[direct_node++]);
+		read_buffer(static_cast<int>(offset), &read, length, data, inode.Direct[direct_node++]);
 
-		if (read==length) return write_ret(inumber, inode, length);
-		else {
+		if (read==length) {
+			return write_ret(i_number, inode, length);
+		} else {
+
 			for (int i = direct_node; i < static_cast<int>(POINTERS_PER_INODE); i++) {
+
 				if (!check_allocation(inode, read, origin_offset, inode.Direct[direct_node], false, indirect_block)) {
-					return write_ret(inumber, inode, read);
+					return write_ret(i_number, inode, read);
 				}
+
 				read_buffer(0, &read, length, data, inode.Direct[direct_node++]);
 
-				if (read==length) return write_ret(inumber, inode, length);
+				if (read==length) {
+					return write_ret(i_number, inode, length);
+				}
 			}
 
-			if (inode.Indirect) fs_disk->read(inode.Indirect, indirect_block.Data);
-			else {
+			if (inode.Indirect) {
+				fs_disk->read(static_cast<int>(inode.Indirect), indirect_block.Data);
+			} else {
 
 				if (!check_allocation(inode, read, origin_offset, inode.Indirect, false, indirect_block)) {
-					return write_ret(inumber, inode, read);
+					return write_ret(i_number, inode, read);
 				}
 
-				fs_disk->read(inode.Indirect, indirect_block.Data);
+				fs_disk->read(static_cast<int>(inode.Indirect), indirect_block.Data);
 
 				for (int i = 0; i < static_cast<int>(POINTERS_PER_BLOCK); i++) {
 					indirect_block.Pointers[i] = 0;
@@ -743,69 +793,78 @@ ssize_t FileSystem::write(size_t inumber, std::vector<std::byte> &data, int leng
 			for (int j = 0; j < static_cast<int>(POINTERS_PER_BLOCK); j++) {
 
 				if (!check_allocation(inode, read, origin_offset, indirect_block.Pointers[j], true, indirect_block)) {
-					return write_ret(inumber, inode, read);
+					return write_ret(i_number, inode, read);
 				}
 
 				read_buffer(0, &read, length, data, indirect_block.Pointers[j]);
 
 				if (read==length) {
-					fs_disk->write(inode.Indirect, indirect_block.Data);
-					return write_ret(inumber, inode, length);
+					fs_disk->write(static_cast<int>(inode.Indirect), indirect_block.Data);
+					return write_ret(i_number, inode, length);
 				}
 			}
 
-			fs_disk->write(inode.Indirect, indirect_block.Data);
-			return write_ret(inumber, inode, read);
+			fs_disk->write(static_cast<int>(inode.Indirect), indirect_block.Data);
+			return write_ret(i_number, inode, read);
 		}
+
 	} else {
 		offset -= (Disk::BLOCK_SIZE*POINTERS_PER_INODE);
-		int indirect_node = offset/Disk::BLOCK_SIZE;
+		int indirect_node = static_cast<int>(offset/Disk::BLOCK_SIZE);
 		offset %= Disk::BLOCK_SIZE;
 
-		if (inode.Indirect) fs_disk->read(inode.Indirect, indirect_block.Data);
-		else {
+		if (inode.Indirect) {
+			fs_disk->read(static_cast<int>(inode.Indirect), indirect_block.Data);
+		} else {
+
 			if (!check_allocation(inode, read, origin_offset, inode.Indirect, false, indirect_block)) {
-				return write_ret(inumber, inode, read);
+				return write_ret(i_number, inode, read);
 			}
 
-			fs_disk->read(inode.Indirect, indirect_block.Data);
+			fs_disk->read(static_cast<int>(inode.Indirect), indirect_block.Data);
 
 			for (int i = 0; i < static_cast<int>(POINTERS_PER_BLOCK); i++) {
 				indirect_block.Pointers[i] = 0;
 			}
 		}
+
 		if (!check_allocation(inode,
 							  read,
 							  origin_offset,
 							  indirect_block.Pointers[indirect_node],
 							  true,
 							  indirect_block)) {
-			return write_ret(inumber, inode, read);
+
+			return write_ret(i_number, inode, read);
 		}
-		read_buffer(offset, &read, length, data, indirect_block.Pointers[indirect_node++]);
+
+		read_buffer(static_cast<int>(offset), &read, length, data, indirect_block.Pointers[indirect_node++]);
 
 		if (read==length) {
-			fs_disk->write(inode.Indirect, indirect_block.Data);
-			return write_ret(inumber, inode, length);
+			fs_disk->write(static_cast<int>(inode.Indirect), indirect_block.Data);
+			return write_ret(i_number, inode, length);
 		} else {
+
 			for (int j = indirect_node; j < static_cast<int>(POINTERS_PER_BLOCK); j++) {
+
 				if (!check_allocation(inode, read, origin_offset, indirect_block.Pointers[j], true, indirect_block)) {
-					return write_ret(inumber, inode, read);
+					return write_ret(i_number, inode, read);
 				}
+
 				read_buffer(0, &read, length, data, indirect_block.Pointers[j]);
 
 				if (read==length) {
-					fs_disk->write(inode.Indirect, indirect_block.Data);
-					return write_ret(inumber, inode, length);
+					fs_disk->write(static_cast<int>(inode.Indirect), indirect_block.Data);
+					return write_ret(i_number, inode, length);
 				}
 			}
 
-			fs_disk->write(inode.Indirect, indirect_block.Data);
-			return write_ret(inumber, inode, read);
+			fs_disk->write(static_cast<int>(inode.Indirect), indirect_block.Data);
+			return write_ret(i_number, inode, read);
 		}
 	}
 
-	return -1;
+	return -1; // should never get here
 }
 
 }
