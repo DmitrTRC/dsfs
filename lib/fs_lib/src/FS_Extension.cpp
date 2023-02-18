@@ -110,7 +110,7 @@ bool FileSystem::remove_password() {
 FileSystem::Directory FileSystem::add_dir_entry(FileSystem::Directory &dir,
 												uint32_t i_num,
 												uint32_t type,
-												std::string name) {
+												const std::string &name) {
 	Directory temp_dir = dir;
 
 	uint32_t idx = 0;

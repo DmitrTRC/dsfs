@@ -254,7 +254,7 @@ class FileSystem {
 
   Directory curDir;
 
-  Directory add_dir_entry(Directory &dir, uint32_t i_num, uint32_t type, std::string name);
+  Directory add_dir_entry(Directory &dir, uint32_t i_num, uint32_t type, const std::string &name);
 
   void write_dir_back(struct Directory &dir);
 
