@@ -226,10 +226,10 @@ bool FileSystem::ls_dir(const std::string &name) {
 		if (entry.valid==1) {
 			if (entry.type==1) {
 				std::cout << std::setw(10) << entry.i_num << " | " << std::setw(16) << entry.name.data() << " | "
-					<< std::setw(5) << "file" << std::endl;
+						  << std::setw(5) << "file" << std::endl;
 			} else {
 				std::cout << std::setw(10) << entry.i_num << " | " << std::setw(16) << entry.name.data() << " | "
-					<< std::setw(5) << "dir" << std::endl;
+						  << std::setw(5) << "dir" << std::endl;
 			}
 		}
 	}
