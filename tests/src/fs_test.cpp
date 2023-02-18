@@ -46,11 +46,45 @@ TEST(FS, Format_Test) {
 
 }
 
-TEST(FS, Mount_Test) {
+TEST(FS, Mount5_Test) {
 // Using image.5.img as a test disk
 	EXPECT_EQ(true, true);
 	std::shared_ptr<Disk> disk = std::make_shared<Disk>();
 	disk->open("image.5.img", 5);
+
+	FileSystem::debug(disk);
+
+	FileSystem fs;
+
+	fs.set_cur_disk(disk);
+	fs.mount(disk);
+
+	EXPECT_EQ(fs.get_cur_disk()->mounted(), true);
+
+}
+
+TEST(FS, Mount20_Test) {
+// Using image.20.img as a test disk
+	EXPECT_EQ(true, true);
+	std::shared_ptr<Disk> disk = std::make_shared<Disk>();
+	disk->open("image.20.img", 20);
+
+	FileSystem::debug(disk);
+
+	FileSystem fs;
+
+	fs.set_cur_disk(disk);
+	fs.mount(disk);
+
+	EXPECT_EQ(fs.get_cur_disk()->mounted(), true);
+
+}
+
+TEST(FS, Mount200_Test) {
+// Using image.200.img as a test disk
+	EXPECT_EQ(true, true);
+	std::shared_ptr<Disk> disk = std::make_shared<Disk>();
+	disk->open("image.200.img", 200);
 
 	FileSystem::debug(disk);
 
@@ -109,12 +143,17 @@ TEST(FS, LS_Test) {
 	fs.mount(disk);
 
 	EXPECT_EQ(fs.get_cur_disk()->mounted(), true);
+	//EXPECT_EQ(fs.get_cur_disk()->size(), 20);
 
 	// Test reading from a file , read first inode
 
 	std::vector<std::byte> data;
 
+	std::cout << "LS test" << std::endl;
+
 	fs.ls();
+
+	std::cout << "LS test end" << std::endl;
 
 }
 

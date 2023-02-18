@@ -87,9 +87,9 @@ bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
 
 	block.Super.MagicNumber = MAGIC_NUMBER;
 	block.Super.Blocks = static_cast<std::uint32_t>(disk->size());
-	block.Super.InodeBlocks = static_cast<std::uint32_t>(std::ceil((static_cast<double >(disk->size())*1.00)/10));
+	block.Super.InodeBlocks = (uint32_t)std::ceil((int(block.Super.Blocks)*1.00)/10);
 	block.Super.Inodes = block.Super.InodeBlocks*INODES_PER_BLOCK;
-	block.Super.DirBlocks = static_cast<std::uint32_t>(std::ceil((static_cast<double>(disk->size())*1.00)/100));
+	block.Super.DirBlocks = (uint32_t)std::ceil((int(block.Super.Blocks)*1.00)/100);
 
 	// ------- 1-d Write super block -------
 	disk->write(0, block.Data);
@@ -199,14 +199,15 @@ bool FileSystem::mount(const std::shared_ptr<Disk> &disk) {
 	}
 
 	Block block;
-
+//FIXME: Directory blocks are not being read
+//ERROR: Directory blocks are always empty
 	disk->read(0, block.Data);
 
 	if (block.Super.MagicNumber!=MAGIC_NUMBER) {
 		return false;
 	}
 
-	if (block.Super.InodeBlocks!=static_cast<std::uint32_t>(std::ceil((static_cast<double >(disk->size())*1.00)/10))) {
+	if (block.Super.InodeBlocks!=std::ceil((block.Super.Blocks*1.00)/10)) {
 		return false;
 	}
 
@@ -214,7 +215,7 @@ bool FileSystem::mount(const std::shared_ptr<Disk> &disk) {
 		return false;
 	}
 
-	if (block.Super.DirBlocks!=static_cast<std::uint32_t>(std::ceil((static_cast<double>(disk->size())*1.00)/100))) {
+	if (block.Super.DirBlocks!=(uint32_t)std::ceil((int(block.Super.Blocks)*1.00)/100)) {
 		return false;
 	}
 
