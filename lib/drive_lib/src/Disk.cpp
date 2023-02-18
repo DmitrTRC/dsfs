@@ -91,7 +91,7 @@ void Disk::read(int block_num, std::array<std::byte, Disk::BLOCK_SIZE> &data) {
 		throw std::runtime_error(ss.str());
 	}
 //Read the data from the disk
-	FileDescriptor_.read(reinterpret_cast<char *>(data.data()), Disk::BLOCK_SIZE);
+	FileDescriptor_.read(reinterpret_cast<char *>(data.data()), Disk::BLOCK_SIZE); //TODO: Fix data type
 
 	if (FileDescriptor_.fail()) {
 		std::stringstream ss;
@@ -108,11 +108,9 @@ void Disk::write(int block_num, const std::array<std::byte, Disk::BLOCK_SIZE> &d
 	ValidCheck(block_num, data);
 
 	if (FileDescriptor_.seekp(block_num*static_cast<int>(BLOCK_SIZE), std::ios::beg).fail()) {
-
 		std::stringstream ss;
 		ss << "Unable to seek " << block_num << ": " << strerror(errno);
 		throw std::runtime_error(ss.str());
-
 	}
 
 	if (FileDescriptor_.bad()) {
@@ -149,6 +147,7 @@ void Disk::close() {
 	}
 
 }
+
 Disk::Disk() : FileDescriptor_(nullptr), blocks_(0), reads_(0), writes_(0), mounts_(0) {}
 
 Disk::Disk(const std::string &path, std::size_t n_blocks) {
@@ -158,13 +157,16 @@ Disk::Disk(const std::string &path, std::size_t n_blocks) {
 }
 
 void Disk::show_file_permissions(const std::filesystem::path &path) {
+
 	using std::filesystem::perms;
 
 	perms p = std::filesystem::status(path).permissions();
 
+	/// Lambda function to show the permissions
 	auto show = [=](char op, perms perm) {
 	  std::cout << (perms::none==(perm & p) ? '-' : op);
 	};
+
 	show('r', perms::owner_read);
 	show('w', perms::owner_write);
 	show('x', perms::owner_exec);
@@ -174,5 +176,6 @@ void Disk::show_file_permissions(const std::filesystem::path &path) {
 	show('r', perms::others_read);
 	show('w', perms::others_write);
 	show('x', perms::others_exec);
-	std::cout << '\n';
+
+	std::cout << std::endl;
 }
