@@ -79,7 +79,7 @@ class FileSystem {
 
   bool rm(const std::array<char, NAME_SIZE> &name);
 
-  bool copyout(const std::string path, const std::string name);
+  bool copyout(const std::string &path, const std::string &name);
 
   bool copyin(const std::string path, const std::string name);
 

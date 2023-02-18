@@ -1,5 +1,5 @@
 #include "File_System.hpp"
-#include "sha256.hpp"
+#include "sha256.h"
 
 #include <algorithm>
 #include <cmath>

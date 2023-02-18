@@ -548,7 +548,7 @@ void FileSystem::exit() {
 	mounted_ = false;
 
 }
-bool FileSystem::copyout(const std::string path, const std::string name) {
+bool FileSystem::copyout(const std::string &path, const std::string &name) {
 
 	if (!mounted_) {
 		std::cout << "File system is not mounted" << std::endl;
@@ -577,25 +577,25 @@ bool FileSystem::copyout(const std::string path, const std::string name) {
 		return false;
 	}
 
-	std::vector<std::byte> buffer;
 	offset = 0;
+	std::vector<std::byte> buffer(Disk::BLOCK_SIZE, std::byte(0));
 
-	std::istringstream iss(path);
+	do {
+		ssize_t result = read(i_num, buffer, offset);
 
-//	char buffer[4*BUFSIZ] = {0};
-//	offset = 0;
-//	while (true) {
-//		ssize_t result = read(inum, buffer, sizeof(buffer), offset);
-//		if (result <= 0) {
-//			break;
-//		}
-//		fwrite(buffer, 1, result, stream);
-//		offset += result;
-//	}
-//
-//	printf("%d bytes copied\n", offset);
-//	fclose(stream);
-//	return true;
+		if (result <= 0) {
+			break;
+		}
+
+		stream.write(reinterpret_cast<const char *>(buffer.data()), static_cast<int>(buffer.size()));
+		offset += static_cast<int>(result);
+
+	} while (not buffer.empty());
+
+	stream.close();
+	std::cout << "Bytes copied: " << offset << std::endl;
+
+	return true;
 }
 
 }
