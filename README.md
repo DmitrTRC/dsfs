@@ -32,7 +32,7 @@
   <p align="center">
     About the project:
     <br />
-    <a href="https://dmitrtrc.github.io/dsfs/"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/DmitrTRC/dsfs/blob/testing/DoxyDoc/html/index.html"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://github.com/DmitrTRC/dsfs.git">View Demo</a>
@@ -176,7 +176,6 @@ the [Documentation](https://dmitrtrc.github.io/dsfs/)
 - [ ] File System
 - [ ] File System Command Manager
 - [ ] File System Interface
-
 
 See the [open issues](https://github.com/DmitrTRC/dsfs/issues) for a full list of proposed features (and
 known issues)

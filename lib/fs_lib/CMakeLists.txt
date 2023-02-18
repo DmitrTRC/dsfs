@@ -8,12 +8,15 @@ add_library(${PROJECT_NAME}
             src/File_System.cpp
             src/FS_Extension.cpp
             )
+
 add_library(sub::fs ALIAS ${PROJECT_NAME})
 
 target_include_directories(${PROJECT_NAME}
                            PUBLIC ${PROJECT_SOURCE_DIR}/include
                            )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC sub::ds)
+target_link_libraries(${PROJECT_NAME} PUBLIC sub::ds picosha2
+
+                      )
 
 message(STATUS "Lib name: ${PROJECT_NAME} build finished")

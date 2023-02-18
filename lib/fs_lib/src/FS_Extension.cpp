@@ -4,13 +4,12 @@
 // Created by Dmitry Morozov on 14/2/23.
 //
 #include "File_System.hpp"
-#include "SHA256.h"
+#include"picosha2.h"
 
 #include <cinttypes>
 #include <fstream>
 #include <iostream>
 #include <iterator>
-#include <sstream>
 #include <string>
 #include <vector>
 
@@ -28,14 +27,14 @@ bool FileSystem::set_password() {
 		return change_password();
 	}
 
-	SHA256 hash_f;
+	//SHA256
 	std::string pass;
 
 	std::cout << ("Enter new password: ");
 	std::getline(std::cin, pass);
 
 	meta_data_.Protected = 1;
-	std::strcpy(meta_data_.PasswordHash.data(), hash_f(pass).c_str());
+	std::strcpy(meta_data_.PasswordHash.data(), picosha2::hash256_hex_string(pass).c_str());
 
 	Block block;
 
@@ -56,13 +55,12 @@ bool FileSystem::change_password() {
 
 	if (meta_data_.Protected) {
 
-		SHA256 hash_f;
 		std::string pass;
 
 		std::cout << ("Enter current password: ");
 		std::getline(std::cin, pass);
 
-		if (hash_f(pass)!=std::string(meta_data_.PasswordHash.data())) {
+		if (picosha2::hash256_hex_string(pass)!=std::string(meta_data_.PasswordHash.data())) {
 			std::cout << "Old password incorrect." << std::endl;
 			return false;
 		}
@@ -84,13 +82,12 @@ bool FileSystem::remove_password() {
 
 	if (meta_data_.Protected) {
 
-		SHA256 hash_f;
 		std::string pass;
 
 		std::cout << ("Enter current password: ");
 		std::getline(std::cin, pass);
 
-		if (hash_f(pass)!=std::string(meta_data_.PasswordHash.data())) {
+		if (picosha2::hash256_hex_string(pass)!=std::string(meta_data_.PasswordHash.data())) {
 			std::cout << "Old password incorrect." << std::endl;
 			return false;
 		}
