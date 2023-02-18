@@ -665,4 +665,54 @@ bool FileSystem::copyin(const std::string path, const std::string name) {
 
 }
 
+// Directory stat ------------------------------------------------------------------
+
+void FileSystem::stat() {
+
+	if (not mounted_) {
+		std::cerr << "File system is not mounted" << std::endl;
+		return;
+	}
+
+	Block block;
+
+	fs_disk->read(0, block.Data);
+
+	std::cout << "Total Blocks: " << block.Super.Blocks << std::endl;
+	std::cout << "Total Directory Blocks: " << block.Super.DirBlocks << std::endl;
+	std::cout << "Total Inode Blocks: " << block.Super.InodeBlocks << std::endl;
+	std::cout << "Total Inodes: " << block.Super.Inodes << std::endl;
+
+	std::cout << "Password Protected: " << block.Super.Protected << std::endl;
+
+	std::cout << "Max Directories per block: " << DIR_PER_BLOCK << std::endl;
+	std::cout << "Max Namsize: " << NAME_SIZE << std::endl;
+	std::cout << "Max Inodes per block: " << INODES_PER_BLOCK << std::endl;
+	std::cout << "Max Entries per directory: " << ENTRIES_PER_DIR << std::endl;
+
+	for (uint32_t block_idx = 0; block_idx < meta_data_.DirBlocks; block_idx++) {
+
+		fs_disk->read(static_cast<int>(meta_data_.Blocks - 1 - block_idx), block.Data);
+
+		for (uint32_t offset = 0; offset < DIR_PER_BLOCK; offset++) {
+			Directory dir = block.Directories[offset];
+
+			if (dir.Valid) {
+				std::cout << "Directory Name: " << dir.Name.data() << std::endl;
+
+				for (uint32_t tbl_idx = 0; tbl_idx < ENTRIES_PER_DIR; tbl_idx++) {
+					Dirent ent = dir.TableOfEntries[tbl_idx];
+
+					if (ent.valid) {
+						std::cout << "    Entry Name: " << ent.name.data() << std::endl;
+						std::cout << "    Entry Type: " << ent.type << std::endl;
+						std::cout << "    Entry Inode: " << ent.i_num << std::endl;
+					}
+				}
+			}
+		}
+	}
+
+}
+
 }
