@@ -1,0 +1,49 @@
+.TH "lib/fs_lib/include/File_System.hpp" 3 "Sat Feb 18 2023" "Version v0.01" "DSFS" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+lib/fs_lib/include/File_System.hpp
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'Disk\&.hpp'\fP
+.br
+\fC#include <algorithm>\fP
+.br
+\fC#include <any>\fP
+.br
+\fC#include <array>\fP
+.br
+\fC#include <cstdint>\fP
+.br
+\fC#include <string>\fP
+.br
+\fC#include <vector>\fP
+.br
+
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBfs::FileSystem\fP"
+.br
+.RI "Class for File System\&. Contains all the functions for File System operations Used by the Shell to perform File System operations\&. "
+.in -1c
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI "namespace \fBfs\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "template<std::size_t N> std::ostream & \fBfs::operator<<\fP (std::ostream &os, std::array< std::byte, N > const &v1)"
+.br
+.RI "Helper function to print std::array<std::byte, N> to std::ostream\&. "
+.in -1c
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for DSFS from the source code\&.

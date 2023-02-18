@@ -1,0 +1,121 @@
+.TH "SHA256" 3 "Sat Feb 18 2023" "Version v0.01" "DSFS" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+SHA256 \- compute \fBSHA256\fP hash  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <sha256\&.h>\fP
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum { \fBBlockSize\fP = 512/8, \fBHashBytes\fP = 32 }"
+.br
+.RI "split into 64 byte blocks (=> 512 bits), hash is 32 bytes long "
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBSHA256\fP ()"
+.br
+.RI "same as \fBreset()\fP "
+.ti -1c
+.RI "std::string \fBoperator()\fP (const void *data, size_t numBytes)"
+.br
+.RI "compute \fBSHA256\fP of a memory block "
+.ti -1c
+.RI "std::string \fBoperator()\fP (const std::string &text)"
+.br
+.RI "compute \fBSHA256\fP of a string, excluding final zero "
+.ti -1c
+.RI "void \fBadd\fP (const void *data, size_t numBytes)"
+.br
+.RI "add arbitrary number of bytes "
+.ti -1c
+.RI "std::string \fBgetHash\fP ()"
+.br
+.RI "return latest hash as 64 hex characters "
+.ti -1c
+.RI "void \fBgetHash\fP (unsigned char buffer[\fBHashBytes\fP])"
+.br
+.RI "return latest hash as bytes "
+.ti -1c
+.RI "void \fBreset\fP ()"
+.br
+.RI "restart "
+.in -1c
+.SH "Detailed Description"
+.PP 
+compute \fBSHA256\fP hash 
+
+Usage: \fBSHA256\fP sha256; std::string myHash = sha256('Hello World'); // std::string std::string myHash2 = sha256('How are you', 11); // arbitrary data, 11 bytes
+.PP
+or in a streaming fashion: 
+.PP
+.nf
+SHA256 sha256;
+while (more data available)
+  sha256\&.add(pointer to fresh data, number of new bytes);
+std::string myHash3 = sha256\&.getHash();
+
+.fi
+.PP
+ 
+.PP
+Definition at line \fB37\fP of file \fBsha256\&.h\fP\&.
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "anonymous enum"
+
+.PP
+split into 64 byte blocks (=> 512 bits), hash is 32 bytes long 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIBlockSize \fP\fP
+.TP
+\fB\fIHashBytes \fP\fP
+.PP
+Definition at line \fB41\fP of file \fBsha256\&.h\fP\&.
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "SHA256::SHA256 ()"
+
+.PP
+same as \fBreset()\fP 
+.SH "Member Function Documentation"
+.PP 
+.SS "void SHA256::add (const void * data, size_t numBytes)"
+
+.PP
+add arbitrary number of bytes 
+.SS "std::string SHA256::getHash ()"
+
+.PP
+return latest hash as 64 hex characters 
+.SS "void SHA256::getHash (unsigned char buffer[HashBytes])"
+
+.PP
+return latest hash as bytes 
+.SS "std::string SHA256::operator() (const std::string & text)"
+
+.PP
+compute \fBSHA256\fP of a string, excluding final zero 
+.SS "std::string SHA256::operator() (const void * data, size_t numBytes)"
+
+.PP
+compute \fBSHA256\fP of a memory block 
+.SS "void SHA256::reset ()"
+
+.PP
+restart 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for DSFS from the source code\&.

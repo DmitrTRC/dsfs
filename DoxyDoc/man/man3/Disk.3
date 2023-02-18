@@ -1,0 +1,317 @@
+.TH "Disk" 3 "Sat Feb 18 2023" "Version v0.01" "DSFS" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Disk \- Contains the implementation of disk layer to support File System\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <Disk\&.hpp>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBDisk\fP ()"
+.br
+.RI "4K blocks "
+.ti -1c
+.RI "\fBDisk\fP (const std::string &path, std::size_t n_blocks)"
+.br
+.RI "Constructor\&. "
+.ti -1c
+.RI "\fB~Disk\fP ()"
+.br
+.RI "Destructor\&. "
+.ti -1c
+.RI "void \fBopen\fP (const std::string &path, std::size_t n_blocks)"
+.br
+.ti -1c
+.RI "std::size_t \fBsize\fP () const"
+.br
+.RI "Return number of blocks in disk image\&. "
+.ti -1c
+.RI "std::size_t \fBmounts\fP () const"
+.br
+.RI "Return number of mounts\&. "
+.ti -1c
+.RI "bool \fBmounted\fP () const"
+.br
+.RI "Return true if disk is mounted\&. "
+.ti -1c
+.RI "void \fBmount\fP ()"
+.br
+.RI "Increment mounts by 1\&. "
+.ti -1c
+.RI "void \fBunmount\fP ()"
+.br
+.RI "Decrement mounts by 1\&. "
+.ti -1c
+.RI "void \fBread\fP (int block_num, std::array< std::byte, \fBDisk::BLOCK_SIZE\fP > &data)"
+.br
+.RI "Read a block from the disk\&. "
+.ti -1c
+.RI "size_t \fBgetReads\fP () const"
+.br
+.RI "Get number of reads\&. "
+.ti -1c
+.RI "size_t \fBgetWrites\fP () const"
+.br
+.RI "Get number of writes\&. "
+.ti -1c
+.RI "void \fBwrite\fP (int block_num, const std::array< std::byte, \fBDisk::BLOCK_SIZE\fP > &data)"
+.br
+.RI "Write a block to the disk\&. "
+.ti -1c
+.RI "void \fBclose\fP ()"
+.br
+.RI "Close disk image ( Debugging purposes ) "
+.ti -1c
+.RI "void \fBisValid\fP (int block_num, const std::array< std::byte, \fBDisk::BLOCK_SIZE\fP > &data) const"
+.br
+.RI "Check if disk is valid\&. "
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static void \fBshow_file_permissions\fP (const std::filesystem::path &path)"
+.br
+.RI "Show file permissions\&. "
+.ti -1c
+.RI "static size_t \fBgetBlockSize\fP ()"
+.br
+.RI "Get block size\&. "
+.in -1c
+.SS "Static Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "static const std::size_t \fBBLOCK_SIZE\fP = 4096"
+.br
+.RI "Block size\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+Contains the implementation of disk layer to support File System\&. 
+
+Created by Dmitry Morozov on 4/12/22\&.
+.PP
+disk\&.h: \fBDisk\fP emulator
+.IP "\(bu" 2
+\fBDisk\fP class Implements \fBDisk\fP abstraction that enables emulation of a disk image\&. Used by file system to access and make changes to the disk\&. 
+.PP
+
+.PP
+Definition at line \fB21\fP of file \fBDisk\&.hpp\fP\&.
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "Disk::Disk ()"
+
+.PP
+4K blocks Default constructor 
+.PP
+Definition at line \fB151\fP of file \fBDisk\&.cpp\fP\&.
+.SS "Disk::Disk (const std::string & path, std::size_t n_blocks)"
+
+.PP
+Constructor\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP Path to disk image 
+.br
+\fIn_blocks\fP Number of blocks in disk image 
+.RE
+.PP
+
+.PP
+Definition at line \fB153\fP of file \fBDisk\&.cpp\fP\&.
+.SS "Disk::~Disk ()"
+
+.PP
+Destructor\&. 
+.PP
+Definition at line \fB37\fP of file \fBDisk\&.cpp\fP\&.
+.SH "Member Function Documentation"
+.PP 
+.SS "void Disk::close ()"
+
+.PP
+Close disk image ( Debugging purposes ) 
+.PP
+Definition at line \fB136\fP of file \fBDisk\&.cpp\fP\&.
+.SS "static size_t Disk::getBlockSize ()\fC [inline]\fP, \fC [static]\fP"
+
+.PP
+Get block size\&. 
+.PP
+\fBReturns\fP
+.RS 4
+Block size 
+.RE
+.PP
+
+.PP
+Definition at line \fB137\fP of file \fBDisk\&.hpp\fP\&.
+.SS "size_t Disk::getReads () const\fC [inline]\fP"
+
+.PP
+Get number of reads\&. 
+.PP
+\fBReturns\fP
+.RS 4
+Number of reads performed 
+.RE
+.PP
+
+.PP
+Definition at line \fB100\fP of file \fBDisk\&.hpp\fP\&.
+.SS "size_t Disk::getWrites () const\fC [inline]\fP"
+
+.PP
+Get number of writes\&. 
+.PP
+\fBReturns\fP
+.RS 4
+Number of writes performed 
+.RE
+.PP
+
+.PP
+Definition at line \fB108\fP of file \fBDisk\&.hpp\fP\&.
+.SS "void Disk::isValid (int block_num, const std::array< std::byte, \fBDisk::BLOCK_SIZE\fP > & data) const\fC [inline]\fP"
+
+.PP
+Check if disk is valid\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIblock_num\fP Block to operate on 
+.br
+\fIdata\fP Buffer to operate on 
+.RE
+.PP
+
+.PP
+Definition at line \fB129\fP of file \fBDisk\&.hpp\fP\&.
+.SS "void Disk::mount ()\fC [inline]\fP"
+
+.PP
+Increment mounts by 1\&. 
+.PP
+Definition at line \fB82\fP of file \fBDisk\&.hpp\fP\&.
+.SS "bool Disk::mounted () const\fC [inline]\fP"
+
+.PP
+Return true if disk is mounted\&. 
+.PP
+\fBReturns\fP
+.RS 4
+True if disk is mounted 
+.RE
+.PP
+
+.PP
+Definition at line \fB77\fP of file \fBDisk\&.hpp\fP\&.
+.SS "std::size_t Disk::mounts () const\fC [inline]\fP"
+
+.PP
+Return number of mounts\&. 
+.PP
+\fBReturns\fP
+.RS 4
+Number of mounts 
+.RE
+.PP
+
+.PP
+Definition at line \fB71\fP of file \fBDisk\&.hpp\fP\&.
+.SS "void Disk::open (const std::string & path, std::size_t n_blocks)"
+Open disk image 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP Path to disk image 
+.br
+\fIn_blocks\fP Number of blocks in disk image Throws runtime_error exception on error\&. 
+.RE
+.PP
+
+.PP
+Definition at line \fB13\fP of file \fBDisk\&.cpp\fP\&.
+.SS "void Disk::read (int block_num, std::array< std::byte, \fBDisk::BLOCK_SIZE\fP > & data)"
+
+.PP
+Read a block from the disk\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIblock_num\fP Block to operate on 
+.br
+\fIdata\fP Buffer to operate on 
+.RE
+.PP
+
+.PP
+Definition at line \fB70\fP of file \fBDisk\&.cpp\fP\&.
+.SS "void Disk::show_file_permissions (const std::filesystem::path & path)\fC [static]\fP"
+
+.PP
+Show file permissions\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP Path to disk image 
+.RE
+.PP
+Lambda function to show the permissions
+.PP
+Definition at line \fB159\fP of file \fBDisk\&.cpp\fP\&.
+.SS "std::size_t Disk::size () const\fC [inline]\fP"
+
+.PP
+Return number of blocks in disk image\&. 
+.PP
+\fBReturns\fP
+.RS 4
+Number of blocks in disk image 
+.RE
+.PP
+
+.PP
+Definition at line \fB65\fP of file \fBDisk\&.hpp\fP\&.
+.SS "void Disk::unmount ()\fC [inline]\fP"
+
+.PP
+Decrement mounts by 1\&. 
+.PP
+Definition at line \fB87\fP of file \fBDisk\&.hpp\fP\&.
+.SS "void Disk::write (int block_num, const std::array< std::byte, \fBDisk::BLOCK_SIZE\fP > & data)"
+
+.PP
+Write a block to the disk\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIblock_num\fP Block to operate on 
+.br
+\fIdata\fP Buffer to operate on 
+.RE
+.PP
+
+.PP
+Definition at line \fB106\fP of file \fBDisk\&.cpp\fP\&.
+.SH "Member Data Documentation"
+.PP 
+.SS "const std::size_t Disk::BLOCK_SIZE = 4096\fC [static]\fP"
+
+.PP
+Block size\&. 
+.PP
+Definition at line \fB28\fP of file \fBDisk\&.hpp\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for DSFS from the source code\&.

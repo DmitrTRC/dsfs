@@ -1,0 +1,508 @@
+.TH "fs::FileSystem" 3 "Sat Feb 18 2023" "Version v0.01" "DSFS" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+fs::FileSystem \- Class for File System\&. Contains all the functions for File System operations Used by the Shell to perform File System operations\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <File_System\&.hpp>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBFileSystem\fP ()=default"
+.br
+.ti -1c
+.RI "\fB~FileSystem\fP ()"
+.br
+.RI "Destructor\&. "
+.ti -1c
+.RI "bool \fBmount\fP (const std::shared_ptr< \fBDisk\fP > &disk)"
+.br
+.RI "mounts the file system onto the disk "
+.ti -1c
+.RI "bool \fBset_password\fP ()"
+.br
+.RI "Sets the password for the file system\&. "
+.ti -1c
+.RI "bool \fBchange_password\fP ()"
+.br
+.RI "Changes the password for the file system\&. "
+.ti -1c
+.RI "bool \fBremove_password\fP ()"
+.br
+.RI "Removes the password for the file system\&. "
+.ti -1c
+.RI "bool \fBtouch\fP (const std::array< char, \fBNAME_SIZE\fP > &name)"
+.br
+.RI "Creates a file with the given name\&. "
+.ti -1c
+.RI "bool \fBmkdir\fP (const std::string &name)"
+.br
+.RI "Creates a directory with the given name\&. "
+.ti -1c
+.RI "bool \fBrmdir\fP (const std::array< char, \fBNAME_SIZE\fP > &name)"
+.br
+.RI "Removes the directory with the given name\&. "
+.ti -1c
+.RI "bool \fBcd\fP (const std::array< char, \fBNAME_SIZE\fP > &name)"
+.br
+.RI "Changes the current working directory to the directory with the given name\&. "
+.ti -1c
+.RI "bool \fBls\fP ()"
+.br
+.RI "Prints the contents of the current working directory\&. "
+.ti -1c
+.RI "bool \fBrm\fP (const std::array< char, \fBNAME_SIZE\fP > &name)"
+.br
+.RI "Removes the file with the given name\&. "
+.ti -1c
+.RI "bool \fBcopyout\fP (const std::string &path, const std::string &name)"
+.br
+.RI "Copies the file with the given name to the given path\&. "
+.ti -1c
+.RI "bool \fBcopyin\fP (std::string path, std::string name)"
+.br
+.RI "Copies the file with the given name from the given path\&. "
+.ti -1c
+.RI "bool \fBls_dir\fP (const std::string &name)"
+.br
+.RI "Prints the contents of the directory with the given name\&. "
+.ti -1c
+.RI "void \fBexit\fP ()"
+.br
+.RI "Exits the file system\&. "
+.ti -1c
+.RI "void \fBstat\fP ()"
+.br
+.RI "Displays the status of the file system\&. "
+.ti -1c
+.RI "auto \fBget_cur_disk\fP ()"
+.br
+.RI "Returns the current disk\&. "
+.ti -1c
+.RI "auto \fBmounted\fP () const"
+.br
+.RI "Checks if the file system is mounted\&. "
+.ti -1c
+.RI "void \fBset_cur_disk\fP (std::shared_ptr< \fBDisk\fP > &disk)"
+.br
+.RI "Sets the current disk\&. "
+.ti -1c
+.RI "ssize_t \fBread\fP (size_t i_number, std::vector< std::byte > &data, size_t offset)"
+.br
+.RI "reads the data from the inode "
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static void \fBdebug\fP (const std::shared_ptr< \fBDisk\fP > &disk)"
+.br
+.RI "Debug function to print the contents of the \fBFileSystem\fP\&. "
+.ti -1c
+.RI "static bool \fBformat\fP (const std::shared_ptr< \fBDisk\fP > &disk)"
+.br
+.RI "Formats the disk to create a \fBFileSystem\fP\&. "
+.in -1c
+.SS "Static Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "static const uint32_t \fBMAGIC_NUMBER\fP = 0xf0f03410"
+.br
+.ti -1c
+.RI "static const uint32_t \fBINODES_PER_BLOCK\fP = 128"
+.br
+.ti -1c
+.RI "static const uint32_t \fBPOINTERS_PER_INODE\fP = 5"
+.br
+.ti -1c
+.RI "static const uint32_t \fBPOINTERS_PER_BLOCK\fP = 1024"
+.br
+.ti -1c
+.RI "static const uint32_t \fBNAME_SIZE\fP = 16"
+.br
+.ti -1c
+.RI "static const uint32_t \fBENTRIES_PER_DIR\fP = 7"
+.br
+.ti -1c
+.RI "static const uint32_t \fBDIR_PER_BLOCK\fP = 8"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Class for File System\&. Contains all the functions for File System operations Used by the Shell to perform File System operations\&. 
+.PP
+Definition at line \fB46\fP of file \fBFile_System\&.hpp\fP\&.
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "fs::FileSystem::FileSystem ()\fC [default]\fP"
+
+.SS "fs::FileSystem::~FileSystem ()"
+
+.PP
+Destructor\&. 
+.PP
+Definition at line \fB182\fP of file \fBFile_System\&.cpp\fP\&.
+.SH "Member Function Documentation"
+.PP 
+.SS "bool fs::FileSystem::cd (const std::array< char, \fBNAME_SIZE\fP > & name)"
+
+.PP
+Changes the current working directory to the directory with the given name\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP the name of the directory to be changed to 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+true if the directory was changed successfully; false otherwise 
+.RE
+.PP
+
+.PP
+Definition at line \fB487\fP of file \fBFS_Extension\&.cpp\fP\&.
+.SS "bool fs::FileSystem::change_password ()"
+
+.PP
+Changes the password for the file system\&. 
+.PP
+\fBReturns\fP
+.RS 4
+true if the password was changed successfully; false otherwise 
+.RE
+.PP
+
+.PP
+Definition at line \fB50\fP of file \fBFS_Extension\&.cpp\fP\&.
+.SS "bool fs::FileSystem::copyin (std::string path, std::string name)"
+
+.PP
+Copies the file with the given name from the given path\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP the path to copy the file from 
+.br
+\fIname\fP the name of the file to be copied 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+true if the file was copied successfully; false otherwise 
+.RE
+.PP
+
+.PP
+Definition at line \fB602\fP of file \fBFS_Extension\&.cpp\fP\&.
+.SS "bool fs::FileSystem::copyout (const std::string & path, const std::string & name)"
+
+.PP
+Copies the file with the given name to the given path\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP the path to copy the file to 
+.br
+\fIname\fP the name of the file to be copied 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+true if the file was copied successfully; false otherwise 
+.RE
+.PP
+
+.PP
+Definition at line \fB553\fP of file \fBFS_Extension\&.cpp\fP\&.
+.SS "void fs::FileSystem::debug (const std::shared_ptr< \fBDisk\fP > & disk)\fC [static]\fP"
+
+.PP
+Debug function to print the contents of the \fBFileSystem\fP\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdisk\fP The disk to be debugged 
+.RE
+.PP
+
+.PP
+Definition at line \fB10\fP of file \fBFile_System\&.cpp\fP\&.
+.SS "void fs::FileSystem::exit ()"
+
+.PP
+Exits the file system\&. 
+.PP
+Definition at line \fB541\fP of file \fBFS_Extension\&.cpp\fP\&.
+.SS "bool fs::FileSystem::format (const std::shared_ptr< \fBDisk\fP > & disk)\fC [static]\fP"
+
+.PP
+Formats the disk to create a \fBFileSystem\fP\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdisk\fP the disk to be formatted 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+true if the format operation was successful; false otherwise 
+.RE
+.PP
+
+.PP
+Definition at line \fB80\fP of file \fBFile_System\&.cpp\fP\&.
+.SS "auto fs::FileSystem::get_cur_disk ()\fC [inline]\fP"
+
+.PP
+Returns the current disk\&. 
+.PP
+\fBReturns\fP
+.RS 4
+the current disk 
+.RE
+.PP
+
+.PP
+Definition at line \fB186\fP of file \fBFile_System\&.hpp\fP\&.
+.SS "bool fs::FileSystem::ls ()"
+
+.PP
+Prints the contents of the current working directory\&. 
+.PP
+\fBReturns\fP
+.RS 4
+true if the contents were printed successfully; false otherwise 
+.RE
+.PP
+
+.PP
+Definition at line \fB513\fP of file \fBFS_Extension\&.cpp\fP\&.
+.SS "bool fs::FileSystem::ls_dir (const std::string & name)"
+
+.PP
+Prints the contents of the directory with the given name\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP the name of the directory to be printed 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+true if the contents were printed successfully; false otherwise 
+.RE
+.PP
+
+.PP
+Definition at line \fB197\fP of file \fBFS_Extension\&.cpp\fP\&.
+.SS "bool fs::FileSystem::mkdir (const std::string & name)"
+
+.PP
+Creates a directory with the given name\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP the name of the directory to be created 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+true if the directory was created successfully; false otherwise 
+.RE
+.PP
+
+.PP
+Definition at line \fB240\fP of file \fBFS_Extension\&.cpp\fP\&.
+.SS "bool fs::FileSystem::mount (const std::shared_ptr< \fBDisk\fP > & disk)"
+
+.PP
+mounts the file system onto the disk 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdisk\fP the disk to be mounted 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+true if the mount operation was successful; false otherwise 
+.RE
+.PP
+
+.PP
+Definition at line \fB195\fP of file \fBFile_System\&.cpp\fP\&.
+.SS "auto fs::FileSystem::mounted () const\fC [inline]\fP"
+
+.PP
+Checks if the file system is mounted\&. 
+.PP
+\fBReturns\fP
+.RS 4
+true if the file system is mounted; false otherwise 
+.RE
+.PP
+
+.PP
+Definition at line \fB192\fP of file \fBFile_System\&.hpp\fP\&.
+.SS "ssize_t fs::FileSystem::read (size_t i_number, std::vector< std::byte > & data, size_t offset)"
+
+.PP
+reads the data from the inode 
+.PP
+\fBParameters\fP
+.RS 4
+\fIi_number\fP index into the inode table of the inode to be read 
+.br
+\fIoffset\fP Start reading from index = offset 
+.br
+\fIdata\fP data buffer 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+number of bytes read; -1 if the inode is invalid 
+.RE
+.PP
+
+.PP
+Definition at line \fB501\fP of file \fBFile_System\&.cpp\fP\&.
+.SS "bool fs::FileSystem::remove_password ()"
+
+.PP
+Removes the password for the file system\&. 
+.PP
+\fBReturns\fP
+.RS 4
+true if the password was removed successfully; false otherwise 
+.RE
+.PP
+
+.PP
+Definition at line \fB78\fP of file \fBFS_Extension\&.cpp\fP\&.
+.SS "bool fs::FileSystem::rm (const std::array< char, \fBNAME_SIZE\fP > & name)"
+
+.PP
+Removes the file with the given name\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP the name of the file to be removed 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+true if the file was removed successfully; false otherwise 
+.RE
+.PP
+
+.PP
+Definition at line \fB525\fP of file \fBFS_Extension\&.cpp\fP\&.
+.SS "bool fs::FileSystem::rmdir (const std::array< char, \fBNAME_SIZE\fP > & name)"
+
+.PP
+Removes the directory with the given name\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP the name of the directory to be removed 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+true if the directory was removed successfully; false otherwise 
+.RE
+.PP
+
+.PP
+Definition at line \fB437\fP of file \fBFS_Extension\&.cpp\fP\&.
+.SS "void fs::FileSystem::set_cur_disk (std::shared_ptr< \fBDisk\fP > & disk)"
+
+.PP
+Sets the current disk\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdisk\fP 
+.RE
+.PP
+
+.PP
+Definition at line \fB345\fP of file \fBFile_System\&.cpp\fP\&.
+.SS "bool fs::FileSystem::set_password ()"
+
+.PP
+Sets the password for the file system\&. 
+.PP
+\fBReturns\fP
+.RS 4
+true if the password was set successfully; false otherwise 
+.RE
+.PP
+
+.PP
+Definition at line \fB19\fP of file \fBFS_Extension\&.cpp\fP\&.
+.SS "void fs::FileSystem::stat ()"
+
+.PP
+Displays the status of the file system\&. 
+.PP
+Definition at line \fB672\fP of file \fBFS_Extension\&.cpp\fP\&.
+.SS "bool fs::FileSystem::touch (const std::array< char, \fBNAME_SIZE\fP > & name)"
+
+.PP
+Creates a file with the given name\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP the name of the file to be created 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+true if the file was created successfully; false otherwise 
+.RE
+.PP
+
+.PP
+Definition at line \fB451\fP of file \fBFS_Extension\&.cpp\fP\&.
+.SH "Member Data Documentation"
+.PP 
+.SS "const uint32_t fs::FileSystem::DIR_PER_BLOCK = 8\fC [static]\fP"
+
+.PP
+Definition at line \fB54\fP of file \fBFile_System\&.hpp\fP\&.
+.SS "const uint32_t fs::FileSystem::ENTRIES_PER_DIR = 7\fC [static]\fP"
+
+.PP
+Definition at line \fB53\fP of file \fBFile_System\&.hpp\fP\&.
+.SS "const uint32_t fs::FileSystem::INODES_PER_BLOCK = 128\fC [static]\fP"
+
+.PP
+Definition at line \fB49\fP of file \fBFile_System\&.hpp\fP\&.
+.SS "const uint32_t fs::FileSystem::MAGIC_NUMBER = 0xf0f03410\fC [static]\fP"
+
+.PP
+Definition at line \fB48\fP of file \fBFile_System\&.hpp\fP\&.
+.SS "const uint32_t fs::FileSystem::NAME_SIZE = 16\fC [static]\fP"
+
+.PP
+Definition at line \fB52\fP of file \fBFile_System\&.hpp\fP\&.
+.SS "const uint32_t fs::FileSystem::POINTERS_PER_BLOCK = 1024\fC [static]\fP"
+
+.PP
+Definition at line \fB51\fP of file \fBFile_System\&.hpp\fP\&.
+.SS "const uint32_t fs::FileSystem::POINTERS_PER_INODE = 5\fC [static]\fP"
+
+.PP
+Definition at line \fB50\fP of file \fBFile_System\&.hpp\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for DSFS from the source code\&.

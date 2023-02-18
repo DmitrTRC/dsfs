@@ -1,0 +1,114 @@
+.TH "lib/fs_lib/src/sha256.cpp" 3 "Sat Feb 18 2023" "Version v0.01" "DSFS" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+lib/fs_lib/src/sha256.cpp
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdlib\&.h>\fP
+.br
+\fC#include <memory\&.h>\fP
+.br
+\fC#include 'sha256\&.hpp'\fP
+.br
+
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBROTLEFT\fP(a,  b)   (((a) << (b)) | ((a) >> (32\-(b))))"
+.br
+.ti -1c
+.RI "#define \fBROTRIGHT\fP(a,  b)   (((a) >> (b)) | ((a) << (32\-(b))))"
+.br
+.ti -1c
+.RI "#define \fBCH\fP(x,  y,  z)   (((x) & (y)) ^ (~(x) & (z)))"
+.br
+.ti -1c
+.RI "#define \fBMAJ\fP(x,  y,  z)   (((x) & (y)) ^ ((x) & (z)) ^ ((y) & (z)))"
+.br
+.ti -1c
+.RI "#define \fBEP0\fP(x)   (\fBROTRIGHT\fP(x,2) ^ \fBROTRIGHT\fP(x,13) ^ \fBROTRIGHT\fP(x,22))"
+.br
+.ti -1c
+.RI "#define \fBEP1\fP(x)   (\fBROTRIGHT\fP(x,6) ^ \fBROTRIGHT\fP(x,11) ^ \fBROTRIGHT\fP(x,25))"
+.br
+.ti -1c
+.RI "#define \fBSIG0\fP(x)   (\fBROTRIGHT\fP(x,7) ^ \fBROTRIGHT\fP(x,18) ^ ((x) >> 3))"
+.br
+.ti -1c
+.RI "#define \fBSIG1\fP(x)   (\fBROTRIGHT\fP(x,17) ^ \fBROTRIGHT\fP(x,19) ^ ((x) >> 10))"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBsha256_transform\fP (SHA256_CTX *ctx, const BYTE data[])"
+.br
+.ti -1c
+.RI "void \fBsha256_init\fP (SHA256_CTX *ctx)"
+.br
+.ti -1c
+.RI "void \fBsha256_update\fP (SHA256_CTX *ctx, const BYTE data[], size_t len)"
+.br
+.ti -1c
+.RI "void \fBsha256_final\fP (SHA256_CTX *ctx, BYTE hash[])"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define CH(x, y, z)   (((x) & (y)) ^ (~(x) & (z)))"
+
+.PP
+Definition at line \fB27\fP of file \fBsha256\&.cpp\fP\&.
+.SS "#define EP0(x)   (\fBROTRIGHT\fP(x,2) ^ \fBROTRIGHT\fP(x,13) ^ \fBROTRIGHT\fP(x,22))"
+
+.PP
+Definition at line \fB29\fP of file \fBsha256\&.cpp\fP\&.
+.SS "#define EP1(x)   (\fBROTRIGHT\fP(x,6) ^ \fBROTRIGHT\fP(x,11) ^ \fBROTRIGHT\fP(x,25))"
+
+.PP
+Definition at line \fB30\fP of file \fBsha256\&.cpp\fP\&.
+.SS "#define MAJ(x, y, z)   (((x) & (y)) ^ ((x) & (z)) ^ ((y) & (z)))"
+
+.PP
+Definition at line \fB28\fP of file \fBsha256\&.cpp\fP\&.
+.SS "#define ROTLEFT(a, b)   (((a) << (b)) | ((a) >> (32\-(b))))"
+
+.PP
+Definition at line \fB24\fP of file \fBsha256\&.cpp\fP\&.
+.SS "#define ROTRIGHT(a, b)   (((a) >> (b)) | ((a) << (32\-(b))))"
+
+.PP
+Definition at line \fB25\fP of file \fBsha256\&.cpp\fP\&.
+.SS "#define SIG0(x)   (\fBROTRIGHT\fP(x,7) ^ \fBROTRIGHT\fP(x,18) ^ ((x) >> 3))"
+
+.PP
+Definition at line \fB31\fP of file \fBsha256\&.cpp\fP\&.
+.SS "#define SIG1(x)   (\fBROTRIGHT\fP(x,17) ^ \fBROTRIGHT\fP(x,19) ^ ((x) >> 10))"
+
+.PP
+Definition at line \fB32\fP of file \fBsha256\&.cpp\fP\&.
+.SH "Function Documentation"
+.PP 
+.SS "void sha256_final (SHA256_CTX * ctx, BYTE hash[])"
+
+.PP
+Definition at line \fB114\fP of file \fBsha256\&.cpp\fP\&.
+.SS "void sha256_init (SHA256_CTX * ctx)"
+
+.PP
+Definition at line \fB87\fP of file \fBsha256\&.cpp\fP\&.
+.SS "void sha256_transform (SHA256_CTX * ctx, const BYTE data[])"
+
+.PP
+Definition at line \fB47\fP of file \fBsha256\&.cpp\fP\&.
+.SS "void sha256_update (SHA256_CTX * ctx, const BYTE data[], size_t len)"
+
+.PP
+Definition at line \fB100\fP of file \fBsha256\&.cpp\fP\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for DSFS from the source code\&.

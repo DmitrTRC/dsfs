@@ -1,0 +1,54 @@
+.TH "fs" 3 "Sat Feb 18 2023" "Version v0.01" "DSFS" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+fs
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBFileSystem\fP"
+.br
+.RI "Class for File System\&. Contains all the functions for File System operations Used by the Shell to perform File System operations\&. "
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "template<std::size_t N> std::ostream & \fBoperator<<\fP (std::ostream &os, std::array< std::byte, N > const &v1)"
+.br
+.RI "Helper function to print std::array<std::byte, N> to std::ostream\&. "
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "template<std::size_t N> std::ostream & fs::operator<< (std::ostream & os, std::array< std::byte, N > const & v1)"
+
+.PP
+Helper function to print std::array<std::byte, N> to std::ostream\&. 
+.PP
+\fBTemplate Parameters\fP
+.RS 4
+\fIN\fP Size of the array 
+.RE
+.PP
+\fBParameters\fP
+.RS 4
+\fIos\fP Output stream 
+.br
+\fIv1\fP Array to print 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+Output stream 
+.RE
+.PP
+
+.PP
+Definition at line \fB32\fP of file \fBFile_System\&.hpp\fP\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for DSFS from the source code\&.

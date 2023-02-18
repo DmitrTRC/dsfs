@@ -1,0 +1,106 @@
+.TH "lib/fs_lib/include/sha2xx_common.hpp" 3 "Sat Feb 18 2023" "Version v0.01" "DSFS" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+lib/fs_lib/include/sha2xx_common.hpp
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <string\&.h>\fP
+.br
+\fC#include <stdint\&.h>\fP
+.br
+
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBsha2xx_context_t\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBCh\fP(x,  y,  z)   ((x & (y ^ z)) ^ z)"
+.br
+.ti -1c
+.RI "#define \fBMaj\fP(x,  y,  z)   ((x & (y | z)) | (y & z))"
+.br
+.ti -1c
+.RI "#define \fBSHR\fP(x,  n)   (x >> n)"
+.br
+.ti -1c
+.RI "#define \fBROTR\fP(x,  n)   ((x >> n) | (x << (32 \- n)))"
+.br
+.ti -1c
+.RI "#define \fBS0\fP(x)   (\fBROTR\fP(x, 2) ^ \fBROTR\fP(x, 13) ^ \fBROTR\fP(x, 22))"
+.br
+.ti -1c
+.RI "#define \fBS1\fP(x)   (\fBROTR\fP(x, 6) ^ \fBROTR\fP(x, 11) ^ \fBROTR\fP(x, 25))"
+.br
+.ti -1c
+.RI "#define \fBs0\fP(x)   (\fBROTR\fP(x, 7) ^ \fBROTR\fP(x, 18) ^ \fBSHR\fP(x, 3))"
+.br
+.ti -1c
+.RI "#define \fBs1\fP(x)   (\fBROTR\fP(x, 17) ^ \fBROTR\fP(x, 19) ^ \fBSHR\fP(x, 10))"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBsha2xx_pad\fP (\fBsha2xx_context_t\fP *ctx)"
+.br
+.ti -1c
+.RI "void \fBsha2xx_update\fP (\fBsha2xx_context_t\fP *ctx, const void *data, size_t len)"
+.br
+.ti -1c
+.RI "void \fBsha2xx_final\fP (\fBsha2xx_context_t\fP *ctx, void *digest, size_t dig_len)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define Ch(x, y, z)   ((x & (y ^ z)) ^ z)"
+
+.PP
+Definition at line \fB53\fP of file \fBsha2xx_common\&.hpp\fP\&.
+.SS "#define Maj(x, y, z)   ((x & (y | z)) | (y & z))"
+
+.PP
+Definition at line \fB54\fP of file \fBsha2xx_common\&.hpp\fP\&.
+.SS "#define ROTR(x, n)   ((x >> n) | (x << (32 \- n)))"
+
+.PP
+Definition at line \fB56\fP of file \fBsha2xx_common\&.hpp\fP\&.
+.SS "#define S0(x)   (\fBROTR\fP(x, 2) ^ \fBROTR\fP(x, 13) ^ \fBROTR\fP(x, 22))"
+
+.PP
+Definition at line \fB57\fP of file \fBsha2xx_common\&.hpp\fP\&.
+.SS "#define s0(x)   (\fBROTR\fP(x, 7) ^ \fBROTR\fP(x, 18) ^ \fBSHR\fP(x, 3))"
+
+.PP
+Definition at line \fB59\fP of file \fBsha2xx_common\&.hpp\fP\&.
+.SS "#define S1(x)   (\fBROTR\fP(x, 6) ^ \fBROTR\fP(x, 11) ^ \fBROTR\fP(x, 25))"
+
+.PP
+Definition at line \fB58\fP of file \fBsha2xx_common\&.hpp\fP\&.
+.SS "#define s1(x)   (\fBROTR\fP(x, 17) ^ \fBROTR\fP(x, 19) ^ \fBSHR\fP(x, 10))"
+
+.PP
+Definition at line \fB60\fP of file \fBsha2xx_common\&.hpp\fP\&.
+.SS "#define SHR(x, n)   (x >> n)"
+
+.PP
+Definition at line \fB55\fP of file \fBsha2xx_common\&.hpp\fP\&.
+.SH "Function Documentation"
+.PP 
+.SS "void sha2xx_final (\fBsha2xx_context_t\fP * ctx, void * digest, size_t dig_len)"
+
+.SS "void sha2xx_pad (\fBsha2xx_context_t\fP * ctx)"
+
+.SS "void sha2xx_update (\fBsha2xx_context_t\fP * ctx, const void * data, size_t len)"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for DSFS from the source code\&.
