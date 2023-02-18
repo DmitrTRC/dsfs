@@ -435,7 +435,7 @@ class FileSystem {
    * @param name name of the entry
    * @return directory with the added entry
    */
-  Directory add_dir_entry(Directory &dir, uint32_t i_num, uint32_t type, const std::string &name);
+  static Directory add_dir_entry(Directory &dir, uint32_t i_num, uint32_t type, const std::string &name);
 
   /**
    * @brief Writes the directory back to the disk
@@ -450,7 +450,7 @@ class FileSystem {
    * @param name
    * @return index of the entry if found; -1 otherwise
    */
-  int dir_lookup(Directory &dir, const std::string &name);
+  static int dir_lookup(Directory &dir, const std::string &name);
 
   /**
    * @brief Reads Directory from Dirent offset in curr_dir
