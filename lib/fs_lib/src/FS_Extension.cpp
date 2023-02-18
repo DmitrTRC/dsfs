@@ -597,5 +597,72 @@ bool FileSystem::copyout(const std::string &path, const std::string &name) {
 
 	return true;
 }
+bool FileSystem::copyin(const std::string path, const std::string name) {
+
+	if (not mounted_) {
+		std::cerr << "File system is not mounted" << std::endl;
+		return false;
+	}
+
+	std::array<char, NAME_SIZE> name_array = {0};
+
+	std::copy(name.begin(), name.end(), name_array.begin());
+	touch(name_array);
+
+	int offset = dir_lookup(curDir, name);
+
+	if (offset==-1) {
+		std::cerr << "Error adding new file" << std::endl;
+		return false;
+	}
+
+	if (curDir.TableOfEntries[offset].type==0) {
+		std::cerr << "Not a file" << std::endl;
+		return false;
+	}
+
+	uint32_t i_num = curDir.TableOfEntries[offset].i_num;
+
+	std::fstream external_file(path, std::ios::binary | std::ios::in);
+
+	if (not external_file.is_open() || not external_file.good()) {
+		std::cerr << "Error opening file" << std::endl;
+		std::cerr << "Error: " << strerror(errno) << std::endl;
+		return false;
+	}
+
+	offset = 0;
+	std::vector<std::byte> buffer(Disk::BLOCK_SIZE, std::byte(0));
+
+	do {
+		external_file.read(reinterpret_cast<char *>(buffer.data()), static_cast<int>(buffer.size()));
+		ssize_t result = external_file.gcount();
+
+		if (result <= 0) {
+			break;
+		}
+
+		ssize_t actual = write(i_num, buffer, result, offset);
+
+		if (actual < 0) {
+			std::cerr << "fs.write returned invalid result " << actual << std::endl;
+			break;
+		}
+
+		offset += actual;
+
+		if (actual!=result) {
+			std::cerr << "fs.write only wrote " << actual << " bytes, not " << result << " bytes" << std::endl;
+			break;
+		}
+
+	} while (not buffer.empty());
+
+	external_file.close();
+	std::cout << "Bytes copied: " << offset << std::endl;
+
+	return true;
+
+}
 
 }
