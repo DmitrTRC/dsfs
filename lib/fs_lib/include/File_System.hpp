@@ -209,11 +209,11 @@ class FileSystem {
 	u_int32_t MagicNumber;    // Magic Number to identify the file system
 	u_int32_t Blocks;        // Number of blocks in the file system
 	u_int32_t InodeBlocks;    // Number of Inode blocks in the file system
-	u_int32_t Inodes;        // Number of Inodes in the file system
 	u_int32_t DirBlocks;    // Number of Directory blocks in the file system
+	u_int32_t Inodes;        // Number of Inodes in the file system
+	u_int32_t Protected;               // 1 if the file system is protected; 0 otherwise
 
 	std::array<char, 257> PasswordHash; // Hash of the password
-	u_int32_t Protected;               // 1 if the file system is protected; 0 otherwise
   };
 
   /**
