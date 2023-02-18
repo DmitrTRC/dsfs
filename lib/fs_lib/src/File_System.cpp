@@ -1,5 +1,4 @@
 #include "File_System.hpp"
-#include "sha256.h"
 
 #include <algorithm>
 #include <cmath>
@@ -9,6 +8,7 @@
 namespace fs {
 
 void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
+
 	Block block;
 
 	disk->read(0, block.Data);
@@ -16,7 +16,7 @@ void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
 	std::cout << "SuperBlock:" << std::endl;
 
 	if (block.Super.MagicNumber!=MAGIC_NUMBER) {
-		std::cout << "  Magic Number: " << block.Super.MagicNumber << " Is INVALID! Exiting... " << std::endl;
+		std::cerr << "  Magic Number: " << block.Super.MagicNumber << " Is INVALID! Exiting... " << std::endl;
 		return;
 	}
 
@@ -73,8 +73,8 @@ void FileSystem::debug(const std::shared_ptr<Disk> &disk) {
 	std::cout << "  Data Size: " << sizeof(std::byte) << std::endl;
 	std::cout << "  Directory Blocks: " << block.Super.DirBlocks << std::endl;
 
-//	std::cout << "  Protected: " << block.Super.Protected << std::endl;
-//	std::cout << "  PasswordHash Size: " << block.Super.PasswordHash.size() << std::endl;
+	std::cout << "  Protected: " << block.Super.Protected << std::endl;
+	std::cout << "  PasswordHash Size: " << block.Super.PasswordHash.size() << std::endl;
 }
 
 bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
@@ -182,7 +182,7 @@ bool FileSystem::format(const std::shared_ptr<Disk> &disk) {
 FileSystem::~FileSystem() {
 
 	if (not fs_disk) {
-		std::cout << "No disk mounted! FileSystem closing" << std::endl;
+		std::cerr << "No disk mounted! FileSystem closing" << std::endl;
 		return;
 	}
 
