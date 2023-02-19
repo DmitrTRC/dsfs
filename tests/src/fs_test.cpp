@@ -26,7 +26,7 @@ TEST(FS, Constructor_Test) {
 
 }
 
-TEST(FS, Format_Test) {
+TEST(FS, Format5k_Test) {
 	std::shared_ptr<Disk> disk = std::make_shared<Disk>();
 	FileSystem fs;
 
@@ -35,6 +35,26 @@ TEST(FS, Format_Test) {
 	fs.set_cur_disk(disk);
 
 	EXPECT_EQ(fs.get_cur_disk()->size(), 5);
+	EXPECT_EQ(fs.get_cur_disk()->mounted(), false);
+
+	EXPECT_NO_THROW(FileSystem::format(fs.get_cur_disk()));
+
+
+	//Check each block
+
+	std::array<std::byte, Disk::BLOCK_SIZE> data = {};
+
+}
+
+TEST(FS, Format20k_Test) {
+	std::shared_ptr<Disk> disk = std::make_shared<Disk>();
+	FileSystem fs;
+
+	disk->open("image.5.img", 20);
+
+	fs.set_cur_disk(disk);
+
+	EXPECT_EQ(fs.get_cur_disk()->size(), 20);
 	EXPECT_EQ(fs.get_cur_disk()->mounted(), false);
 
 	EXPECT_NO_THROW(FileSystem::format(fs.get_cur_disk()));
