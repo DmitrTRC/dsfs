@@ -143,7 +143,7 @@ TEST(FS, LS_Test) {
 	fs.mount(disk);
 
 	EXPECT_EQ(fs.get_cur_disk()->mounted(), true);
-	//EXPECT_EQ(fs.get_cur_disk()->size(), 20);
+	EXPECT_EQ(fs.get_cur_disk()->size(), 20);
 
 	// Test reading from a file , read first inode
 
